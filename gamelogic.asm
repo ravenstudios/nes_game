@@ -1,0 +1,78 @@
+.include "input.asm"
+
+
+
+
+
+INFLOOP:
+    JSR ReadController1
+
+	JMP INFLOOP
+
+
+NMI:
+    ; Clamp XPOS to [LEFTBOUNDS, RIGHTBOUNDS] and then write OAM
+
+    LDA XPOS
+    CMP #LEFTBOUNDS
+    BCC CLAMPLEFT            ; XPOS < LEFT  -> clamp left
+    CMP #RIGHTBOUNDS
+    BCS CLAMPRIGHT           ; XPOS >= RIGHT -> clamp right
+    JMP XOK
+
+CLAMPLEFT:
+    LDA #LEFTBOUNDS
+    STA XPOS
+    JMP XOK
+
+CLAMPRIGHT:
+    LDA #RIGHTBOUNDS
+    STA XPOS
+    JMP XOK
+
+XOK:
+
+LDA YPOS
+CMP #TOPBOUNDS
+BCC CLAMPTOP
+CMP #BOTTOMBOUNDS
+BCS CLAMPBOTTOM
+JMP YOK
+
+CLAMPTOP:
+    LDA #TOPBOUNDS
+    STA YPOS
+    JMP YOK
+
+CLAMPBOTTOM:
+    LDA #BOTTOMBOUNDS
+    STA YPOS
+    JMP YOK
+
+YOK:
+
+    ; write X
+    LDA XPOS
+    STA $0050
+    STA $0203
+    STA $020B
+    CLC
+    ADC #8
+    STA $0207
+    STA $020F
+
+    ; write Y
+    LDA YPOS
+    STA $0060
+    STA $0200
+    STA $0204
+    CLC
+    ADC #8
+    STA $0208
+    STA $020C
+
+
+
+    LDA #$02
+    STA $4014
+    RTI
