@@ -90,6 +90,7 @@ LOADBACKGROUND:
 	STA anim_timer
 	STA anim_frame
 	STA vblank_flag
+
 	STA direction
 
 
@@ -107,4 +108,4 @@ LOADBACKGROUND:
 
 PALETTEDATA:
 	.byte $00, $0F, $00, $10, 	$00, $0A, $15, $01, 	$00, $29, $28, $27, 	$00, $34, $24, $14 	;background palettes
-	.byte $31, $0F, $15, $30, 	$00, $0F, $11, $30, 	$00, $0F, $30, $27, 	$00, $3C, $2C, $1C 	;sprite palettes
+	.byte $00, $27, $13, $0f, 	$00, $0F, $11, $30, 	$00, $0F, $30, $27, 	$00, $3C, $2C, $1C 	;sprite palettes

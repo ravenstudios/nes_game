@@ -21,10 +21,10 @@ SPRITEDATA:
 ;|+------- Flip sprite horizontally
 ;+-------- Flip sprite vertically
 
-	.byte $40, $00, $08, $40
-	.byte $40, $01, $09, $48
-	.byte $48, $10, $0a, $40
-	.byte $48, $11, $0b, $48
+	.byte $40, $00, $00, $40
+	.byte $40, $01, $00, $48
+	.byte $48, $10, $00, $40
+	.byte $48, $11, $00, $48
 
 	;Blocks
 	.byte $90, $80, $00, $60

@@ -32,5 +32,5 @@ IRQ:
 	
 
 .segment "CHARS"
-	.incbin "rom.chr"
+	.incbin "romx.chr"
 
