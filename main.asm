@@ -1,7 +1,7 @@
 ; .include "ppu.asm"
 ; .include "audio.asm"
 
-
+.include "constants.inc"
 .segment "HEADER"
 	.include "header.asm"
 
@@ -10,10 +10,14 @@
 .include "zeropage.asm"
 
 
-.segment "STARTUP"
-.include "reset.asm"
 
-.include "constants.inc"
+.segment "STARTUP"
+
+.include "reset.asm"
+IRQ:
+    RTI
+
+
     
 
 	
@@ -24,6 +28,7 @@
 .segment "VECTORS"
 	.word NMI
 	.word RESET
+    .word IRQ
 	
 
 .segment "CHARS"

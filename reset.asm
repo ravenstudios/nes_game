@@ -79,6 +79,20 @@ LOADBACKGROUND:
 	LDX #$00
 
 	;ENABLE INTERUPTS
+
+	;init vars
+
+	LDX #$40
+	STX XPOS
+	STX YPOS
+	LDA #$00
+	STA move_timer
+	STA anim_timer
+	STA anim_frame
+	STA vblank_flag
+	STA direction
+
+
 	CLI
 
 	LDA #%10010000
@@ -87,13 +101,8 @@ LOADBACKGROUND:
 	LDA #%00011110		;show sprites and background
 	STA $2001
 
-	LDX #$40
-	STX XPOS
-	STX YPOS
-
-
+	
 	JMP INFLOOP
-
 
 
 PALETTEDATA:

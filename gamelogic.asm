@@ -7,12 +7,6 @@
 INFLOOP:
     JSR ReadController1
 
-	JMP INFLOOP
-
-
-NMI:
-    ; Clamp XPOS to [LEFTBOUNDS, RIGHTBOUNDS] and then write OAM
-
     LDA XPOS
     CMP #LEFTBOUNDS
     BCC CLAMPLEFT            ; XPOS < LEFT  -> clamp left
@@ -53,26 +47,44 @@ YOK:
 
     ; write X
     LDA XPOS
-    STA $0050
     STA $0203
-    STA $020B
+    STA $020b
     CLC
     ADC #8
     STA $0207
-    STA $020F
+    STA $020f
 
     ; write Y
     LDA YPOS
-    STA $0060
     STA $0200
     STA $0204
     CLC
     ADC #8
     STA $0208
-    STA $020C
+    STA $020c
+
+    JSR AnimatePlayer
+
+	JMP INFLOOP
 
 
+NMI:
+    PHA
+    TXA
+    PHA
+    TYA
+    PHA
 
+    LDA #1
+    STA vblank_flag
+    
+    ;Draw
     LDA #$02
     STA $4014
+
+    PLA
+    TAY
+    PLA
+    TAX
+    PLA
     RTI

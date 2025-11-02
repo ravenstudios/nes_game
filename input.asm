@@ -32,6 +32,8 @@ HandleDpad:
     AND #RIGHTBTN
     BEQ @check_left
     INC XPOS
+    LDA #$40
+    STA direction
 
 @check_left:
     ; LEFT
@@ -39,6 +41,8 @@ HandleDpad:
     AND #LEFTBTN
     BEQ @check_up
     DEC XPOS
+    LDA #$60
+    STA direction
 
 @check_up:
     ; UP
@@ -46,6 +50,8 @@ HandleDpad:
     AND #UPBTN
     BEQ @check_down
     DEC YPOS
+    LDA #$20
+    STA direction
 
 @check_down:
     ; DOWN
@@ -53,7 +59,8 @@ HandleDpad:
     AND #DOWNBTN
     BEQ @done
     INC YPOS
-
+    LDA $0
+    STA direction
 
 @done:
     RTS
