@@ -22,6 +22,7 @@ IRQ:
 
 	
 .segment "CODE"
+.include "collision.asm"
 .include "gamelogic.asm"
 
 

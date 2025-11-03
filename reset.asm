@@ -127,15 +127,10 @@ LOADBACKGROUNDATTRDATA:
 
 	;init vars
 
-	LDX #$40
-	STX XPOS
-	STX YPOS
-	LDA #$00
-	STA move_timer
-	STA anim_timer
-	STA anim_frame
-	STA vblank_flag
+	.include "init_vars.asm"
+	
 
+	LDA #$00
 	STA direction
 
 
@@ -152,7 +147,7 @@ LOADBACKGROUNDATTRDATA:
 
 
 PALETTEDATA:
-	.byte $00, $0F, $00, $10, 	$00, $0A, $15, $01, 	$00, $29, $28, $27, 	$00, $34, $24, $14 	;background palettes
+	.byte $00, $31, $22, $11, 	$00, $0A, $15, $01, 	$00, $29, $28, $27, 	$00, $34, $24, $14 	;background palettes
 	.byte $00, $27, $13, $0f, 	$00, $0F, $11, $30, 	$00, $0F, $30, $27, 	$00, $3C, $2C, $1C 	;sprite palettes
 
 BACKGROUNDDATA:
@@ -191,10 +186,10 @@ BACKGROUNDDATA:
 BACKGROUNDATTRDATA:
   .byte $40, $50, $50, $50, $50, $50, $50, $10
   .byte $44, $55, $55, $55, $55, $55, $55, $11
-  .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
-  .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
-  .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
-  .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
+  .byte $c0,$cf, $ff, $ff, $ff, $ff, $ff, $33
+  .byte $cc, $f3, $cf, %10101010, $ff, $ff, $ff, $33
+  .byte $cc, $ff, %11110011, %11001111, $ff, $ff, $ff, $33
+  .byte $cc, $ff, $ff, $ff, %11001111, $ff, $ff, $33
   .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
   .byte $c0, $f0, $f0, $f0, $f0, $f0, $f0, $00
   

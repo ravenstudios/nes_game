@@ -21,50 +21,89 @@ ReadController1:
     BNE @read_loop
 
 HandleDpad:
-    ; Only move when timer expires
-    LDA move_timer
-    BNE @dec_timer      ; if > 0, skip moving
-    LDA #50            ; <-- adjust this value
-    STA move_timer      ; reset delay
 
-    ; RIGHT
+    ; movement speed timer
+    LDA move_timer
+    BNE @dec
+    LDA #50        ; adjust repeat delay
+    STA move_timer
+
+    ; --- RIGHT ---
     LDA controller1
     AND #RIGHTBTN
-    BEQ @check_left
-    INC XPOS
-    LDA #$40
+    BEQ @left
+    LDA PLAYER_X
+    CLC
+    ADC PLAYER_SPEED
+    ADC #8
+    STA NEXT_X
+    LDA PLAYER_Y
+    STA NEXT_Y
+    JSR CheckCollision     ; C=1 if blocked
+    BCS @left
+    INC PLAYER_X
+    LDA #FACINGRIGHT
     STA direction
 
-@check_left:
-    ; LEFT
+@left:
+    ; --- LEFT ---
     LDA controller1
     AND #LEFTBTN
-    BEQ @check_up
-    DEC XPOS
-    LDA #$60
+    BEQ @up
+    LDA PLAYER_X
+    SEC
+    SBC PLAYER_SPEED
+    SBC #4
+    STA NEXT_X
+    LDA PLAYER_Y
+    STA NEXT_Y
+    JSR CheckCollision
+    BCS @up
+    DEC PLAYER_X
+    LDA #FACINGLEFT
     STA direction
 
-@check_up:
-    ; UP
+@up:
+    ; --- UP ---
     LDA controller1
     AND #UPBTN
-    BEQ @check_down
-    DEC YPOS
-    LDA #$20
+    BEQ @down
+    LDA PLAYER_X
+    STA NEXT_X
+    LDA PLAYER_Y
+    SBC #4
+    SBC PLAYER_SPEED
+    STA NEXT_Y
+    JSR CheckCollision
+    BCS @down
+    DEC PLAYER_Y
+    LDA #FACINGUP
     STA direction
 
-@check_down:
-    ; DOWN
+@down:
+    ; --- DOWN ---
     LDA controller1
     AND #DOWNBTN
     BEQ @done
-    INC YPOS
-    LDA $0
+    LDA PLAYER_X
+    STA NEXT_X
+    LDA PLAYER_Y
+    CLC
+    ADC PLAYER_SPEED
+    ADC #8
+    STA NEXT_Y
+    JSR CheckCollision
+    BCS @done
+    INC PLAYER_Y
+    LDA #FACINGDOWN
     STA direction
 
 @done:
     RTS
 
-@dec_timer:
+@dec:
     DEC move_timer
     RTS
+
+
+

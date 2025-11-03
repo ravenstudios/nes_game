@@ -5,7 +5,7 @@ LOADSPRITES:
 	LDA SPRITEDATA, X
 	STA $0200, X
 	INX
-	CPX #$20	;16bytes (4 bytes per sprite, 8 sprites total)
+	CPX #$50	;16bytes (4 bytes per sprite, 8 sprites total)
 	BNE LOADSPRITES
 	JMP DONE
 
@@ -25,6 +25,18 @@ SPRITEDATA:
 	.byte $40, $01, $00, $48
 	.byte $48, $10, $00, $40
 	.byte $48, $11, $00, $48
+
+	;window
+	.byte $10, $08, $01, $90
+	.byte $10, $09, $01, $98
+	.byte $18, $18, $01, $90
+	.byte $18, $19, $01, $98
+	.byte $20, $28, $01, $90
+	.byte $20, $29, $01, $98
+	.byte $28, $38, $01, $90
+	.byte $28, $39, $01, $98
+	
+	
 
 	;Blocks
 	.byte $90, $80, $00, $60
