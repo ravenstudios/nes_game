@@ -1,5 +1,6 @@
 .include "init_vars.asm"
-.include "background.asm"
+; .include "background.asm"
+.include "test_room.asm"
 .include "sprites.asm"
 
 RESET:

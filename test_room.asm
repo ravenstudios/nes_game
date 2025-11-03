@@ -1,35 +1,80 @@
+
+
 LOADBACKGROUND:
-	LDA $2002		;read PPU status to reset high/low latch
-	LDA #$20	;start of nametable "canvas" as the high bit
+	LDA $2002		
+	LDA #$20	
 	STA $2006	
-	LDA #$00	;sets low bit
-	STA $2006	;what adress to write to starting at $2100
-	LDX #$00	;bad code that uses wraparound to hit 0 in the loop
-LOADBACKGROUNDP1:
-	LDA BACKGROUNDDATA, X ;loop through BACKGROUNDDATA
-	STA $2007 ; store byte
+	LDA #$40
+	STA $2006	
+
+
+	LDX #$00	
+    LDY #$00
+    LDA #$00
+
+LOADBACKGROUNDP:
+	LDA BACKGROUNDDATA, X 
+	STA $2007
 	INX
-	CPX #$00 ;wrap around
-	BNE LOADBACKGROUNDP1 ; if x == 0 break
+	CPX #10 
+	BNE LOADBACKGROUNDP ; if x == 0 break
+
+
+    LDA $2002		
+	LDA #$20	
+	STA $2006	
+	LDA #$60
+	STA $2006	
+
+    LDX #$00
+
+
+
 LOADBACKGROUNDP2:
-	LDA BACKGROUNDDATA+256, X
+	LDA BACKGROUNDDATA+10, X 
 	STA $2007
 	INX
-	CPX #$00
-	BNE LOADBACKGROUNDP2
-LOADBACKGROUNDP3:
-	LDA BACKGROUNDDATA+512, X
-	STA $2007
-	INX
-	CPX #$00
-	BNE LOADBACKGROUNDP3
-LOADBACKGROUNDP4:
-	LDA BACKGROUNDDATA+768, X
-	STA $2007
-	INX
-	CPX #$c0
-	BNE LOADBACKGROUNDP4
-;192
+	CPX #10 
+	BNE LOADBACKGROUNDP2 ; if x == 0 break
+    ; INY
+    ; LDA $2002		;read PPU status to reset high/low latch
+	; LDA #$20	;start of nametable "canvas" as the high bit
+	; STA $2006	
+	; LDA #$20	;sets low bit
+	; STA $2006
+    ; LDX #$00
+    ; CPY #$0A
+    ; BNE LOADBACKGROUNDP
+
+
+; .byte $02,$03,$02,$03,$02,$03,$02,$03,$02,$03
+; .byte $12,$13,$12,$13,$12,$13,$12,$13,$12,$13
+
+;reset h/l bit in $2002
+;set $2000 high bit to $20 sta in 2006 and set low bit then sta $2006
+
+;loop through X bytes of map data where X is the W of map, using a var or register to index loop
+
+;sta each byte into $2007
+
+;reset inside loop counter
+
+;inc outside loop counter
+
+;set low bit for $2006 that is 32 - map width
+
+;go back to inner loop and offset reading data by map w * row
+
+
+
+
+
+
+
+
+
+
+
 
 ;LOAD BACKGROUND PALETTEDATA
 	LDA #$23	
@@ -49,16 +94,8 @@ LOADBACKGROUNDATTRDATA:
 	STA $2005
 	STA $2005
 
-	;ENABLE INTERUPTS
 
-	;init vars
-
-	
-	
-
-	
-
-
+RTS
 	
 
 
@@ -78,12 +115,13 @@ BACKGROUNDDATA:
 .byte $02,$03,$02,$03,$02,$03,$02,$03,$02,$03
 .byte $12,$13,$12,$13,$12,$13,$12,$13,$12,$13
 
+
 BACKGROUNDATTRDATA:
-  .byte $40, $50, $50, $50, $50, $50, $50, $10
-  .byte $44, $55, $55, $55, $55, $55, $55, $11
-  .byte $c0,$cf, $ff, $ff, $ff, $ff, $ff, $33
-  .byte $cc, $f3, $cf, %10101010, $ff, $ff, $ff, $33
-  .byte $cc, $ff, %11110011, %11001111, $ff, $ff, $ff, $33
-  .byte $cc, $ff, $ff, $ff, %11001111, $ff, $ff, $33
-  .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
-  .byte $c0, $f0, $f0, $f0, $f0, $f0, $f0, $00
+.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
+.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
+.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
+.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
+.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
+.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
+.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
+.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
