@@ -9,3 +9,4 @@ cc65/bin/ld65 $o_file -o $nes_file -t nes  || exit 1
 rm $o_file
 
 /Applications/Mesen.app/Contents/MacOS/Mesen $nes_file
+

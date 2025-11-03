@@ -5,8 +5,17 @@
 
 
 INFLOOP:
-    JSR ReadController1
 
+
+@wait_vblank:
+    ; LDA vblank_flag
+    ; BEQ @wait_vblank
+    ; LDA #0
+    ; STA vblank_flag
+
+    
+    JSR ReadController1
+    ; JSR HandleDpad
     LDA PLAYER_X
     CMP #LEFTBOUNDS
     BCC CLAMPLEFT            ; PLAYER_X < LEFT  -> clamp left
