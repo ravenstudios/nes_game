@@ -101,12 +101,12 @@ RTS
 
 PALETTEDATA:
 	.byte $00, $31, $22, $11, 	$00, $0A, $15, $01, 	$00, $29, $28, $27, 	$00, $34, $24, $14 	;background palettes
-	.byte $00, $27, $13, $0f, 	$00, $0F, $11, $30, 	$00, $0F, $30, $27, 	$00, $3C, $2C, $1C 	;sprite palettes
+	.byte $00, $27, $13, $00, 	$00, $00, $11, $30, 	$00, $00, $30, $27, 	$00, $3C, $2C, $1C 	;sprite palettes
 
 BACKGROUNDDATA:
-.byte $02,$03,$02,$03,$02,$03,$02,$03,$02,$03
-.byte $12,$13,$12,$13,$12,$13,$12,$13,$12,$13
-.byte $02,$03,$02,$03,$02,$03,$02,$03,$02,$03
+.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
+.byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,
 .byte $12,$13,$12,$13,$12,$13,$12,$13,$12,$13
 .byte $02,$03,$02,$03,$02,$03,$02,$03,$02,$03
 .byte $12,$13,$12,$13,$12,$13,$12,$13,$12,$13
@@ -117,11 +117,11 @@ BACKGROUNDDATA:
 
 
 BACKGROUNDATTRDATA:
-.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
-.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
-.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
-.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
-.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
-.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
-.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
-.byte $fe, $fe, $fe, $fe, $fe, $fe, $fe, $fe
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff

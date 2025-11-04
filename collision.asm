@@ -37,3 +37,67 @@ NoColl:
     CLC ;clear carry as
     ; RTS
 
+
+tl: .res 1
+tr: .res 1
+bl: .res 1
+br: .res 1
+tile_x: .res 1
+tile_y: .res 1
+tile_i: .res 1
+
+TILECollision:
+    ;tl
+    LDA PLAYER_X
+    LSR 
+    LSR
+    LSR
+    STA tile_x
+    STA $0040 ;tile x
+    LDA PLAYER_Y
+    STA $0026
+    LSR 
+    LSR
+    LSR
+    STA tile_y
+    STA $0041 ;tile y
+
+    LDA tile_y
+    STA $0021 ;debug
+    ASL A
+    ASL A
+    ASL A
+    ASL A
+    ASL A
+    CLC
+    STA $0042 ;tile y
+    CLC
+    ADC tile_x
+    STA tile_i
+    LDX tile_i
+    LDA COLLISIONTABLE, X
+    STX $0022 ;debug
+    BEQ @returntrue
+        CLC
+        RTS
+    
+    @returntrue:
+    SEC
+    RTS
+; Pick the points to check on the player.
+; Use the four corners of the player’s box:
+
+; Top-left (x, y)
+
+; Top-right (x+width−1, y)
+
+; Bottom-left (x, y+height−1)
+
+; Bottom-right (x+width−1, y+height−1)
+
+; Convert each point from pixels → tile coordinates.
+; Since each tile is 8×8:
+
+; tile_x = floor(point_x / 8)
+
+; tile_y = floor(point_y / 8)

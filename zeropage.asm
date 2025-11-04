@@ -24,3 +24,5 @@ controller1_prev: .res 1   ; optional (for detecting presses)
 direction: .res 1 
 NEXT_X: .res 1
 NEXT_Y: .res 1
+
+COLLISIONTABLE: .res 1
