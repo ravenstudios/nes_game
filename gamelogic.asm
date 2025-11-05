@@ -1,58 +1,11 @@
 .include "input.asm"
 
-
-
-
-
 INFLOOP:
 
 
 @wait_vblank:
-    ; LDA vblank_flag
-    ; BEQ @wait_vblank
-    ; LDA #0
-    ; STA vblank_flag
-
-    
     JSR ReadController1
-    ; JSR HandleDpad
-    LDA PLAYER_X
-    CMP #LEFTBOUNDS
-    BCC CLAMPLEFT            ; PLAYER_X < LEFT  -> clamp left
-    CMP #RIGHTBOUNDS
-    BCS CLAMPRIGHT           ; PLAYER_X >= RIGHT -> clamp right
-    JMP XOK
-
-CLAMPLEFT:
-    LDA #LEFTBOUNDS
-    STA PLAYER_X
-    JMP XOK
-
-CLAMPRIGHT:
-    LDA #RIGHTBOUNDS
-    STA PLAYER_X
-    JMP XOK
-
-XOK:
-
-LDA PLAYER_Y
-CMP #TOPBOUNDS
-BCC CLAMPTOP
-CMP #BOTTOMBOUNDS
-BCS CLAMPBOTTOM
-JMP YOK
-
-CLAMPTOP:
-    LDA #TOPBOUNDS
-    STA PLAYER_Y
-    JMP YOK
-
-CLAMPBOTTOM:
-    LDA #BOTTOMBOUNDS
-    STA PLAYER_Y
-    JMP YOK
-
-YOK:
+    
 
     ; write X
     LDA PLAYER_X
@@ -76,58 +29,7 @@ YOK:
     STA ENEMY_X
     LDA #$90
     STA ENEMY_Y
-    ; JSR CheckCollision
-    ; BCS FIXLOCATION
-    ; JMP DONEFIXLOCATION
-
-; FIXLOCATION:
-
-
-;     LDA direction
-;     CMP #FACINGUP
-;     BNE @checkdown
-;     CLC
-;     LDA ENEMY_Y
-;     ADC ENEMY_H
-;     ADC #$01
-;     STA PLAYER_Y
-;     JMP DONEFIXLOCATION
-
-; @checkdown:
-;     LDA direction
-;     CMP #FACINGDOWN
-;     BNE @checkleft
-;     LDA ENEMY_Y
-;     CLC
-;     SBC PLAYER_H
-;     SBC #$01
-;     STA PLAYER_Y
-;     JMP DONEFIXLOCATION
-
-; @checkleft:
-;     LDA direction
-;     CMP #FACINGLEFT
-;     BNE @checkright
-;     LDY ENEMY_X
-;     DEX
-;     STY PLAYER_X
-;     JMP DONEFIXLOCATION
-
-; @checkright:
-;     LDA direction
-;     CMP #FACINGRIGHT
-;     BNE DONEFIXLOCATION
-;     LDA ENEMY_X
-;     CLC
-;     ADC ENEMY_W
-;     ADC #$01
-;     STA PLAYER_X
-    
-
-
-; DONEFIXLOCATION:
-
-
+   
 
 
 JSR AnimatePlayer

@@ -32,55 +32,71 @@ HandleDpad:
     LDA controller1
     AND #RIGHTBTN
     BEQ @left
-
+    LDA PLAYER_X
+    CLC
+    ADC PLAYER_W
+    STA player_coll_x
+    LDA PLAYER_Y
+    STA player_coll_y
     JSR TILECollision
-
+    BCS @left
     INC PLAYER_X
     LDA #FACINGRIGHT
     STA direction
+    RTS
 
 @left:
     ; --- LEFT ---
     LDA controller1
     AND #LEFTBTN
     BEQ @up
-
+    LDA PLAYER_X
+    STA player_coll_x
+    DEC player_coll_x
+    LDA PLAYER_Y
+    STA player_coll_y
     JSR TILECollision
-
+    BCS @up
     DEC PLAYER_X
     LDA #FACINGLEFT
     STA direction
+    RTS
 
 @up:
     ; --- UP ---
     LDA controller1
     AND #UPBTN
     BEQ @down
-
+    LDA PLAYER_X
+    STA player_coll_x
+    LDA PLAYER_Y
+    STA player_coll_y
+    DEC player_coll_y
     JSR TILECollision
-    BCS :+
-        ; LDA #$01
-        ; STA $0020
-        ; LDA #$00
-        ; STA PLAYER_X
-    :
+    BCS @down    
     LDA #$00
-    STA $0020
     DEC PLAYER_Y
     LDA #FACINGUP
     STA direction
+    RTS
 
 @down:
     ; --- DOWN ---
     LDA controller1
     AND #DOWNBTN
     BEQ @done
-
+    LDA PLAYER_X
+    STA player_coll_x
+    LDA PLAYER_Y
+    CLC
+    ADC PLAYER_H
+    STA player_coll_y
     JSR TILECollision
-
+    BCS @done
     INC PLAYER_Y
     LDA #FACINGDOWN
     STA direction
+    RTS
 
 @done:
     RTS

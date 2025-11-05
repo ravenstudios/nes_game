@@ -26,3 +26,14 @@ NEXT_X: .res 1
 NEXT_Y: .res 1
 
 COLLISIONTABLE: .res 1
+
+index_low_byte = $90
+index_high_byte = $91
+index_pointer_low = $92
+index_pointer_high = $93
+
+tile_x = $0080
+tile_y = $0081
+
+player_coll_x: .res 1
+player_coll_y: .res 1
