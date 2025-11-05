@@ -19,15 +19,10 @@ ReadController1:
    
     DEY
     BNE @read_loop
-
+    RTS
+    
 HandleDpad:
-
-    ; movement speed timer
-    LDA move_timer
-    BNE @dec
-    LDA #50        ; adjust repeat delay
-    STA move_timer
-
+   
     ; --- RIGHT ---
     LDA controller1
     AND #RIGHTBTN
@@ -35,14 +30,14 @@ HandleDpad:
     LDA PLAYER_X
     CLC
     ADC PLAYER_W
-    STA player_coll_x
+    STA collision_check_x
     LDA PLAYER_Y
-    STA player_coll_y
+    STA collision_check_y
     JSR TILECollision
     BCS @left
     INC PLAYER_X
     LDA #FACINGRIGHT
-    STA direction
+    STA PLAYERDIRECTION
     RTS
 
 @left:
@@ -51,15 +46,15 @@ HandleDpad:
     AND #LEFTBTN
     BEQ @up
     LDA PLAYER_X
-    STA player_coll_x
-    DEC player_coll_x
+    STA collision_check_x
+    DEC collision_check_x
     LDA PLAYER_Y
-    STA player_coll_y
+    STA collision_check_y
     JSR TILECollision
     BCS @up
     DEC PLAYER_X
     LDA #FACINGLEFT
-    STA direction
+    STA PLAYERDIRECTION
     RTS
 
 @up:
@@ -68,16 +63,16 @@ HandleDpad:
     AND #UPBTN
     BEQ @down
     LDA PLAYER_X
-    STA player_coll_x
+    STA collision_check_x
     LDA PLAYER_Y
-    STA player_coll_y
-    DEC player_coll_y
+    STA collision_check_y
+    DEC collision_check_y
     JSR TILECollision
     BCS @down    
     LDA #$00
     DEC PLAYER_Y
     LDA #FACINGUP
-    STA direction
+    STA PLAYERDIRECTION
     RTS
 
 @down:
@@ -86,24 +81,21 @@ HandleDpad:
     AND #DOWNBTN
     BEQ @done
     LDA PLAYER_X
-    STA player_coll_x
+    STA collision_check_x
     LDA PLAYER_Y
     CLC
     ADC PLAYER_H
-    STA player_coll_y
+    STA collision_check_y
     JSR TILECollision
     BCS @done
     INC PLAYER_Y
     LDA #FACINGDOWN
-    STA direction
+    STA PLAYERDIRECTION
     RTS
 
 @done:
     RTS
 
-@dec:
-    DEC move_timer
-    RTS
 
 
 

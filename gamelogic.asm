@@ -1,41 +1,39 @@
+.include "player.asm"
 .include "input.asm"
-
+.include "enemy.asm"
+.include "animate.asm"
 INFLOOP:
 
 
 @wait_vblank:
-    JSR ReadController1
-    
+    LDA vblank_flag
+    BEQ @wait_vblank
+    LDA #0
+    STA vblank_flag  
+    JSR UPDATE
+    JSR DRAW
 
-    ; write X
-    LDA PLAYER_X
-    STA $0203
-    STA $020b
-    CLC
-    ADC #8
-    STA $0207
-    STA $020f
-
-    ; write Y
-    LDA PLAYER_Y
-    STA $0200
-    STA $0204
-    CLC
-    ADC #8
-    STA $0208
-    STA $020c
-
-    LDA #$60
-    STA ENEMY_X
-    LDA #$90
-    STA ENEMY_Y
-   
-
-
-JSR AnimatePlayer
-
+    LDA ENEMYDIRECTION
 JMP INFLOOP
 
+
+
+
+
+
+UPDATE:
+    JSR GetRandom
+    JSR ReadController1
+    JSR HandleDpad
+    JSR ENEMYWALK
+    JSR GetNewEnemyRandomWalkTimer
+RTS
+
+DRAW:
+    JSR ANITMATION
+    JSR DRAWENEMY
+    JSR DRAWPLAYER
+RTS
 
 NMI:
     PHA
@@ -44,6 +42,8 @@ NMI:
     TYA
     PHA
 
+
+
     LDA #1
     STA vblank_flag
     
@@ -51,9 +51,23 @@ NMI:
     LDA #$02
     STA $4014
 
+
     PLA
     TAY
     PLA
     TAX
     PLA
     RTI
+
+
+
+; rand8 = (rand8 >> 1) ^ (carry ? $B8 : 0)
+; returns A = rand8
+GetRandom:
+    LDA rand8
+    LSR A          ; shift right, bit0 -> carry
+    BCC no_xor
+    EOR #$B8       ; tap polynomial
+no_xor:
+    STA rand8
+    RTS

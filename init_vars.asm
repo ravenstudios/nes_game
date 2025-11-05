@@ -6,6 +6,7 @@ INITVARS:
     STA vblank_flag
 
     LDA #$40
+     STA ENEMYDIRECTION
     STA PLAYER_X
     STA PLAYER_Y
     LDA #$10
@@ -13,12 +14,18 @@ INITVARS:
     STA PLAYER_H
     STA ENEMY_W
     STA ENEMY_H
-
-    LDA #$00
+    STA EnemyRandomWalkTimer
+    LDA #$80
     STA ENEMY_X
     STA ENEMY_Y
+    
 
-    STA direction
+    ; STA direction
     LDA #$00
-	STA direction
+	STA PLAYERDIRECTION
+   
+
+    LDA #$A5       ; any non-zero seed
+    STA rand8
+
     RTS
