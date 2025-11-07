@@ -162,11 +162,11 @@ CheckTile:
     STA index_high_byte
 
 
-    LDA #<COLLISIONTABLEDATA
+    LDA #<COLLISIONTABLE
     CLC
     ADC index_low_byte
     STA index_pointer_low
-    LDA #>COLLISIONTABLEDATA
+    LDA #>COLLISIONTABLE
     ADC index_high_byte
     STA index_pointer_high
 

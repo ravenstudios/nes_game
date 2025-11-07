@@ -80,8 +80,6 @@ JSR INITVARS
 JSR LOADSPRITES
 JSR LOADBACKGROUND
 
-
-
 LDA #10         ; place 10 random blocks
 LDX #$04        ; meta-tile TL id = $04
 JSR LoadRandomRoom

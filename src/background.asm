@@ -1,6 +1,7 @@
 
 
 LOADBACKGROUND:
+INC $00
 	LDA $2002		;read PPU status to reset high/low latch
 	LDA #$20	;start of nametable "canvas" as the high bit
 	STA $2006	
@@ -158,3 +159,34 @@ COLLISIONTABLEDATA:
 	
 	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
 	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+
+
+LoadCollisionTable:
+   LDX #$00
+@copy1:
+    LDA COLLISIONTABLEDATA, X
+    STA COLLISIONTABLE, X
+    INX
+    BNE @copy1
+
+    LDX #$00
+@copy2:
+    LDA COLLISIONTABLEDATA+256, X
+    STA COLLISIONTABLE+256, X
+    INX
+    BNE @copy2
+
+    LDX #$00
+@copy3:
+    LDA COLLISIONTABLEDATA+512, X
+    STA COLLISIONTABLE+512, X
+    INX
+    BNE @copy3
+
+    LDX #$00
+@copy4:
+    LDA COLLISIONTABLEDATA+768, X
+    STA COLLISIONTABLE+768, X
+    INX
+    CPX #$C0          ; 192 bytes -> 960 total
+    BNE @copy4

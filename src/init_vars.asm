@@ -5,8 +5,9 @@ INITVARS:
     STA anim_frame
     STA vblank_flag
     STA loop_counter
+    STA start_screen
+    STA state
 
-    
     LDA #$40
     STA ENEMYDIRECTION
     LDA #$90

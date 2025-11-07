@@ -2,24 +2,24 @@
 
 
 ReadController1:
-    ; Latch controller
+    ; Latch
     LDA #$01
     STA $4016
     LDA #$00
     STA $4016
 
-    ; Build controller1 by shifting in 8 bits
+    ; Build controller1 by shifting in 8 bits (LSB-first)
     LDA #$00
     STA controller1
     LDY #$08
 @read_loop:
     LDA $4016        ; bit0 = current button (1 = pressed)
-    LSR A            ; move bit0 -> C
-    ROR controller1  ; rotate C into controller1 (LSB first)
-   
+    LSR A            ; bit0 -> C
+    ROR controller1  ; rotate C into controller1
     DEY
     BNE @read_loop
     RTS
+
     
 HandleDpad:
 

@@ -63,3 +63,15 @@ rand_row: .res 1
 loop_counter: .res 1
 
 
+tmp0: .res 1
+tmp1: .res 1
+loadedTile: .res 1
+
+random_seed: .res 1
+button_pressed: .res 1
+start_screen: .res 1
+
+state: .res 1
+vram_busy: .res 1
+
+COLLISIONTABLE: .res 960
