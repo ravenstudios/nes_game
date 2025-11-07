@@ -3,7 +3,7 @@
 ; .include "test_room.asm"
 .include "sprites.asm"
 .include "random_room.asm"
-
+.include "start_screen.asm"
 
 
 RESET:
@@ -46,11 +46,14 @@ CLEARMEMORY:		;$0000 - $07FF
 	CPX #$00
 	BNE CLEARMEMORY
 
-	;WAIT FOR VBLANK
-:
-	BIT $2002
-	BPL :-
-	
+; --- PPU Warmup: wait 2 vblanks ---
+    BIT $2002
+@vb1:
+    BIT $2002
+    BPL @vb1
+@vb2:
+    BIT $2002
+    BPL @vb2
 
 	
 
@@ -72,17 +75,19 @@ LOADPALETTES:
 	LDA PALETTEDATA, X
 	STA $2007
 	INX
-	CPX #20
+	CPX #$20
 	BNE LOADPALETTES
 
 JSR INITVARS
 
-JSR LOADSPRITES
-JSR LOADBACKGROUND
 
-LDA #10         ; place 10 random blocks
-LDX #$04        ; meta-tile TL id = $04
-JSR LoadRandomRoom
+
+
+; JSR LOADBACKGROUND
+JSR LoadTitleScreenBackground
+; LDA #10         ; place 10 random blocks
+; LDX #$04        ; meta-tile TL id = $04
+; JSR LoadRandomRoom
 
 
 	CLI

@@ -3,6 +3,7 @@
 .include "enemy.asm"
 .include "chaser.asm"
 .include "animate.asm"
+
 INFLOOP:
 
 
@@ -46,7 +47,8 @@ StartScreenStateUpdate:
     LDA #10         ; place 10 random blocks
     LDX #$04        ; meta-tile TL id = $04
     JSR LoadRandomRoom
-    
+    JSR LOADSPRITES
+
     
 @done:
     ; advance state if start_screen==1
@@ -54,7 +56,7 @@ StartScreenStateUpdate:
     CMP #$01
     BNE :+
         INC state
-        LDA #$00
+        
         ; STA start_screen
         
     :
@@ -96,6 +98,9 @@ RTS
 
 NMI:
     INC rand8
+    
+       
+    
     PHA
     TXA
     PHA
@@ -126,6 +131,7 @@ NMI:
 ; rand8 = (rand8 >> 1) ^ (carry ? $B8 : 0)
 ; returns A = rand8
 GetRandom:
+
     LDA rand8
     LSR A          ; shift right, bit0 -> carry
     BCC no_xor

@@ -25,8 +25,8 @@ LoadRandomRoom:
     STA $2001
     LDA #$01
     STA vram_busy
-JSR LOADBACKGROUND
-JSR LoadCollisionTable
+    JSR LOADBACKGROUND
+    JSR LoadCollisionTable
 
 
 @loop:
