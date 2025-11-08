@@ -75,18 +75,52 @@ HandleDpad:
     ; --- RIGHT ---
     LDA controller1
     AND #RIGHTBTN
-    BEQ @done
+    BEQ @start_btn
 
     LDA #FACINGRIGHT
     STA PLAYERDIRECTION
     
     JSR LoadPlayerCollisionValues
     JSR TILECollision
-    BCS @done
+    BCS @start_btn
 
     INC PLAYER_X
     
     RTS
+
+
+@start_btn:
+    LDA controller1
+    AND #STARTBTN
+    BEQ @select_btn
+        
+        LDA #HitTimer
+        STA player_hit_timer
+        LDA #$01
+        STA is_player_hit
+    RTS
+
+@select_btn:
+    LDA controller1
+    AND #SELECTBTN
+    BEQ @a_btn
+
+    RTS
+
+@a_btn:
+    LDA controller1
+    AND #ABTN
+    BEQ @b_btn
+    
+    RTS
+
+@b_btn:
+    LDA controller1
+    AND #BBTN
+    BEQ @done
+    
+    RTS
+
 
 @done:
     RTS

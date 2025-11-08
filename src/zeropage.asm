@@ -75,3 +75,8 @@ state: .res 1
 vram_busy: .res 1
 
 COLLISIONTABLE: .res 960
+
+is_player_hit: .res 1
+player_hit_timer: .res 1
+player_y_pos: .res 1
+frame_counter: .res 1

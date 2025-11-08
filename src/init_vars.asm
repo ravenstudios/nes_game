@@ -7,7 +7,12 @@ INITVARS:
     STA loop_counter
     STA start_screen
     STA state
+    STA is_player_hit
+    STA frame_counter
+    STA player_hit_timer
 
+
+    
     LDA #$40
     STA ENEMYDIRECTION
     LDA #$90

@@ -13,6 +13,29 @@ INFLOOP:
     LDA #0
     STA vblank_flag
 
+    LDA #HitTimer
+    STA $0010
+    INC frame_counter
+
+    ; --- hit flash timer (safe, no underflow) ---
+    LDA is_player_hit
+    BEQ @done                ; not active → skip
+
+    LDA player_hit_timer
+    BEQ @clear               ; already 0 → clear & stop
+
+    DEC player_hit_timer     ; count down once per frame
+    LDA player_hit_timer
+    STA $0000
+    BNE @done                ; still >0 → done
+
+@clear:
+    LDA #$00
+    STA is_player_hit
+    STA player_hit_timer     ; keep it at 0
+
+@done:
+
 
     LDA state
     CMP #$00
