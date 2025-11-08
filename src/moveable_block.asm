@@ -31,6 +31,8 @@ UpdateMoveableBlock:
     JSR CheckCollision
     BCC @done          ; C=0 → no hit → skip
     ; on collision:
+        LDA is_moveable_block_moved
+        BNE @done
         LDA PLAYERDIRECTION
 
         CMP #FACINGUP

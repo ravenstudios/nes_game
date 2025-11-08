@@ -10,6 +10,8 @@ INITVARS:
     STA is_player_hit
     STA frame_counter
     STA player_hit_timer
+    LDA #$01
+    STA is_moveable_block_moved
 
     LDA #$aa
     STA moveable_block_x
