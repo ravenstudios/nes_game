@@ -29,6 +29,13 @@ LoadRandomRoom:
     JSR LoadCollisionTable
 
 
+    ; JSR RandomCell16x15
+    ; LDA rand_col
+    ; STA moveable_block_x
+    ; LDA rand_row
+    ; STA moveable_block_y
+
+
 @loop:
     
     JSR RandomCell16x15

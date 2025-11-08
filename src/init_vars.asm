@@ -11,6 +11,9 @@ INITVARS:
     STA frame_counter
     STA player_hit_timer
 
+    LDA #$aa
+    STA moveable_block_x
+    STA moveable_block_y
 
     
     LDA #$40
@@ -25,6 +28,8 @@ INITVARS:
     STA ENEMY_H
     STA CHASERENEMY_W
     STA CHASERENEMY_H
+    STA moveable_block_w
+    STA moveable_block_h
     STA EnemyRandomWalkTimer
     LDA #$80
     STA ENEMY_X

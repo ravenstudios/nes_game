@@ -5,7 +5,7 @@ LOADSPRITES:
         LDA SPRITEDATA, X
         STA $0200, X
         INX
-        CPX #$30	;16bytes (4 bytes per sprite, 8 sprites total)
+        CPX #$40	;16bytes (4 bytes per sprite, 8 sprites total)
         BNE LOADSPRITESMEM
         
     RTS
@@ -52,10 +52,12 @@ LOADSPRITES:
         
 
         ; ;Blocks
-        ; .byte $90, $80, $00, $60
-        ; .byte $90, $81, $00, $68
-        ; .byte $98, $90, $00, $60
-        ; .byte $98, $91, $00, $68
+        .byte $00, $82, $00, $00
+        .byte $00, $83, $00, $00
+        .byte $00, $92, $00, $00
+        .byte $00, $93, $00, $00
+
+   
 
         ; 2 if frames are laid out across, 32 if vertical
 

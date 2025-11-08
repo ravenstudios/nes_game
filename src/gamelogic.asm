@@ -3,6 +3,7 @@
 .include "enemy.asm"
 .include "chaser.asm"
 .include "animate.asm"
+.include "moveable_block.asm"
 
 INFLOOP:
 
@@ -103,12 +104,13 @@ UpdateGameLoop:
 
     INC CHASERSPEEDCOUNTER
     LDA CHASERSPEEDCOUNTER
-    STA $0050
     CMP #$04
     BNE @return
         JSR CHASERENEMYWALK
         LDA #$00
         STA CHASERSPEEDCOUNTER
+
+    JSR UpdateMoveableBlock
 @return:
     RTS
 
@@ -117,6 +119,7 @@ DrawGameLoop:
     JSR DRAWENEMY
     JSR DRAWCHASERENEMY
     JSR DRAWPLAYER
+    JSR DrawMoveableBlock
 RTS
 
 NMI:

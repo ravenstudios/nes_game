@@ -180,3 +180,59 @@ CheckTile:
 @return_true:
     CLC
     RTS
+
+
+; returns Z=0 (not equal) if collision happens
+; returns Z=1 if no collision
+
+; AABB overlap test using unsigned math (8-bit)
+; Inputs: collide_check_1x,1y,1w,1h and collide_check_2x,2y,2w,2h
+; Output: C=1 (hit), C=0 (no hit). A/X/Y unchanged (if you need, push/pop).
+
+; collide_check_1x/1y/1w/1h  = box 1 (player)
+; collide_check_2x/2y/2w/2h  = box 2 (block)
+; OUT: C=1 collision, C=0 no collision
+
+CheckCollision:
+    ; if (x2 + w2) <= x1 → no hit
+    LDA collide_check_2x
+    CLC
+    ADC collide_check_2w
+    CMP collide_check_1x
+    BCC @no_hit       ; A <  M  → no hit
+    BEQ @no_hit       ; A == M  → no hit
+
+    ; if (x1 + w1) <= x2 → no hit
+    LDA collide_check_1x
+    CLC
+    ADC collide_check_1w
+    CMP collide_check_2x
+    BCC @no_hit
+    BEQ @no_hit
+
+    ; if (y2 + h2) <= y1 → no hit
+    LDA collide_check_2y
+    CLC
+    ADC collide_check_2h
+    CMP collide_check_1y
+    BCC @no_hit
+    BEQ @no_hit
+
+    ; if (y1 + h1) <= y2 → no hit
+    LDA collide_check_1y
+    CLC
+    ADC collide_check_1h
+    CMP collide_check_2y
+    BCC @no_hit
+    BEQ @no_hit
+
+    ; overlap on both axes → hit
+    SEC
+    RTS
+@no_hit:
+    CLC
+    RTS
+
+
+
+

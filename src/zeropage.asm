@@ -80,3 +80,20 @@ is_player_hit: .res 1
 player_hit_timer: .res 1
 player_y_pos: .res 1
 frame_counter: .res 1
+
+moveable_block_x: .res 1
+moveable_block_y: .res 1
+moveable_block_w: .res 1
+moveable_block_h: .res 1
+
+collide_check_1x: .res 1
+collide_check_1y: .res 1
+collide_check_1w: .res 1
+collide_check_1h: .res 1
+
+collide_check_2x: .res 1
+collide_check_2y: .res 1
+collide_check_2w: .res 1
+collide_check_2h: .res 1
+
+block_push_latched: .res 1
