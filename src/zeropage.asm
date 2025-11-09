@@ -12,9 +12,13 @@ tile_y:             .res 1
 
 moveable_block_x: .res 3
 moveable_block_y: .res 3
-pushable_contact: .res 3
+; pushable_contact: .res 3
 moveable_block_count: .res 1
 
+target_idx: .res 1
+tx:         .res 1   ; temp for x>>4
+
+is_player_checking: .res 1
 is_player_hit: .res 1
 player_hit_timer: .res 1
 player_y_pos: .res 1
@@ -22,7 +26,7 @@ frame_counter: .res 1
 
 ; tmp_push_block_x: .res 1
 ; tmp_push_block_y: .res 1
-; is_moveable_block_moved: .res 1
+is_moveable_block_moved: .res 3
 
 collide_check_1x: .res 1
 collide_check_1y: .res 1

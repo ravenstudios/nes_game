@@ -33,10 +33,14 @@ HandleDpad:
     STA PLAYERDIRECTION
 
     JSR LoadPlayerCollisionValues
+    LDA #$01
+    STA is_player_checking
     JSR TILECollision
     BCS @down  
     DEC PLAYER_Y
     
+    LDA #$00
+    STA is_player_checking
     RTS
     
 @down:
@@ -49,10 +53,14 @@ HandleDpad:
     STA PLAYERDIRECTION
 
     JSR LoadPlayerCollisionValues
+    LDA #$01
+    STA is_player_checking
     JSR TILECollision
     BCS @left
     INC PLAYER_Y
     
+    LDA #$00
+    STA is_player_checking
     RTS
 
 @left:
@@ -65,10 +73,14 @@ HandleDpad:
     STA PLAYERDIRECTION
 
     JSR LoadPlayerCollisionValues
+    LDA #$01
+    STA is_player_checking
     JSR TILECollision
     BCS @right
     DEC PLAYER_X
     
+    LDA #$00
+    STA is_player_checking
     RTS
 
 @right:
@@ -81,10 +93,14 @@ HandleDpad:
     STA PLAYERDIRECTION
     
     JSR LoadPlayerCollisionValues
+    LDA #$01
+    STA is_player_checking
     JSR TILECollision
     BCS @start_btn
 
     INC PLAYER_X
+    LDA #$00
+    STA is_player_checking
     
     RTS
 

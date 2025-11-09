@@ -147,40 +147,57 @@ CheckTile:
 
 
     
-    ;if current tile == 2 - pushable block
-        
+    ;if current tile == 2 - pushable block    
     LDA COLLISIONTABLE,X
     CMP #02
     BNE @done
-        LDY moveable_block_count
-        DEY ; -1 for array 
-        ;loop through all pushblocks
-        @loop:
-            TYA
-            BEQ @done 
-            ;compare current push block x with collision_check_x
-            LDA moveable_block_x, Y
-            CMP collision_check_x
-            BEQ  :+
-                JMP @next_block
 
-            :
-            ;compare current  push block y
-            LDA moveable_block_y, Y
-            CMP collision_check_y
-            BEQ @set_flag
-                JMP @next_block
+    LDA is_player_checking
+    BEQ @done
+    
+    TXA
+    STA target_idx            ; save the front tile index
 
-    ; if same then set pushable_contact[x] to #$01
-    @set_flag:
-        LDA #$01
-        STA pushable_contact, Y
-        JMP @done
-    ;if not iny, loop
-    @next_block:
-        DEY
-        JMP @loop
-        
+    LDY moveable_block_count
+    BEQ @done
+    DEY                        ; start at count-1
+
+@loop:
+    ; tx = (moveable_block_x[Y] >> 4)
+    LDA moveable_block_x,Y
+    LSR
+    LSR
+    LSR
+    LSR
+    STA tx
+
+    ; A = index = ((moveable_block_y[Y] >> 4) * 16) + tx
+    LDA moveable_block_y,Y
+    LSR
+    LSR
+    LSR
+    LSR                        ; y>>4
+    ASL
+    ASL
+    ASL
+    ASL                        ; (y>>4)*16
+    CLC
+    ADC tx                     ; + x>>4
+
+    CMP target_idx
+    BEQ @hit
+
+@next:
+    DEY
+    BPL @loop
+    JMP @done
+
+@hit:
+    LDA #$01
+    STA is_moveable_block_moved,Y   ; or pushable_contact,Y if that’s your latch
+    JMP @next
+
+
 @done:
     CMP #$01
     BEQ @solid

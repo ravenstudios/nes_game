@@ -10,22 +10,21 @@ INITVARS:
     STA is_player_hit
     STA frame_counter
     STA player_hit_timer
-    ; LDA #$01
-
+    STA is_player_checking
     LDX #00
     STA moveable_block_x, X
     STA moveable_block_y, X
-    STA pushable_contact, X
+    STA is_moveable_block_moved, X
 
     LDX #01
     STA moveable_block_x, X
     STA moveable_block_y, X
-    STA pushable_contact, X
+    STA is_moveable_block_moved, X
 
     LDX #02
     STA moveable_block_x, X
     STA moveable_block_y, X
-    STA pushable_contact, X
+    STA is_moveable_block_moved, X
 
     LDA #$60
     

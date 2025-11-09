@@ -132,7 +132,7 @@ LDX #$00
     CPX moveable_block_count
     BCS @done
 
-    LDA pushable_contact, X
+    LDA is_moveable_block_moved, X
     BEQ @next_block
 
     ;set curent tile to passable
@@ -200,7 +200,7 @@ JSR SetTileSolid1
 PLA
 TAX
 LDA #$00
-STA pushable_contact, X
+STA is_moveable_block_moved, X
 
 
 @next_block:
