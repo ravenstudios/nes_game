@@ -12,11 +12,10 @@ tile_y:             .res 1
 
 moveable_block_x: .res 3
 moveable_block_y: .res 3
-; pushable_contact: .res 3
 moveable_block_count: .res 1
 
 target_idx: .res 1
-tx:         .res 1   ; temp for x>>4
+tx:         .res 1   
 
 is_player_checking: .res 1
 is_player_hit: .res 1
@@ -54,11 +53,12 @@ PLAYER_Y: .res 1
 
 PLAYERDIRECTION: .res 1
 
-ENEMY_X: .res 1
-ENEMY_Y: .res 1
+enemy_x: .res 3
+enemy_y: .res 3
+enemy_direction: .res 3
+enemy_random_walk_timer: .res 3
+enemy_count: .res 1
 
-ENEMYDIRECTION: .res 1
-EnemyRandomWalkTimer: .res 1
 
 CHASERENEMY_X: .res 1
 CHASERENEMY_Y: .res 1

@@ -15,7 +15,7 @@ CHASERENEMYWALK:
     LDA #FACINGRIGHT
     STA CHASERENEMYDIRECTION
     JSR LoadChaserCollisionValues
-    JSR TILECollision
+    JSR TileCollision
     BCS @bump_left                ; blocked → skip move
     INC CHASERENEMY_X
     JMP @VERT
@@ -29,7 +29,7 @@ CHASERENEMYWALK:
     LDA #FACINGLEFT
     STA CHASERENEMYDIRECTION
     JSR LoadChaserCollisionValues
-    JSR TILECollision
+    JSR TileCollision
     BCS @bump_right
     DEC CHASERENEMY_X
     JMP @VERT
@@ -50,7 +50,7 @@ CHASERENEMYWALK:
     LDA #FACINGDOWN
     STA CHASERENEMYDIRECTION
     JSR LoadChaserCollisionValues
-    JSR TILECollision
+    JSR TileCollision
     BCS @bump_up
     INC CHASERENEMY_Y
     JMP @DONE
@@ -63,7 +63,7 @@ CHASERENEMYWALK:
     LDA #FACINGUP
     STA CHASERENEMYDIRECTION
     JSR LoadChaserCollisionValues
-    JSR TILECollision
+    JSR TileCollision
     BCS @bump_down
     DEC CHASERENEMY_Y
     JMP @DONE
@@ -83,7 +83,7 @@ DRAWCHASERENEMY:
     ASL A
     CLC
     ADC #$08
-    ADC ENEMYDIRECTION
+    ADC enemy_direction
     TAX                        ; X = frame_base
     
     ; write TILE bytes ONLY

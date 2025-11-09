@@ -61,10 +61,10 @@ StartScreenStateUpdate:
 
     ; if *any* button is pressed, set start_screen=1 once
     LDA start_screen
-    BNE @done                ; already set
+    BNE skip                ; already set
 
     LDA controller1
-    BEQ @done                ; no buttons this frame
+    BEQ skip                ; no buttons this frame
 
     LDA #$01
     STA start_screen
@@ -73,32 +73,9 @@ StartScreenStateUpdate:
     JSR LoadRandomRoom
     JSR LOADSPRITES
 
-   ; index = (moveable_block_y >> 4) * 16 + (moveable_block_x >> 4)
-; LDA moveable_block_y
-; LSR
-; LSR
-; LSR
-; LSR                  ; A = y_tile (0..14)
-; ASL
-; ASL
-; ASL
-; ASL                  ; A = y_tile * 16
-; STA tmp              ; tmp = row offset
-
-; LDA moveable_block_x
-; LSR
-; LSR
-; LSR
-; LSR                  ; A = x_tile (0..15)
-; CLC
-; ADC tmp              ; A = index (0..239)
-; TAX
-
-; LDA #$02             ; e.g., 2 = pushable block (or 1 if you treat it as solid)
-; STA COLLISIONTABLE,X
-
 LDX #$00
-LDA #$40
+
+LDA #$20
 STA moveable_block_x, X
 STA moveable_block_y, X
 LDY moveable_block_y, X
@@ -107,7 +84,7 @@ TAX
 JSR SetTilePushable
 
 LDX #$01
-LDA #$60
+LDA #$30
 STA moveable_block_x, X
 STA moveable_block_y, X
 LDY moveable_block_y, X
@@ -116,15 +93,40 @@ TAX
 JSR SetTilePushable
 
 LDX #$02
-LDA #$80
+LDA #$40
 STA moveable_block_x, X
 STA moveable_block_y, X
 LDY moveable_block_y, X
 LDA moveable_block_x, X
 TAX
 JSR SetTilePushable
+
+
+
+LDX #$00
+LoadEnemys:
+    CPX enemy_count
+    BEQ :+
+        LDY #$00
+        LDA EnemyPos, Y
+        STA enemy_x, X
+
+        ; load starting Y
+        INY
+        LDA EnemyPos, Y
+        STA enemy_y, X
+
+        LDA EnemyPos
+        CLC
+        ADC #$02
+        STA EnemyPos
+
+        INX
+        JMP LoadEnemys
+
+:
     
-@done:
+skip:
     ; advance state if start_screen==1
     LDA start_screen
     CMP #$01
@@ -147,7 +149,7 @@ UpdateGameLoop:
     JSR GetRandom
     JSR ReadController1
     JSR HandleDpad
-    JSR ENEMYWALK
+    JSR EnemyWalk
     
     JSR GetNewEnemyRandomWalkTimer
 
@@ -166,7 +168,7 @@ UpdateGameLoop:
 
 DrawGameLoop:
     JSR ANITMATION
-    JSR DRAWENEMY
+    JSR DrawEnemies
     JSR DRAWCHASERENEMY
     JSR DRAWPLAYER
     ; JSR DrawMoveableBlock
@@ -216,3 +218,9 @@ GetRandom:
 no_xor:
     STA rand8
     RTS
+
+
+EnemyPos:
+    .byte $60, $20
+    .byte $60, $40
+    .byte $60, $60

@@ -35,7 +35,7 @@ HandleDpad:
     JSR LoadPlayerCollisionValues
     LDA #$01
     STA is_player_checking
-    JSR TILECollision
+    JSR TileCollision
     BCS @down  
     DEC PLAYER_Y
     
@@ -55,7 +55,7 @@ HandleDpad:
     JSR LoadPlayerCollisionValues
     LDA #$01
     STA is_player_checking
-    JSR TILECollision
+    JSR TileCollision
     BCS @left
     INC PLAYER_Y
     
@@ -75,7 +75,7 @@ HandleDpad:
     JSR LoadPlayerCollisionValues
     LDA #$01
     STA is_player_checking
-    JSR TILECollision
+    JSR TileCollision
     BCS @right
     DEC PLAYER_X
     
@@ -95,7 +95,7 @@ HandleDpad:
     JSR LoadPlayerCollisionValues
     LDA #$01
     STA is_player_checking
-    JSR TILECollision
+    JSR TileCollision
     BCS @start_btn
 
     INC PLAYER_X

@@ -1,4 +1,4 @@
-TILECollision:
+TileCollision:
 
 LDA collision_check_dir
 CMP #FACINGUP
@@ -195,7 +195,8 @@ CheckTile:
 @hit:
     LDA #$01
     STA is_moveable_block_moved,Y   ; or pushable_contact,Y if that’s your latch
-    JMP @next
+    LDA #00
+    STA is_player_checking
 
 
 @done:
