@@ -73,6 +73,30 @@ StartScreenStateUpdate:
     JSR LoadRandomRoom
     JSR LOADSPRITES
 
+   ; index = (moveable_block_y >> 4) * 16 + (moveable_block_x >> 4)
+LDA moveable_block_y
+LSR
+LSR
+LSR
+LSR                  ; A = y_tile (0..14)
+ASL
+ASL
+ASL
+ASL                  ; A = y_tile * 16
+STA tmp              ; tmp = row offset
+
+LDA moveable_block_x
+LSR
+LSR
+LSR
+LSR                  ; A = x_tile (0..15)
+CLC
+ADC tmp              ; A = index (0..239)
+TAX
+
+LDA #$02             ; e.g., 2 = pushable block (or 1 if you treat it as solid)
+STA COLLISIONTABLE,X
+ 
     
 @done:
     ; advance state if start_screen==1

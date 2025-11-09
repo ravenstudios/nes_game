@@ -183,10 +183,6 @@ INC $0088
     STA collision_check_x
     LDA ENEMY_Y
     STA collision_check_y
-    LDA ENEMY_W
-    STA collision_check_w
-    LDA ENEMY_H
-    STA collision_check_h
     LDA ENEMYDIRECTION
     STA collision_check_dir
 RTS

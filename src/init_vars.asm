@@ -10,10 +10,11 @@ INITVARS:
     STA is_player_hit
     STA frame_counter
     STA player_hit_timer
-    LDA #$01
+    ; LDA #$01
     STA is_moveable_block_moved
+    STA pushable_contact
 
-    LDA #$aa
+    LDA #$60
     STA moveable_block_x
     STA moveable_block_y
 
@@ -23,16 +24,10 @@ INITVARS:
     LDA #$90
     STA PLAYER_X
     STA PLAYER_Y
+
     LDA #$10
-    STA PLAYER_W
-    STA PLAYER_H
-    STA ENEMY_W
-    STA ENEMY_H
-    STA CHASERENEMY_W
-    STA CHASERENEMY_H
-    STA moveable_block_w
-    STA moveable_block_h
     STA EnemyRandomWalkTimer
+
     LDA #$80
     STA ENEMY_X
     STA ENEMY_Y
@@ -43,13 +38,12 @@ INITVARS:
 
     ; STA direction
     
-    STA PLAYERMOVED
+ 
     STA CHASERSPEEDCOUNTER
 
     LDA #$20
 	STA PLAYERDIRECTION
     STA CHASERDIRECTION
-    LDA #$A5       ; any non-zero seed
-    STA rand8
+
 
     RTS

@@ -11,14 +11,14 @@ CMP #FACINGLEFT
 BEQ @left
 
 CMP #FACINGRIGHT
-BEQ @rightjmp
-
+BEQ @right
 CLC
 RTS
 
 
 ;all collision_check_vars are loaded before calling this sub routine
 @up:
+    INC $00a1
     ;tl
     LDA collision_check_y
     SEC
@@ -29,7 +29,7 @@ RTS
     ;tr
     LDA collision_check_x
     CLC
-    ADC collision_check_w
+    ADC #WIDTH
     SEC
     SBC #01
     STA collision_check_x
@@ -43,7 +43,7 @@ RTS
     ;bl
     LDA collision_check_y
     CLC
-    ADC collision_check_h
+    ADC #HEIGHT
     ADC #01
     STA collision_check_y
     JSR CheckTile
@@ -51,7 +51,7 @@ RTS
     ;br
     LDA collision_check_x
     CLC
-    ADC collision_check_w
+    ADC #WIDTH
     SEC
     SBC #01
     STA collision_check_x
@@ -61,10 +61,6 @@ RTS
     CLC
     RTS
 
-
-@rightjmp:
-    JMP @right
-
 @yesCollision:
     SEC
     RTS
@@ -72,7 +68,6 @@ RTS
 @noCollision:
     CLC
     RTS
-
 
 
 @left:
@@ -86,7 +81,7 @@ RTS
     ;bl
     LDA collision_check_y
     CLC
-    ADC collision_check_h
+    ADC #HEIGHT
     SEC
     SBC #01
     STA collision_check_y
@@ -100,7 +95,7 @@ RTS
     ;tr
     LDA collision_check_x
     CLC
-    ADC collision_check_w
+    ADC #WIDTH
     CLC
     ; ADC #$01
     STA collision_check_x
@@ -109,7 +104,7 @@ RTS
     ;br
     LDA collision_check_y
     CLC
-    ADC collision_check_h
+    ADC #HEIGHT
     SEC
     SBC #01
     STA collision_check_y
@@ -124,115 +119,143 @@ RTS
     RTS
 
 CheckTile:
+    ; x >> 4
     LDA collision_check_x
-    LSR 
+    LSR
+    LSR
     LSR
     LSR
     STA tile_x
-    
+
+    ; y >> 4
     LDA collision_check_y
-    LSR 
+    LSR
+    LSR
     LSR
     LSR
     STA tile_y
-    STA index_low_byte
-    LDA #$00
-    STA index_high_byte
 
-
-
-    LDA index_low_byte
-    ASL index_low_byte
-    ROL index_high_byte
-    ASL index_low_byte
-    ROL index_high_byte
-    ASL index_low_byte
-    ROL index_high_byte
-    ASL index_low_byte
-    ROL index_high_byte
-    ASL index_low_byte
-    ROL index_high_byte
-
+    ; index = y*16 + x
+    LDA tile_y
+    ASL
+    ASL
+    ASL
+    ASL              ; <<4 (KEEP THIS IN A)
     CLC
-    LDA index_low_byte
     ADC tile_x
-    STA index_low_byte
-    LDA index_high_byte
-    ADC #$00
-    STA index_high_byte
+    TAX
 
-
-    LDA #<COLLISIONTABLE
-    CLC
-    ADC index_low_byte
-    STA index_pointer_low
-    LDA #>COLLISIONTABLE
-    ADC index_high_byte
-    STA index_pointer_high
-
-    LDY #0
-    LDA (index_pointer_low),Y
-
+    LDA COLLISIONTABLE,X
+    ; CMP #02
+    ; BNE :+
+    ;     LDA #$01
+    ;     STA pushable_contact
+    ; :
     CMP #$01
-    BNE @return_true
-        SEC
-        RTS
-@return_true:
+    BEQ @solid
     CLC
+    RTS
+@solid:
+    SEC
     RTS
 
 
-; returns Z=0 (not equal) if collision happens
-; returns Z=1 if no collision
+; ---- Tile-range overlap on a 16x15 grid -----------------------
+; collide_check_1x/1y/1w/1h = box1 (player)
+; collide_check_2x/2y/2w/2h = box2 (block)
+; Assumes WIDTH/HEIGHT are constants (e.g., 16). For general sizes,
+; replace +15 with +(WIDTH-1)/(HEIGHT-1) immediates.
+; OUT: C=1 overlap, C=0 no overlap
 
-; AABB overlap test using unsigned math (8-bit)
-; Inputs: collide_check_1x,1y,1w,1h and collide_check_2x,2y,2w,2h
-; Output: C=1 (hit), C=0 (no hit). A/X/Y unchanged (if you need, push/pop).
+; temps (ZP recommended)
 
-; collide_check_1x/1y/1w/1h  = box 1 (player)
-; collide_check_2x/2y/2w/2h  = box 2 (block)
-; OUT: C=1 collision, C=0 no collision
 
+; assumes WIDTH and HEIGHT are constants for BOTH boxes
+; OUT: C=1 overlap, C=0 no overlap
 CheckCollision:
-    ; if (x2 + w2) <= x1 → no hit
-    LDA collide_check_2x
-    CLC
-    ADC collide_check_2w
-    CMP collide_check_1x
-    BCC @no_hit       ; A <  M  → no hit
-    BEQ @no_hit       ; A == M  → no hit
-
-    ; if (x1 + w1) <= x2 → no hit
+    ; box1 X
+    LDA collide_check_1x
+    LSR
+    LSR
+    LSR
+    LSR
+    STA t1_minx
     LDA collide_check_1x
     CLC
-    ADC collide_check_1w
-    CMP collide_check_2x
-    BCC @no_hit
-    BEQ @no_hit
+    ADC #(WIDTH-1)      ; <-- not hard-coded 15 unless WIDTH=16
+    LSR
+    LSR
+    LSR
+    LSR
+    STA t1_maxx
 
-    ; if (y2 + h2) <= y1 → no hit
-    LDA collide_check_2y
-    CLC
-    ADC collide_check_2h
-    CMP collide_check_1y
-    BCC @no_hit
-    BEQ @no_hit
-
-    ; if (y1 + h1) <= y2 → no hit
+    ; box1 Y
+    LDA collide_check_1y
+    LSR
+    LSR
+    LSR
+    LSR
+    STA t1_miny
     LDA collide_check_1y
     CLC
-    ADC collide_check_1h
-    CMP collide_check_2y
-    BCC @no_hit
-    BEQ @no_hit
+    ADC #(HEIGHT-1)
+    LSR
+    LSR
+    LSR
+    LSR
+    STA t1_maxy
 
-    ; overlap on both axes → hit
+    ; box2 X
+    LDA collide_check_2x
+    LSR
+    LSR
+    LSR
+    LSR
+    STA t2_minx
+    LDA collide_check_2x
+    CLC
+    ADC #(WIDTH-1)
+    LSR
+    LSR
+    LSR
+    LSR
+    STA t2_maxx
+
+    ; box2 Y
+    LDA collide_check_2y
+    LSR
+    LSR
+    LSR
+    LSR
+    STA t2_miny
+    LDA collide_check_2y
+    CLC
+    ADC #(HEIGHT-1)
+    LSR
+    LSR
+    LSR
+    LSR
+    STA t2_maxy
+
+    ; no-overlap tests
+    LDA t1_maxx
+    CMP t2_minx
+    BCC @no_hit
+
+    LDA t2_maxx
+    CMP t1_minx
+    BCC @no_hit
+
+    LDA t1_maxy
+    CMP t2_miny
+    BCC @no_hit
+
+    LDA t2_maxy
+    CMP t1_miny
+    BCC @no_hit
+
     SEC
     RTS
 @no_hit:
     CLC
     RTS
-
-
-
-

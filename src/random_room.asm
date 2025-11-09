@@ -8,7 +8,6 @@ RandomCell16x15:
     STA rand_row           ; save for row calc
     AND #$0F               ; low nibble = col
     STA rand_col           ; 0..15
-    STA $0040
     LDA rand_row
 
     LSR A                  ; divide by 16 → row 0..14
@@ -16,7 +15,6 @@ RandomCell16x15:
     LSR A
     LSR A
     STA rand_row
-    STA $0041
     RTS
 
 LoadRandomRoom:
@@ -36,21 +34,20 @@ LoadRandomRoom:
     ; STA moveable_block_y
 
 
-@loop:
+; @loop:
     
-    JSR RandomCell16x15
+;     JSR RandomCell16x15
 
-    LDA #$04
-    STA loadedTile
-    JSR SetTiles
-    JSR SetTileSolid
+;     LDA #$04
+;     STA loadedTile
+;     JSR SetTiles
+;     JSR SetTileSolid
     
-    INC loop_counter
-    LDA loop_counter
+;     INC loop_counter
+;     LDA loop_counter
 
-    CMP #$0A
-    BNE @loop
-
+;     CMP #$0A
+;     BNE @loop
 
 
     LDA #$00
@@ -69,85 +66,22 @@ LoadRandomRoom:
 
 
 SetTileSolid:
-    
-    ; meta (0..15,0..14) -> 8x8 tile coords (0..30,0..28) even
-    LDA rand_col
-    ASL
-    STA tile_x
     LDA rand_row
     ASL
-    STA tile_y
-
-    ; index = tile_y * 32  (16-bit: index_high_byte:index_low_byte)
-    LDA tile_y
-    STA index_low_byte
-    LDA #$00
-    STA index_high_byte
-
-    ASL index_low_byte   ; *2
-    ROL index_high_byte
-    ASL index_low_byte   ; *4
-    ROL index_high_byte
-    ASL index_low_byte   ; *8
-    ROL index_high_byte
-    ASL index_low_byte   ; *16
-    ROL index_high_byte
-    ASL index_low_byte   ; *32
-    ROL index_high_byte
-
-    ; index += tile_x
+    ASL
+    ASL
+    ASL    
     CLC
-    LDA index_low_byte
-    ADC tile_x
-    STA index_low_byte
-    LDA index_high_byte
-    ADC #$00
-    STA index_high_byte
+    ADC rand_col
+    TAX
 
-    ; pointer = COLLISIONTABLE + index
-    LDA #<COLLISIONTABLE
-    CLC
-    ADC index_low_byte
-    STA index_pointer_low
-    LDA #>COLLISIONTABLE
-    ADC index_high_byte
-    STA index_pointer_high
+    LDA #01
 
-    ; write 1 to the 4 cells: (x,y), (x+1,y), (x,y+1), (x+1,y+1)
-    LDY #$00
-    LDA #$01
-    STA (index_pointer_low),Y       ; (x,y)
-    INY
-    STA (index_pointer_low),Y       ; (x+1,y)
-
-    ; ptr += 32 (next row)
-    CLC
-    LDA index_pointer_low
-    ADC #$20
-    STA index_pointer_low
-    LDA index_pointer_high
-    ADC #$00
-    STA index_pointer_high
-
-    LDY #$00
-    LDA #$01
-    STA (index_pointer_low),Y       ; (x,y+1)
-    INY
-    STA (index_pointer_low),Y       ; (x+1,y+1)
+    STA COLLISIONTABLE, X
 
     RTS
 
 
-
-; ------------------------------------------------------------
-; WriteRandTileToNT
-; Inputs:
-;   A = tile id to write
-;   rand_col = 0..31
-;   rand_row = 0..29
-; Nametable base = $2000 (change hi/lo if you use another)
-; Clobbers: A, X, Y, tmp0, tmp1
-; ------------------------------------------------------------
 SetTiles:
     ; meta (rand_col 0..15, rand_row 0..14) → 8×8 coords
     LDA rand_col

@@ -132,10 +132,7 @@ LoadPlayerCollisionValues:
     STA collision_check_x
     LDA PLAYER_Y
     STA collision_check_y
-    LDA PLAYER_W
-    STA collision_check_w
-    LDA PLAYER_H
-    STA collision_check_h
+    
     LDA PLAYERDIRECTION
     STA collision_check_dir
 RTS

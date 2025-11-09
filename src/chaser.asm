@@ -129,10 +129,7 @@ INC $0088
     STA collision_check_x
     LDA CHASERENEMY_Y
     STA collision_check_y
-    LDA CHASERENEMY_W
-    STA collision_check_w
-    LDA CHASERENEMY_H
-    STA collision_check_h
+
     LDA CHASERDIRECTION
     STA collision_check_dir
 RTS
