@@ -74,29 +74,55 @@ StartScreenStateUpdate:
     JSR LOADSPRITES
 
    ; index = (moveable_block_y >> 4) * 16 + (moveable_block_x >> 4)
-LDA moveable_block_y
-LSR
-LSR
-LSR
-LSR                  ; A = y_tile (0..14)
-ASL
-ASL
-ASL
-ASL                  ; A = y_tile * 16
-STA tmp              ; tmp = row offset
+; LDA moveable_block_y
+; LSR
+; LSR
+; LSR
+; LSR                  ; A = y_tile (0..14)
+; ASL
+; ASL
+; ASL
+; ASL                  ; A = y_tile * 16
+; STA tmp              ; tmp = row offset
 
-LDA moveable_block_x
-LSR
-LSR
-LSR
-LSR                  ; A = x_tile (0..15)
-CLC
-ADC tmp              ; A = index (0..239)
+; LDA moveable_block_x
+; LSR
+; LSR
+; LSR
+; LSR                  ; A = x_tile (0..15)
+; CLC
+; ADC tmp              ; A = index (0..239)
+; TAX
+
+; LDA #$02             ; e.g., 2 = pushable block (or 1 if you treat it as solid)
+; STA COLLISIONTABLE,X
+
+LDX #$00
+LDA #$40
+STA moveable_block_x, X
+STA moveable_block_y, X
+LDY moveable_block_y, X
+LDA moveable_block_x, X
 TAX
+JSR SetTilePushable
 
-LDA #$02             ; e.g., 2 = pushable block (or 1 if you treat it as solid)
-STA COLLISIONTABLE,X
- 
+LDX #$01
+LDA #$60
+STA moveable_block_x, X
+STA moveable_block_y, X
+LDY moveable_block_y, X
+LDA moveable_block_x, X
+TAX
+JSR SetTilePushable
+
+LDX #$02
+LDA #$80
+STA moveable_block_x, X
+STA moveable_block_y, X
+LDY moveable_block_y, X
+LDA moveable_block_x, X
+TAX
+JSR SetTilePushable
     
 @done:
     ; advance state if start_screen==1
@@ -143,7 +169,8 @@ DrawGameLoop:
     JSR DRAWENEMY
     JSR DRAWCHASERENEMY
     JSR DRAWPLAYER
-    JSR DrawMoveableBlock
+    ; JSR DrawMoveableBlock
+    JSR DrawAllBlocks
 RTS
 
 NMI:

@@ -145,12 +145,43 @@ CheckTile:
     ADC tile_x
     TAX
 
+
+    
+    ;if current tile == 2 - pushable block
+        
     LDA COLLISIONTABLE,X
-    ; CMP #02
-    ; BNE :+
-    ;     LDA #$01
-    ;     STA pushable_contact
-    ; :
+    CMP #02
+    BNE @done
+        LDY moveable_block_count
+        DEY ; -1 for array 
+        ;loop through all pushblocks
+        @loop:
+            TYA
+            BEQ @done 
+            ;compare current push block x with collision_check_x
+            LDA moveable_block_x, Y
+            CMP collision_check_x
+            BEQ  :+
+                JMP @next_block
+
+            :
+            ;compare current  push block y
+            LDA moveable_block_y, Y
+            CMP collision_check_y
+            BEQ @set_flag
+                JMP @next_block
+
+    ; if same then set pushable_contact[x] to #$01
+    @set_flag:
+        LDA #$01
+        STA pushable_contact, Y
+        JMP @done
+    ;if not iny, loop
+    @next_block:
+        DEY
+        JMP @loop
+        
+@done:
     CMP #$01
     BEQ @solid
     CLC

@@ -10,17 +10,19 @@ tile_x:             .res 1
 tile_y:             .res 1
 
 
-moveable_block_x: .res 1
-moveable_block_y: .res 1
+moveable_block_x: .res 3
+moveable_block_y: .res 3
+pushable_contact: .res 3
+moveable_block_count: .res 1
 
 is_player_hit: .res 1
 player_hit_timer: .res 1
 player_y_pos: .res 1
 frame_counter: .res 1
 
-
-
-is_moveable_block_moved: .res 1
+; tmp_push_block_x: .res 1
+; tmp_push_block_y: .res 1
+; is_moveable_block_moved: .res 1
 
 collide_check_1x: .res 1
 collide_check_1y: .res 1
@@ -41,7 +43,8 @@ t2_maxy: .res 1
 
 
 
-.segment "BSS"
+
+
 PLAYER_X: .res 1
 PLAYER_Y: .res 1
 
@@ -90,10 +93,19 @@ start_screen: .res 1
 state: .res 1
 vram_busy: .res 1
 
+
+oam_ptr_lo: .res 1
+oam_ptr_hi: .res 1
+tmpx:       .res 1
+tmpx8:      .res 1
+tmpy:       .res 1
+tmpy8:      .res 1
+
+
+.segment "BSS"
+
 COLLISIONTABLE: .res 240
 
 
 
 
-
-pushable_contact: .res 1

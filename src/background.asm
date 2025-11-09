@@ -65,6 +65,83 @@ LOADBACKGROUNDATTRDATA:
 RTS
 	
 
+SetTilePushable:
+	TYA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = y_tile (0..14)
+	ASL
+	ASL
+	ASL
+	ASL                  ; A = y_tile * 16
+	STA tmp              ; tmp = row offset
+
+	TXA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = x_tile (0..15)
+	CLC
+	ADC tmp              ; A = index (0..239)
+	TAX
+
+	LDA #$02             ; e.g., 2 = pushable block (or 1 if you treat it as solid)
+	STA COLLISIONTABLE,X
+	RTS
+
+
+UnsetTileSolid:
+	TYA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = y_tile (0..14)
+	ASL
+	ASL
+	ASL
+	ASL                  ; A = y_tile * 16
+	STA tmp              ; tmp = row offset
+
+	TXA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = x_tile (0..15)
+	CLC
+	ADC tmp              ; A = index (0..239)
+	TAX
+
+	LDA #$00             ; e.g., 2 = pushable block (or 1 if you treat it as solid)
+	STA COLLISIONTABLE,X
+	RTS
+
+SetTileSolid1:
+	TYA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = y_tile (0..14)
+	ASL
+	ASL
+	ASL
+	ASL                  ; A = y_tile * 16
+	STA tmp              ; tmp = row offset
+
+	TXA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = x_tile (0..15)
+	CLC
+	ADC tmp              ; A = index (0..239)
+	TAX
+
+	LDA #$01             ; e.g., 2 = pushable block (or 1 if you treat it as solid)
+	STA COLLISIONTABLE,X
+	RTS
+
+
 
 PALETTEDATA:
 	.byte $20, $31, $22, $11, 	$20, $0A, $15, $01, 	$20, $29, $28, $27, 	$20, $34, $24, $14 	;background palettes

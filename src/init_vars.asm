@@ -11,12 +11,24 @@ INITVARS:
     STA frame_counter
     STA player_hit_timer
     ; LDA #$01
-    STA is_moveable_block_moved
-    STA pushable_contact
+
+    LDX #00
+    STA moveable_block_x, X
+    STA moveable_block_y, X
+    STA pushable_contact, X
+
+    LDX #01
+    STA moveable_block_x, X
+    STA moveable_block_y, X
+    STA pushable_contact, X
+
+    LDX #02
+    STA moveable_block_x, X
+    STA moveable_block_y, X
+    STA pushable_contact, X
 
     LDA #$60
-    STA moveable_block_x
-    STA moveable_block_y
+    
 
     
     LDA #$40
@@ -46,4 +58,6 @@ INITVARS:
     STA CHASERDIRECTION
 
 
+    LDA #$03
+    STA moveable_block_count
     RTS

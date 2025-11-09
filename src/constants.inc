@@ -25,3 +25,11 @@ LEFTBTN   = %01000000   ; $40
 RIGHTBTN  = %10000000   ; $80
 
 CHASERSETSPEED = 2
+
+BLOCK_TILE_TL = $82      ; pick your actual tile ids
+BLOCK_TILE_TR = $83
+BLOCK_TILE_BL = $92
+BLOCK_TILE_BR = $93
+BLOCK_ATTR    = $00      ; palette/priority/flip
+
+BLOCK_OAM_START = 12  
