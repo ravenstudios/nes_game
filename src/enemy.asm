@@ -1,7 +1,6 @@
 
 ;----------------------Enemy Walk--------------------------------------
 EnemyWalk:
-
 LDA enemy_x
 STA $0080
 LDA enemy_y
@@ -17,11 +16,15 @@ STA $0084
 LDA enemy_y+2
 STA $0085
 
-    LDX #$00
+    LDA #$00
+    STA enemy_loop_idx
 @loop_enemies:
-    STX target_idx
+    LDX enemy_loop_idx
+    ; STX $0070
     CPX enemy_count
     BCS @done
+
+
 
     LDA enemy_direction, X
 
@@ -103,13 +106,15 @@ TAX
  JMP @advance
 
  @advance:
-    INX
+    INC enemy_loop_idx
     JMP @loop_enemies
 @done:
+    LDA #$00
+    STA enemy_loop_idx
     RTS
 
 @change_direction:
-    LDX target_idx
+    LDX enemy_loop_idx
     LDA enemy_direction, X
 
     CMP #FACINGUP
@@ -153,7 +158,8 @@ TAX
     JMP @advance
 
 
-GetRandomDirection:
+GetRandomDirection: 
+    LDX enemy_loop_idx
     JSR GetRandom      ; returns random in A
     AND #$03           ; now A = 0,1,2,3
     ASL A              ; shift left ×2
@@ -167,6 +173,8 @@ GetRandomDirection:
 
 
 GetNewEnemyRandomWalkTimer:
+    LDX enemy_loop_idx
+
     LDA enemy_random_walk_timer, X
     CMP #$00
     BNE :+
@@ -181,7 +189,7 @@ GetNewEnemyRandomWalkTimer:
 
 
 LoadEnemyCollisionValues:
-    LDX target_idx
+    LDX enemy_loop_idx
     LDA enemy_x, X
     STA collision_check_x
     LDA enemy_y, X

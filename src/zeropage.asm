@@ -105,6 +105,7 @@ tmpx8:      .res 1
 tmpy:       .res 1
 tmpy8:      .res 1
 
+enemy_loop_idx: .res 1
 
 .segment "BSS"
 

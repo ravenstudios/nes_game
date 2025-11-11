@@ -53,6 +53,8 @@ INITVARS:
 
     LDA #$10
     STA enemy_random_walk_timer
+    STA enemy_random_walk_timer+1
+    STA enemy_random_walk_timer+2
 
     LDA #$80
     ; STA enemy_x
