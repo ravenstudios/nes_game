@@ -1,6 +1,8 @@
 
 ;----------------------Enemy Walk--------------------------------------
-EnemyWalk:
+EnemyUpdate:
+
+
 LDA enemy_x
 STA $0080
 LDA enemy_y
@@ -16,16 +18,29 @@ STA $0084
 LDA enemy_y+2
 STA $0085
 
+LDA is_enemy_active
+STA $0090
+LDA is_enemy_active+1
+STA $0091
+LDA is_enemy_active+2
+STA $0092
+
     LDA #$00
     STA enemy_loop_idx
 @loop_enemies:
+    
     LDX enemy_loop_idx
-    ; STX $0070
     CPX enemy_count
     BCS @done
 
 
+    LDA is_enemy_active, X
+    BEQ @advance
 
+    lDA is_bullet_active
+    BEQ :+
+    JSR BulletVsEnemyOverlap
+    :
     LDA enemy_direction, X
 
     CMP #FACINGUP
@@ -203,9 +218,13 @@ RTS
 DrawEnemies:
     LDX #$00
 @loop_enemies:
+    
     CPX enemy_count
     BCS @done
 
+    ; LDA is_enemy_active, X
+    ; BEQ @advance
+    
     ; --- load this ENEMY's X/Y and precompute x+8,y+8 ---
     LDA enemy_x, X   ; X
     STA tmpx
@@ -292,6 +311,7 @@ DrawEnemies:
     STA (oam_ptr_lo),Y
     ; INY not needed after last write
 
+@advance:
     INX
     JMP @loop_enemies          ; (max 255 ENEMYs; you’ll cap earlier)
 @done:
@@ -299,3 +319,56 @@ DrawEnemies:
 
 
 
+; IN:  bullet_x, bullet_y, enemy_x, enemy_y (zero-page or RAM bytes)
+; OUT: C=1 if overlap, C=0 if no overlap
+; TRASH: A
+BulletVsEnemyOverlap:
+    ; if (bullet_x + 8) <= enemy_x → no hit
+    LDX enemy_loop_idx 
+    LDA bullet_x
+    CLC
+    ADC #8
+    CMP enemy_x, X
+    BCC @no_hit        ; A < enemy_x
+    BEQ @no_hit        ; A == enemy_x
+
+    ; if (enemy_x + 16) <= bullet_x → no hit
+    LDA enemy_x, X
+    CLC
+    ADC #16
+    CMP bullet_x
+    BCC @no_hit        ; A < bullet_x
+    BEQ @no_hit        ; A == bullet_x
+
+    ; if (bullet_y + 8) <= enemy_y → no hit
+    LDA bullet_y
+    CLC
+    ADC #8
+    CMP enemy_y, X
+    BCC @no_hit
+    BEQ @no_hit
+
+    ; if (enemy_y + 16) <= bullet_y → no hit
+    LDA enemy_y, X
+    CLC
+    ADC #16
+    CMP bullet_y
+    BCC @no_hit
+    BEQ @no_hit
+
+    ; otherwise they overlap
+    JSR Deactivate
+
+    RTS
+@no_hit:                 ; C=0 → NO HIT
+    RTS
+
+
+Deactivate:
+    LDX enemy_loop_idx
+    LDA #$00
+    JSR DeactivateBullet
+    STA is_enemy_active, X
+    LDA #$f0
+    STA enemy_y, X
+    RTS

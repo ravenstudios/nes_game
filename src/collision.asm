@@ -1,3 +1,4 @@
+;-----------------------Tile Collision------------------------------
 TileCollision:
 
 LDA collision_check_dir

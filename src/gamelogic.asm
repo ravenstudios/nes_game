@@ -4,7 +4,7 @@
 .include "chaser.asm"
 .include "animate.asm"
 .include "moveable_block.asm"
-
+.include "bullet.asm"
 INFLOOP:
 
 
@@ -153,7 +153,7 @@ UpdateGameLoop:
     JSR GetRandom
     JSR ReadController1
     JSR HandleDpad
-    JSR EnemyWalk
+    JSR EnemyUpdate
     
     JSR GetNewEnemyRandomWalkTimer
 
@@ -167,6 +167,7 @@ UpdateGameLoop:
     ;     STA CHASERSPEEDCOUNTER
 
     JSR UpdateMoveableBlock
+    JSR UpdateBulet
 @return:
     RTS
 
@@ -177,6 +178,7 @@ DrawGameLoop:
     JSR DRAWPLAYER
     ; JSR DrawMoveableBlock
     JSR DrawAllBlocks
+    JSR DrawBullet
 RTS
 
 NMI:

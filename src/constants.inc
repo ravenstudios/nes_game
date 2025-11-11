@@ -40,3 +40,7 @@ ENEMY_ATTR    = $00      ; palette/priority/flip
 
 BLOCK_OAM_START = 12  
 ENEMY_OAM_START = 24 
+
+BULLET_OAM = $02a0
+BULLET_TILE = $84
+BULLET_SPEED = 2

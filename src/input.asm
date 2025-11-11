@@ -127,7 +127,14 @@ HandleDpad:
     LDA controller1
     AND #ABTN
     BEQ @b_btn
-    
+        LDA PLAYER_X
+        STA bullet_x
+        LDA PLAYER_Y
+        STA bullet_y
+        LDA PLAYERDIRECTION
+        STA bullet_direction
+        LDA #$01
+        STA is_bullet_active
     RTS
 
 @b_btn:

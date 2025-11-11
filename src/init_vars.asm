@@ -11,8 +11,21 @@ INITVARS:
     STA frame_counter
     STA player_hit_timer
     STA is_player_checking
+; LDA #$30
+; STA bullet_x
+; LDA #$a0
+; STA bullet_y
+LDA #$04
+STA bullet_w
+STA bullet_h
+LDA #$00
+STA is_bullet_active
+STA bullet_direction
 
-
+LDA #$01
+STA is_enemy_active
+STA is_enemy_active+1
+STA is_enemy_active+2
 ;     LDX #00
 ; @l1:
 ;     STA moveable_block_x, X

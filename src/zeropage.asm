@@ -46,6 +46,12 @@ t2_maxy: .res 1
 
 
 
+bullet_x: .res 1
+bullet_y: .res 1
+bullet_w: .res 1
+bullet_h: .res 1
+bullet_direction: .res 1
+is_bullet_active: .res 1
 
 
 PLAYER_X: .res 1
@@ -57,6 +63,7 @@ enemy_x: .res 3
 enemy_y: .res 3
 enemy_direction: .res 3
 enemy_random_walk_timer: .res 3
+is_enemy_active: .res 3
 enemy_count: .res 1
 
 
