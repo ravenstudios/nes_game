@@ -32,4 +32,11 @@ BLOCK_TILE_BL = $92
 BLOCK_TILE_BR = $93
 BLOCK_ATTR    = $00      ; palette/priority/flip
 
+ENEMY_TILE_TL = $08      ; pick your actual tile ids
+ENEMY_TILE_TR = $09
+ENEMY_TILE_BL = $18
+ENEMY_TILE_BR = $19
+ENEMY_ATTR    = $00      ; palette/priority/flip
+
 BLOCK_OAM_START = 12  
+ENEMY_OAM_START = 24 

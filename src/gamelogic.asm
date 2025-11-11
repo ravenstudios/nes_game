@@ -102,29 +102,34 @@ TAX
 JSR SetTilePushable
 
 
+; EnemyPos:
+;     .byte $80, $80
+;     .byte $90, $90
+;     .byte $a0, $a0
 
-LDX #$00
-LoadEnemys:
+
+LoadEnemies:
+    LDX #$00
+@loop:
     CPX enemy_count
-    BEQ :+
-        LDY #$00
-        LDA EnemyPos, Y
-        STA enemy_x, X
+    BCS @done                ; stop when X >= enemy_count
 
-        ; load starting Y
-        INY
-        LDA EnemyPos, Y
-        STA enemy_y, X
+    TXA                      ; A = X
+    ASL                      ; A = 2*X
+    TAY                      ; Y = 2*X
 
-        LDA EnemyPos
-        CLC
-        ADC #$02
-        STA EnemyPos
+    LDA EnemyPos, Y          ; x
+    STA enemy_x, X
+    INY
+    LDA EnemyPos, Y          ; y
+    STA enemy_y, X
 
-        INX
-        JMP LoadEnemys
+    INX
+    BNE @loop                ; (enemy_count <= 255)
+@done:
+    RTS
 
-:
+
     
 skip:
     ; advance state if start_screen==1
@@ -154,13 +159,13 @@ UpdateGameLoop:
     JSR GetNewEnemyRandomWalkTimer
 
 
-    INC CHASERSPEEDCOUNTER
-    LDA CHASERSPEEDCOUNTER
-    CMP #$04
-    BNE @return
-        JSR CHASERENEMYWALK
-        LDA #$00
-        STA CHASERSPEEDCOUNTER
+    ; INC CHASERSPEEDCOUNTER
+    ; LDA CHASERSPEEDCOUNTER
+    ; CMP #$04
+    ; BNE @return
+    ;     JSR CHASERENEMYWALK
+    ;     LDA #$00
+    ;     STA CHASERSPEEDCOUNTER
 
     JSR UpdateMoveableBlock
 @return:
@@ -169,7 +174,7 @@ UpdateGameLoop:
 DrawGameLoop:
     JSR ANITMATION
     JSR DrawEnemies
-    JSR DRAWCHASERENEMY
+    ; JSR DRAWCHASERENEMY
     JSR DRAWPLAYER
     ; JSR DrawMoveableBlock
     JSR DrawAllBlocks
@@ -221,6 +226,7 @@ no_xor:
 
 
 EnemyPos:
-    .byte $60, $20
-    .byte $60, $40
+    .byte $20, $60
     .byte $60, $60
+    .byte $20, $80
+

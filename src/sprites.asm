@@ -5,7 +5,7 @@ LOADSPRITES:
         LDA SPRITEDATA, X
         STA $0200, X
         INX
-        CPX #$40	;16bytes (4 bytes per sprite, 8 sprites total)
+        CPX #$10	;16bytes (4 bytes per sprite, 8 sprites total)
         BNE LOADSPRITESMEM
         
     RTS
@@ -29,16 +29,16 @@ LOADSPRITES:
         
 
         ;ENEMY
-        .byte $80, $08, $2, $80
-        .byte $80, $09, $2, $88
-        .byte $88, $18, $2, $80
-        .byte $88, $19, $2, $88
+        ; .byte $80, $08, $2, $80
+        ; .byte $80, $09, $2, $88
+        ; .byte $88, $18, $2, $80
+        ; .byte $88, $19, $2, $88
 
         ;ENEMY Chaser
-        .byte $90, $08, $3, $90
-        .byte $90, $09, $3, $98
-        .byte $98, $18, $3, $90
-        .byte $98, $19, $3, $98
+        ; .byte $90, $08, $3, $90
+        ; .byte $90, $09, $3, $98
+        ; .byte $98, $18, $3, $90
+        ; .byte $98, $19, $3, $98
         ; ;window
         ; .byte $10, $08, $01, $90
         ; .byte $10, $09, $01, $98
@@ -51,11 +51,11 @@ LOADSPRITES:
         
         
 
-        ; ;Blocks
-        .byte $60, $82, $00, $60
-        .byte $60, $83, $00, $68
-        .byte $68, $92, $00, $60
-        .byte $68, $93, $00, $68
+        ; ; ;Blocks
+        ; .byte $60, $82, $00, $60
+        ; .byte $60, $83, $00, $68
+        ; .byte $68, $92, $00, $60
+        ; .byte $68, $93, $00, $68
 
    
 

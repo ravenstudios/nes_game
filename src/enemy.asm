@@ -1,11 +1,29 @@
 
-
+;----------------------Enemy Walk--------------------------------------
 EnemyWalk:
-INC $0070
-    ; JSR GetRandomDirection
-    ; STA enemy_direction
-    STA $0090
-    LDA enemy_direction
+
+LDA enemy_x
+STA $0080
+LDA enemy_y
+STA $0081
+
+LDA enemy_x+1
+STA $0082
+LDA enemy_y+1
+STA $0083
+
+LDA enemy_x+2
+STA $0084
+LDA enemy_y+2
+STA $0085
+
+    LDX #$00
+@loop_enemies:
+    STX target_idx
+    CPX enemy_count
+    BCS @done
+
+    LDA enemy_direction, X
 
     CMP #FACINGUP
     BEQ @move_up
@@ -18,45 +36,81 @@ INC $0070
 
     CMP #FACINGRIGHT
     BEQ @move_right
-    RTS
+     JMP @advance
 
 
 @move_up:
-    INC $0080
-    JSR LoadEnemyCollisionValues
-    JSR TileCollision
-    BCS @change_direction ;will be move random
-    DEC enemy_y
-    RTS
+TXA
+PHA
+TYA
+PHA
+JSR LoadEnemyCollisionValues   ; OK if uses A only
+JSR TileCollision              ; this will clobber X/Y
+
+PLA
+TAY
+PLA
+TAX
+    BCS  @change_direction
+    DEC enemy_y, X
+     JMP @advance
     
 @move_down:
-INC $0081
-    JSR LoadEnemyCollisionValues
-    JSR TileCollision
-    BCS @change_direction
-    INC enemy_y 
-    RTS
+TXA
+PHA
+TYA
+PHA
 
+JSR LoadEnemyCollisionValues   ; OK if uses A only
+JSR TileCollision              ; this will clobber X/Y
+
+PLA
+TAY
+PLA
+TAX
+    BCS @change_direction
+    INC enemy_y, X
+ JMP @advance
 @move_left:
-INC $0082
-    JSR LoadEnemyCollisionValues
-    JSR TileCollision
-    BCS @change_direction
-    DEC enemy_x 
-    RTS
+TXA
+PHA
+TYA
+PHA
+JSR LoadEnemyCollisionValues   ; OK if uses A only
+JSR TileCollision              ; this will clobber X/Y
 
+PLA
+TAY
+PLA
+TAX
+    BCS @change_direction
+    DEC enemy_x, X
+ JMP @advance
 @move_right:
-INC $0083
-    JSR LoadEnemyCollisionValues
-    JSR TileCollision
-    BCS @change_direction
-    INC enemy_x
-    RTS
+TXA
+PHA
+TYA
+PHA
+JSR LoadEnemyCollisionValues   ; OK if uses A only
+JSR TileCollision              ; this will clobber X/Y
 
+PLA
+TAY
+PLA
+TAX
+    BCS @change_direction
+    INC enemy_x, X
+ JMP @advance
+
+ @advance:
+    INX
+    JMP @loop_enemies
+@done:
+    RTS
 
 @change_direction:
-INC $0084
-    LDA enemy_direction
+    LDX target_idx
+    LDA enemy_direction, X
 
     CMP #FACINGUP
     BEQ @push_down
@@ -70,91 +124,82 @@ INC $0084
     CMP #FACINGRIGHT
     BEQ @push_left
 
-    RTS
+     JMP @advance
 
 @push_up:
-    DEC enemy_y
-    JMP @get_new_direction
-    RTS
+    DEC enemy_y, X
+    JSR GetRandomDirection
+    JMP @advance
 
 @push_down:
-    INC enemy_y
-    JMP @get_new_direction
-    RTS
+    INC enemy_y, X
+    JSR GetRandomDirection
+    JMP @advance
 
 @push_left:
-    DEC enemy_x
-    JMP @get_new_direction
-    RTS
+    DEC enemy_x, X
+    JSR GetRandomDirection
+    JMP @advance
 
 @push_right:
-    INC enemy_x
-    JMP @get_new_direction
-    RTS
+    INC enemy_x, X
+    JSR GetRandomDirection
+    JMP @advance
 
 
 @get_new_direction:
     JMP GetRandomDirection
     
+    JMP @advance
+
+
+GetRandomDirection:
+    JSR GetRandom      ; returns random in A
+    AND #$03           ; now A = 0,1,2,3
+    ASL A              ; shift left ×2
+    ASL A              ; ×4
+    ASL A              ; ×8
+    ASL A              ; ×16
+    ASL A              ; ×32  (now A = 0, $20, $40, $60)
+    STA enemy_direction, X
     RTS
 
-LDY #$00
-; DRAWENEMY:
 
-; @loop:
 
-; 	LDA anim_frame
-;     ASL A
-;     CLC
-;     ADC #$08
-;     ADC enemy_direction, Y
-;     TAX                        ; X = frame_base
-    
-;     ; write TILE bytes ONLY
-;     STX $0211                  ; TL
-;     INX
-;     STX $0215                  ; TR
-;     TXA
-;     CLC
-;     ADC #15
-;     TAX
-;     STX $0219               ; BL
-;     INX
-;     STX $021d               ; BR    
+GetNewEnemyRandomWalkTimer:
+    LDA enemy_random_walk_timer, X
+    CMP #$00
+    BNE :+
+        JSR GetRandom
+        AND #$ff
+        STA enemy_random_walk_timer, X
+        JSR GetRandomDirection
+        RTS
+    :
+    DEC enemy_random_walk_timer, X
+    RTS
 
-    
-    
 
-;         ; write X
-;     LDA enemy_x
-;     STA $0213
-;     STA $021b
-;     CLC
-;     ADC #8
-;     STA $0217
-;     STA $021f
+LoadEnemyCollisionValues:
+    LDX target_idx
+    LDA enemy_x, X
+    STA collision_check_x
+    LDA enemy_y, X
+    STA collision_check_y
+    LDA enemy_direction, X
+    STA collision_check_dir
+RTS
 
-;     ; write Y
-;     LDA enemy_y
-;     SEC 
-;     SBC #$01
-;     STA $0210
-;     STA $0214
-;     CLC
-;     ADC #8
-;     STA $0218
-;     STA $021c
 
-;     RTS
-
+;----------------------Enemy Draw--------------------------------------
 DrawEnemies:
     LDX #$00
 @loop_enemies:
     CPX enemy_count
     BCS @done
 
-    ; --- load this block's X/Y and precompute x+8,y+8 ---
-    LDA enemy_x,X   ; X
+    ; --- load this ENEMY's X/Y and precompute x+8,y+8 ---
+    LDA enemy_x, X   ; X
     STA tmpx
     CLC
     ADC #8
@@ -165,15 +210,14 @@ DrawEnemies:
     CLC
     ADC #8
     STA tmpy8
-
-    ; --- compute OAM pointer = $0200 + 16*(BLOCK_OAM_START + X) ---
-    TXA                       ; A = i
+    TXA
+    ; --- compute OAM pointer = $0200 + ENEMY_OAM_START    TXA                       ; A = i
     ASL                       ; *2
     ASL                       ; *4
     ASL                       ; *8
     ASL                       ; *16   (16*i)
     CLC
-    ADC #(4*BLOCK_OAM_START)  ; + 4*start (sprite index→byte offset)
+    ADC #(4*ENEMY_OAM_START)  ; + 4*start (sprite index→byte offset)
     CLC
     ADC #$00                  ; low of $0200
     STA oam_ptr_lo
@@ -188,10 +232,10 @@ DrawEnemies:
     LDA tmpy                  ; Y
     STA (oam_ptr_lo),Y
     INY
-    LDA #BLOCK_TILE_TL        ; tile
+    LDA #ENEMY_TILE_TL        ; tile
     STA (oam_ptr_lo),Y
     INY
-    LDA #BLOCK_ATTR           ; attr
+    LDA #ENEMY_ATTR           ; attr
     STA (oam_ptr_lo),Y
     INY
     LDA tmpx                  ; X
@@ -202,10 +246,10 @@ DrawEnemies:
     LDA tmpy
     STA (oam_ptr_lo),Y
     INY
-    LDA #BLOCK_TILE_TR
+    LDA #ENEMY_TILE_TR
     STA (oam_ptr_lo),Y
     INY
-    LDA #BLOCK_ATTR
+    LDA #ENEMY_ATTR
     STA (oam_ptr_lo),Y
     INY
     LDA tmpx8
@@ -216,10 +260,10 @@ DrawEnemies:
     LDA tmpy8
     STA (oam_ptr_lo),Y
     INY
-    LDA #BLOCK_TILE_BL
+    LDA #ENEMY_TILE_BL
     STA (oam_ptr_lo),Y
     INY
-    LDA #BLOCK_ATTR
+    LDA #ENEMY_ATTR
     STA (oam_ptr_lo),Y
     INY
     LDA tmpx
@@ -230,10 +274,10 @@ DrawEnemies:
     LDA tmpy8
     STA (oam_ptr_lo),Y
     INY
-    LDA #BLOCK_TILE_BR
+    LDA #ENEMY_TILE_BR
     STA (oam_ptr_lo),Y
     INY
-    LDA #BLOCK_ATTR
+    LDA #ENEMY_ATTR
     STA (oam_ptr_lo),Y
     INY
     LDA tmpx8
@@ -241,46 +285,9 @@ DrawEnemies:
     ; INY not needed after last write
 
     INX
-    BNE @loop_enemies          ; (max 255 blocks; you’ll cap earlier)
+    JMP @loop_enemies          ; (max 255 ENEMYs; you’ll cap earlier)
 @done:
     RTS
 
 
-GetRandomDirection:
-INC $0086
-    JSR GetRandom      ; returns random in A
-    AND #$03           ; now A = 0,1,2,3
-    ASL A              ; shift left ×2
-    ASL A              ; ×4
-    ASL A              ; ×8
-    ASL A              ; ×16
-    ASL A              ; ×32  (now A = 0, $20, $40, $60)
-    STA enemy_direction
-    RTS
 
-
-
-GetNewEnemyRandomWalkTimer:
-INC $0087
-    LDA enemy_random_walk_timer
-    CMP #$00
-    BNE :+
-        JSR GetRandom
-        AND #$ff
-        STA enemy_random_walk_timer
-        JSR GetRandomDirection
-        RTS
-    :
-    DEC enemy_random_walk_timer
-    RTS
-
-
-LoadEnemyCollisionValues:
-INC $0088
-    LDA enemy_x
-    STA collision_check_x
-    LDA enemy_y
-    STA collision_check_y
-    LDA enemy_direction
-    STA collision_check_dir
-RTS

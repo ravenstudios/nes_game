@@ -33,6 +33,17 @@ INITVARS:
     LDA #03
     STA enemy_count
 
+    LDX #$00
+    LDA #$20
+    STA enemy_direction, X
+
+    LDX #$01
+    LDA #$40
+    STA enemy_direction, X
+
+    LDX #$02
+    LDA #$60
+    STA enemy_direction, X
     
     LDA #$40
     STA enemy_direction
