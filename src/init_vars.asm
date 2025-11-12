@@ -45,6 +45,8 @@ STA is_enemy_active+2
 ;     LDA #$60
     LDA #03
     STA enemy_count
+    STA moveable_block_count
+    
 
     LDX #$00
     LDA #$20
@@ -87,6 +89,4 @@ STA is_enemy_active+2
     STA CHASERDIRECTION
 
 
-    LDA #$03
-    STA moveable_block_count
     RTS

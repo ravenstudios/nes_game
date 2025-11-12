@@ -5,7 +5,7 @@ main.o:
     BSS               Offs=000000  Size=0000F0  Align=00001  Fill=0000
     ZEROPAGE          Offs=000000  Size=00005A  Align=00001  Fill=0000
     HEADER            Offs=000000  Size=000010  Align=00001  Fill=0000
-    STARTUP           Offs=000000  Size=000C14  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000C12  Align=00001  Fill=0000
     VECTORS           Offs=000000  Size=000006  Align=00001  Fill=0000
     CHARS             Offs=000000  Size=002000  Align=00001  Fill=0000
 
@@ -18,8 +18,8 @@ CHARS                 000000  001FFF  002000  00001
 HEADER                000000  00000F  000010  00001
 ZEROPAGE              000002  00005B  00005A  00001
 BSS                   000300  0003EF  0000F0  00001
-STARTUP               008000  008C13  000C14  00001
-CODE                  008C14  009408  0007F5  00001
+STARTUP               008000  008C11  000C12  00001
+CODE                  008C12  009406  0007F5  00001
 VECTORS               00FFFA  00FFFF  000006  00001
 
 

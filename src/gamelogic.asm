@@ -71,40 +71,8 @@ StartScreenStateUpdate:
     LDX #$04        ; meta-tile TL id = $04
     JSR LoadRandomRoom
     JSR LOADSPRITES
-
-LDX #$00
-
-LDA #$20
-STA moveable_block_x, X
-STA moveable_block_y, X
-LDY moveable_block_y, X
-LDA moveable_block_x, X
-TAX
-JSR SetTilePushable
-
-LDX #$01
-LDA #$30
-STA moveable_block_x, X
-STA moveable_block_y, X
-LDY moveable_block_y, X
-LDA moveable_block_x, X
-TAX
-JSR SetTilePushable
-
-LDX #$02
-LDA #$40
-STA moveable_block_x, X
-STA moveable_block_y, X
-LDY moveable_block_y, X
-LDA moveable_block_x, X
-TAX
-JSR SetTilePushable
-
-
-; EnemyPos:
-;     .byte $80, $80
-;     .byte $90, $90
-;     .byte $a0, $a0
+    JSR LoadEnemies
+    JSR LoadBlocks
 
 
 LoadEnemies:
@@ -128,6 +96,58 @@ LoadEnemies:
 @done:
     RTS
 
+
+
+; LDX #$00
+
+; LDA #$20
+; STA moveable_block_x, X
+; STA moveable_block_y, X
+; LDY moveable_block_y, X
+; LDA moveable_block_x, X
+; TAX
+; JSR SetTilePushable
+
+; LDX #$01
+; LDA #$30
+; STA moveable_block_x, X
+; STA moveable_block_y, X
+; LDY moveable_block_y, X
+; LDA moveable_block_x, X
+; TAX
+; JSR SetTilePushable
+
+LoadBlocks:
+    LDX #$00
+@loop:
+    CPX moveable_block_count
+    BCS @done                ; stop when X >= enemy_count
+
+    TXA                      ; A = X
+    ASL                      ; A = 2*X
+    TAY                      ; Y = 2*X
+
+    LDA BlockPos, Y          ; x
+    STA moveable_block_x, X
+    INY
+    LDA BlockPos, Y          ; y
+    STA moveable_block_y, X
+
+    TXA 
+    PHA
+
+    LDA moveable_block_x, X
+    LDY moveable_block_y, X
+
+    TAX
+    JSR SetTilePushable
+
+    PLA
+    TAX
+    INX
+    BNE @loop                ; (enemy_count <= 255)
+@done:
+    RTS
 
     
 skip:
@@ -171,6 +191,8 @@ UpdateGameLoop:
 @return:
     RTS
 
+
+
 DrawGameLoop:
     JSR ANITMATION
     JSR DrawEnemies
@@ -181,29 +203,23 @@ DrawGameLoop:
     JSR DrawBullet
 RTS
 
+
+
 NMI:
     INC rand8
-    
-       
-    
     PHA
     TXA
     PHA
     TYA
     PHA
-
-
-
     LDA #1
     STA vblank_flag
-    
     LDA vram_busy
     BNE :+
     ;Draw
     LDA #$02
     STA $4014
     :
-
     PLA
     TAY
     PLA
@@ -212,15 +228,12 @@ NMI:
     RTI
 
 
-
-; rand8 = (rand8 >> 1) ^ (carry ? $B8 : 0)
-; returns A = rand8
 GetRandom:
-
     LDA rand8
     LSR A          ; shift right, bit0 -> carry
     BCC no_xor
     EOR #$B8       ; tap polynomial
+
 no_xor:
     STA rand8
     RTS
@@ -231,3 +244,8 @@ EnemyPos:
     .byte $60, $60
     .byte $20, $80
 
+
+BlockPos:
+    .byte $50, $60
+    .byte $80, $60
+    .byte $a0, $a0
