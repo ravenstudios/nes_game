@@ -11,10 +11,15 @@ INITVARS:
     STA frame_counter
     STA player_hit_timer
     STA is_player_checking
-; LDA #$30
-; STA bullet_x
-; LDA #$a0
-; STA bullet_y
+    LDA MAX_TIMER
+    STA timer_counter
+    LDA TIMER_FPS
+    STA timer_tick_counter
+
+LDA #$00
+STA bullet_x
+LDA #$f0
+STA bullet_y
 LDA #$04
 STA bullet_w
 STA bullet_h
@@ -88,5 +93,8 @@ STA is_enemy_active+2
 	STA PLAYERDIRECTION
     STA CHASERDIRECTION
 
+
+
+    
 
     RTS

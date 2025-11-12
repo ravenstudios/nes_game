@@ -53,7 +53,8 @@ bullet_h: .res 1
 bullet_direction: .res 1
 is_bullet_active: .res 1
 
-
+timer_counter: .res 1
+timer_tick_counter: .res 1
 PLAYER_X: .res 1
 PLAYER_Y: .res 1
 
@@ -120,4 +121,8 @@ COLLISIONTABLE: .res 240
 
 
 
+
+hundreds: .res 1
+tens:     .res 1
+ones:     .res 1
 

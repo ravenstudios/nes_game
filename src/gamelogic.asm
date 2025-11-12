@@ -5,6 +5,9 @@
 .include "animate.asm"
 .include "moveable_block.asm"
 .include "bullet.asm"
+.include "timer.asm"
+
+
 INFLOOP:
 
 
@@ -170,6 +173,7 @@ StartScreenStateUpdatDraw:
     RTS
 
 UpdateGameLoop:
+    
     JSR GetRandom
     JSR ReadController1
     JSR HandleDpad
@@ -201,6 +205,8 @@ DrawGameLoop:
     ; JSR DrawMoveableBlock
     JSR DrawAllBlocks
     JSR DrawBullet
+     JSR Timer_Update
+    
 RTS
 
 
@@ -214,6 +220,7 @@ NMI:
     PHA
     LDA #1
     STA vblank_flag
+   
     LDA vram_busy
     BNE :+
     ;Draw

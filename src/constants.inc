@@ -44,3 +44,22 @@ ENEMY_OAM_START = 24
 BULLET_OAM = $02a0
 BULLET_TILE = $84
 BULLET_SPEED = 2
+
+MAX_TIMER = 255
+TIMER_FPS = 60
+;number tiles
+num_0_tile = $d9
+num_1_tile = $da
+num_2_tile = $db
+num_3_tile = $dc
+num_4_tile = $dd
+num_5_tile = $de
+num_6_tile = $df
+num_7_tile = $e0
+num_8_tile = $e1
+num_9_tile = $e2
+
+TIMER_DIGIT_Y = $03
+TIMER_DIGIT_X1 = $18
+TIMER_DIGIT_X2 = $19
+TIMER_DIGIT_X3 = $1A     

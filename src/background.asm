@@ -211,7 +211,7 @@ COLLISIONTABLEDATA:
 	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
 	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
 	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
+	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
 	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
 	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
 	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
@@ -225,11 +225,83 @@ COLLISIONTABLEDATA:
 	
 
 LoadCollisionTable:
-   LDX #$00
+    LDX #$00
 @copy:
+    CPX #240            ; 16*15
+    BEQ @done
     LDA COLLISIONTABLEDATA, X
     STA COLLISIONTABLE, X
     INX
     BNE @copy
+@done:
+    RTS
 
-    ; LDX #$F0
+
+
+; tmp0/tmp1 are 16-bit scratch in zeropage (low/high)
+; A=tile, X=col, Y=row
+
+; A=tile, X=col, Y=row
+; A = tile, X = col (0..31), Y = row (0..29)
+SetBGTile:
+    ; --- wait for start of vblank ---
+@vbwait:
+    BIT $2002
+    BPL @vbwait          ; loop until vblank begins (bit7=1)
+
+    ; --- render OFF while touching VRAM ---
+    LDA #$00
+    STA $2001
+
+    ; PHA                  ; save tile in A
+
+    ; addr = $2000 + row*32 + col
+    TYA
+    STA tmp0
+    LDA #$00
+    STA tmp1
+    ASL tmp0
+ 	ROL tmp1  ; *2
+    ASL tmp0
+ 	ROL tmp1  ; *4
+    ASL tmp0
+ 	ROL tmp1  ; *8
+    ASL tmp0
+ 	ROL tmp1  ; *16
+    ASL tmp0
+ 	ROL tmp1  ; *32
+
+    CLC
+    LDA tmp0
+    ADC #<$2000
+    STA tmp0
+    LDA tmp1
+    ADC #>$2000
+    STA tmp1
+
+    TXA
+    CLC
+    ADC tmp0
+    STA tmp0
+    LDA tmp1
+    ADC #$00
+    STA tmp1
+
+    ; do the write
+    LDA $2002
+    LDA tmp1
+    STA $2006
+    LDA tmp0
+    STA $2006
+
+    LDA loadedTile
+	STA $00c0
+    STA $2007
+
+    ; --- restore scroll & render ON (no scrolling: both 0) ---
+    LDA #$00
+    STA $2005
+    STA $2005
+    LDA #%00011110
+    STA $2001
+    RTS
