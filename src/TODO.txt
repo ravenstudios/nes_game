@@ -8,7 +8,7 @@
 
 
 ##################Bugs#####################
-[]push enemies meta sprites 1 block up
-[]Fix enemies able to push blocks
-[]Fix enemies collision on blocks
+[x]push enemies meta sprites 1 block up
+[x]Fix enemies able to push blocks
+[x]Fix enemies collision on blocks
 []Make time show minutes and secends
