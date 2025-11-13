@@ -1,0 +1,14 @@
+###############Features To Add#############
+[]Health pickup
+[]Make a room secret
+[]First couple of levles for tut, no enemimes, push blocks, hidden tile
+
+
+
+
+
+##################Bugs#####################
+[]push enemies meta sprites 1 block up
+[]Fix enemies able to push blocks
+[]Fix enemies collision on blocks
+[]Make time show minutes and secends

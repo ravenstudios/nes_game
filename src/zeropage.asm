@@ -9,7 +9,7 @@ tmp:                .res 1   ; scratch
 tile_x:             .res 1
 tile_y:             .res 1
 tmp_tile:.res 1
-
+cur_tile: .res 1
 moveable_block_x: .res 3
 moveable_block_y: .res 3
 moveable_block_count: .res 1

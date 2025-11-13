@@ -2,12 +2,14 @@
 
 
 ReadController1:
+LDA controller1
+    STA controller1_prev
     ; Latch
     LDA #$01
     STA $4016
     LDA #$00
     STA $4016
-
+    
     ; Build controller1 by shifting in 8 bits (LSB-first)
     LDA #$00
     STA controller1

@@ -48,12 +48,25 @@ LDA is_enemy_active+2
      JMP @advance
 
 
+@done:
+    LDA #$00
+    STA enemy_loop_idx
+    RTS
+
+ @advance:
+    INC enemy_loop_idx
+    JMP @loop_enemies
+
+
+
 @move_up:
 TXA
 PHA
 TYA
 PHA
 JSR LoadEnemyCollisionValues   ; OK if uses A only
+LDA #$00
+STA is_player_checking
 JSR TileCollision              ; this will clobber X/Y
 
 PLA
@@ -71,6 +84,8 @@ TYA
 PHA
 
 JSR LoadEnemyCollisionValues   ; OK if uses A only
+LDA #$00
+STA is_player_checking
 JSR TileCollision              ; this will clobber X/Y
 
 PLA
@@ -86,6 +101,8 @@ PHA
 TYA
 PHA
 JSR LoadEnemyCollisionValues   ; OK if uses A only
+LDA #$00
+STA is_player_checking
 JSR TileCollision              ; this will clobber X/Y
 
 PLA
@@ -101,6 +118,8 @@ PHA
 TYA
 PHA
 JSR LoadEnemyCollisionValues   ; OK if uses A only
+LDA #$00
+STA is_player_checking
 JSR TileCollision              ; this will clobber X/Y
 
 PLA
@@ -111,13 +130,7 @@ TAX
     INC enemy_x, X
  JMP @advance
 
- @advance:
-    INC enemy_loop_idx
-    JMP @loop_enemies
-@done:
-    LDA #$00
-    STA enemy_loop_idx
-    RTS
+
 
 @change_direction:
     LDX enemy_loop_idx
@@ -225,9 +238,11 @@ DrawEnemies:
 
     LDA enemy_y,X   ; Y
     STA tmpy
+    DEC tmpy
     CLC
     ADC #8
     STA tmpy8
+    DEC tmpy8
     TXA
     ; --- compute OAM pointer = $0200 + ENEMY_OAM_START    TXA                       ; A = i
     ASL                       ; *2

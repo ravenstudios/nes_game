@@ -144,6 +144,7 @@ LoadBlocks:
 
     TAX
     JSR SetTilePushable
+    
 
     PLA
     TAX
@@ -256,6 +257,6 @@ EnemyPos:
 
 
 BlockPos:
-    .byte $50, $60
-    .byte $80, $60
+    .byte $50, $50
+    .byte $80, $50
     .byte $a0, $a0

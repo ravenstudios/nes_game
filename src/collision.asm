@@ -119,7 +119,7 @@ RTS
     RTS
 
 CheckTile:
-    ; x >> 4
+    ; x>>4, y>>4 -> index in X (unchanged from your code)
     LDA collision_check_x
     LSR
     LSR
@@ -127,7 +127,6 @@ CheckTile:
     LSR
     STA tile_x
 
-    ; y >> 4
     LDA collision_check_y
     LSR
     LSR
@@ -135,59 +134,70 @@ CheckTile:
     LSR
     STA tile_y
 
-    ; index = y*16 + x
+    ; index = y*16 + x  (to X)
     LDA tile_y
     ASL
     ASL
     ASL
-    ASL              ; <<4 (KEEP THIS IN A)
+    ASL
     CLC
     ADC tile_x
     TAX
 
+    ; --- read tile once and keep it ---
+    LDA COLLISIONTABLE, X
+    STA cur_tile           ; <- NEW: remember tile value
 
-    LDA COLLISIONTABLE,X
-    CMP #03
+    ; ---------- Door (tile = 3) ----------
+    LDA cur_tile
+    CMP #$03
     BNE :+
         JSR Exit
+        CLC                 ; usually treat as passable after teleport
+        RTS
+:
 
-    :
-    ;if current tile == 2 - pushable block    
-    LDA COLLISIONTABLE,X
-    CMP #02
-    BNE @done
+    ; ---------- Pushable (tile = 2) ----------
+    LDA cur_tile
+    CMP #$02
+    BNE @decide_solid       ; not pushable → decide solid/empty below
 
+    ; pushable: only player may push
     LDA is_player_checking
-    BEQ @done
-    
+    BEQ @treat_as_solid     ; enemies (or no push intent) → solid
+
+    ; (player push logic)
     TXA
-    STA target_idx            ; save the front tile index
+    STA target_idx
 
     LDY moveable_block_count
-    BEQ @done
-    DEY                        ; start at count-1
+    BEQ @decide_solid
+    DEY
 
 @loop:
-    ; tx = (moveable_block_x[Y] >> 4)
-    LDA moveable_block_x,Y
+    LDA is_moveable_block_moved, Y
+    BNE @next
+
+    ; tx = (x>>4)
+    LDA moveable_block_x, Y
     LSR
     LSR
     LSR
     LSR
     STA tx
 
-    ; A = index = ((moveable_block_y[Y] >> 4) * 16) + tx
-    LDA moveable_block_y,Y
+    ; idx = (y>>4)*16 + (x>>4)
+    LDA moveable_block_y, Y
     LSR
     LSR
     LSR
-    LSR                        ; y>>4
+    LSR
     ASL
     ASL
     ASL
-    ASL                        ; (y>>4)*16
+    ASL
     CLC
-    ADC tx                     ; + x>>4
+    ADC tx
 
     CMP target_idx
     BEQ @hit
@@ -195,23 +205,30 @@ CheckTile:
 @next:
     DEY
     BPL @loop
-    JMP @done
+    ; no push target matched → just treat as solid unless your design says otherwise
+@treat_as_solid:
+    SEC
+    RTS
 
 @hit:
+    ; mark moved + clear flag for this frame if you want
     LDA #$01
-    STA is_moveable_block_moved,Y   ; or pushable_contact,Y if that’s your latch
-    LDA #00
-    STA is_player_checking
+    STA is_moveable_block_moved, Y
+    ; typically still block movement this frame:
+    SEC
+    RTS
 
-    
-@done:
-    CMP #$01
+@decide_solid:
+    ; ---------- Final solidity decision from tile value ----------
+    LDA cur_tile           ; <- use the cached tile value
+    CMP #$01               ; 1 = solid wall?
     BEQ @solid
-    CLC
+    CLC                    ; anything else (0=empty, etc.) → no collision
     RTS
 @solid:
     SEC
     RTS
+
 
 
 
