@@ -4,26 +4,17 @@ EnemyUpdate:
 
 
 LDA enemy_x
-STA $0080
 LDA enemy_y
-STA $0081
 
 LDA enemy_x+1
-STA $0082
 LDA enemy_y+1
-STA $0083
 
 LDA enemy_x+2
-STA $0084
 LDA enemy_y+2
-STA $0085
 
 LDA is_enemy_active
-STA $0090
 LDA is_enemy_active+1
-STA $0091
 LDA is_enemy_active+2
-STA $0092
 
     LDA #$00
     STA enemy_loop_idx

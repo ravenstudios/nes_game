@@ -15,6 +15,13 @@ INITVARS:
     STA timer_counter
     LDA TIMER_FPS
     STA timer_tick_counter
+    STA is_door_unlocked
+
+
+
+LDA #(12*16+2)
+STA secret_tile
+
 
 LDA #$00
 STA bullet_x

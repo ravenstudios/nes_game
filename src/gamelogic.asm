@@ -6,7 +6,7 @@
 .include "moveable_block.asm"
 .include "bullet.asm"
 .include "timer.asm"
-
+.include "door.asm"
 
 INFLOOP:
 
@@ -76,7 +76,7 @@ StartScreenStateUpdate:
     JSR LOADSPRITES
     JSR LoadEnemies
     JSR LoadBlocks
-
+    ; JSR DrawDoor
 
 LoadEnemies:
     LDX #$00
@@ -192,6 +192,7 @@ UpdateGameLoop:
 
     JSR UpdateMoveableBlock
     JSR UpdateBulet
+    JSR DoopUpdate
 @return:
     RTS
 
@@ -206,6 +207,7 @@ DrawGameLoop:
     JSR DrawAllBlocks
     JSR DrawBullet
      JSR Timer_Update
+     
     
 RTS
 

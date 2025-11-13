@@ -143,6 +143,35 @@ SetTileSolid1:
 
 
 
+SetTileDoor:
+
+	TYA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = y_tile (0..14)
+	ASL
+	ASL
+	ASL
+	ASL                  ; A = y_tile * 16
+	STA tmp              ; tmp = row offset
+
+	TXA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = x_tile (0..15)
+	CLC
+	ADC tmp              ; A = index (0..239)
+	TAX
+
+	LDA #$03         ; e.g., 2 = pushable block (or 1 if you treat it as solid)
+	STA COLLISIONTABLE,X
+	RTS
+
+
+
+
 PALETTEDATA:
 	.byte $20, $31, $22, $11, 	$20, $0A, $15, $01, 	$20, $29, $28, $27, 	$20, $34, $24, $14 	;background palettes
 	.byte $20, $27, $13, $0f, 	$20, $0F, $11, $30, 	$20, $0F, $30, $27, 	$20, $3C, $2C, $1C 	;sprite palettes
@@ -295,7 +324,6 @@ SetBGTile:
     STA $2006
 
     LDA loadedTile
-	STA $00c0
     STA $2007
 
     ; --- restore scroll & render ON (no scrolling: both 0) ---

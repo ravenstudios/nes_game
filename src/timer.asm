@@ -5,7 +5,6 @@ Timer_Update:
         STA timer_tick_counter
         DEC timer_counter
         LDA timer_counter
-        STA $0050
 
         ; TIMER_DIGIT_Y = $04
         ; TIMER_DIGIT_X1 = $18

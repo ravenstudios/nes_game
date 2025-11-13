@@ -126,3 +126,5 @@ hundreds: .res 1
 tens:     .res 1
 ones:     .res 1
 
+secret_tile: .res 1
+is_door_unlocked: .res 1

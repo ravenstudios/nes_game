@@ -19,7 +19,6 @@ RTS
 
 ;all collision_check_vars are loaded before calling this sub routine
 @up:
-    INC $00a1
     ;tl
     LDA collision_check_y
     SEC
@@ -147,7 +146,12 @@ CheckTile:
     TAX
 
 
-    
+    LDA COLLISIONTABLE,X
+    CMP #03
+    BNE :+
+        JSR Exit
+
+    :
     ;if current tile == 2 - pushable block    
     LDA COLLISIONTABLE,X
     CMP #02
@@ -199,7 +203,7 @@ CheckTile:
     LDA #00
     STA is_player_checking
 
-
+    
 @done:
     CMP #$01
     BEQ @solid
@@ -208,6 +212,7 @@ CheckTile:
 @solid:
     SEC
     RTS
+
 
 
 ; ---- Tile-range overlap on a 16x15 grid -----------------------
@@ -308,4 +313,11 @@ CheckCollision:
     RTS
 @no_hit:
     CLC
+    RTS
+
+Exit:
+    LDA #$60
+    STA PLAYER_X
+    LDA #$e0
+    STA PLAYER_Y
     RTS
