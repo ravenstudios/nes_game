@@ -13,7 +13,7 @@ PLAYER_SPEED = 5
 
 MOVETIMESPEED = 50
 BLOCK_STEP = $f0
-HitTimer = 30
+HitTimer = 60
 
 ABTN      = %00000001   ; $01
 BBTN      = %00000010   ; $02
@@ -66,3 +66,8 @@ TIMER_DIGIT_X3 = $1A
 
 DOOR_POS_X = $0c
 DOOR_POS_Y = $06
+
+HEALTH_Y = $03
+HEALTH_X = $03
+HEALTH_TILE = $e4
+MAX_HEALTH = 5

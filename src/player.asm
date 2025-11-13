@@ -89,3 +89,147 @@ DRAWPLAYER:
 
     
     RTS
+
+; enemy_x: .res 3
+; enemy_y: .res 3
+; enemy_direction: .res 3
+; enemy_random_walk_timer: .res 3
+; is_enemy_active: .res 3
+; enemy_count: .res 1
+
+
+UpdatePlayer:
+    LDA player_health
+    BNE :+
+        JMP @dead
+    :
+
+    LDX #$00
+    @loop:
+    CPX enemy_count
+    BEQ @done
+        LDA enemy_y, X
+        LSR
+        LSR
+        LSR
+        LSR         ; A = tile_y
+        STA tile_y
+
+        LDA enemy_x, X
+        LSR
+        LSR
+        LSR
+        LSR         ; A = tile_x
+        STA tile_x
+
+        LDA tile_y
+        ASL
+        ASL
+        ASL
+        ASL         ; A = y*16
+        CLC
+        ADC tile_x
+        STA tmp_tile
+        
+        JSR GetPlayerTile
+        LDA tmp_tile
+        CMP player_tile
+        BNE @next
+            LDA is_player_hit
+            BNE @next
+            LDA #HitTimer
+            STA player_hit_timer
+            LDA #$01
+            STA is_player_hit
+            DEC player_health
+            JSR UpdateHealth
+
+
+    @next:
+        INX
+        JMP @loop
+
+@done:
+RTS
+
+@dead:
+    LDA #$00
+    STA PLAYER_X
+    STA PLAYER_Y
+
+
+GetPlayerTile:
+    LDA PLAYER_Y
+    LSR
+    LSR
+    LSR
+    LSR         ; A = tile_y
+    STA player_tile_y
+
+    LDA PLAYER_X
+    LSR
+    LSR
+    LSR
+    LSR         ; A = tile_x
+    STA player_tile_x
+
+    LDA player_tile_y
+    ASL
+    ASL
+    ASL
+    ASL         ; A = y*16
+    CLC
+    ADC player_tile_x
+    STA player_tile
+
+    RTS
+
+
+
+
+
+; draws a row of hearts starting at HEALTH_X, row HEALTH_Y
+; heart if i < player_health, else blank
+
+UpdateHealth:
+    LDX #$00
+    LDA #HEALTH_X         ; base X (tile column)
+    STA tmp               ; tmp holds current draw X
+
+@health_loop:
+    CPX #MAX_HEALTH
+    BCS @health_done      ; exit if X >= MAX_HEALTH
+
+    ; --- choose tile: heart if X < player_health, else blank ---
+    CPX player_health
+    BCC @draw_heart       ; X < player_health → heart
+@draw_blank:
+    LDA #$00              ; blank tile (adjust as needed)
+    STA loadedTile
+    JMP @emit
+@draw_heart:
+    LDA #HEALTH_TILE
+    STA loadedTile
+
+@emit:
+    ; preserve loop index, use tmp as draw X for SetBGTile
+    TXA
+    PHA
+
+    LDX tmp               ; draw column
+    LDY #HEALTH_Y         ; draw row
+    JSR SetBGTile
+
+    PLA
+    TAX                   ; restore loop index
+
+    ; advance draw X and loop index
+    LDA tmp
+    CLC
+    ADC #1
+    STA tmp
+    INX
+    JMP @health_loop
+
+@health_done:
+    RTS

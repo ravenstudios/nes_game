@@ -102,6 +102,7 @@ STA is_enemy_active+2
 
 
 
-    
+    LDA #$03
+    STA player_health
 
     RTS

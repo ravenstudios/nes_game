@@ -76,7 +76,7 @@ StartScreenStateUpdate:
     JSR LOADSPRITES
     JSR LoadEnemies
     JSR LoadBlocks
-    ; JSR DrawDoor
+    JSR UpdateHealth
 
 LoadEnemies:
     LDX #$00
@@ -192,7 +192,8 @@ UpdateGameLoop:
 
     JSR UpdateMoveableBlock
     JSR UpdateBulet
-    JSR DoopUpdate
+    JSR DoorUpdate
+    JSR UpdatePlayer
 @return:
     RTS
 

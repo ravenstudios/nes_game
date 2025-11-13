@@ -8,7 +8,7 @@ rand8:              .res 1
 tmp:                .res 1   ; scratch
 tile_x:             .res 1
 tile_y:             .res 1
-
+tmp_tile:.res 1
 
 moveable_block_x: .res 3
 moveable_block_y: .res 3
@@ -55,10 +55,15 @@ is_bullet_active: .res 1
 
 timer_counter: .res 1
 timer_tick_counter: .res 1
+
+
 PLAYER_X: .res 1
 PLAYER_Y: .res 1
-
+player_tile_x: .res 1
+player_tile_y: .res 1
+player_tile: .res 1
 PLAYERDIRECTION: .res 1
+player_health: .res 1
 
 enemy_x: .res 3
 enemy_y: .res 3

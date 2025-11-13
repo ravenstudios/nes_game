@@ -57,7 +57,7 @@ LDX #$00
     RTS
 
 
-DoopUpdate:
+DoorUpdate:
     LDA is_door_unlocked
     CMP #$01
     BEQ @done
