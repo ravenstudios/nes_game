@@ -177,37 +177,46 @@ PALETTEDATA:
 	.byte $20, $27, $13, $0f, 	$20, $0F, $11, $30, 	$20, $0F, $30, $27, 	$20, $3C, $2C, $1C 	;sprite palettes
 
 BACKGROUNDDATA:
+	.byte $02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03
+	.byte $12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13
 	
-.byte $E4,$02,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$02,$E4
-.byte $02,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$02
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
-.byte $02,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$02
-.byte $E4,$02,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$02,$E4
+    .byte $8b,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8d
+    .byte $9b,$00,$00,$e4,$e4,$e4,$e4,$e4,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$d3,$c8,$cc,$c4,$e3,$dc,$d9,$d9,$00,$00,$00,$00,$9d
+	.byte $9b,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$9d
+	.byte $ab,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ad
+    
+	
+	
+	.byte $02,$03,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$02,$03
+	.byte $12,$13,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$12,$13
+	
+	.byte $02,$03,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$02,$03
+	.byte $12,$13,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$12,$13
+	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
+	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
+	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
+	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
+	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
+	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
+	
+	
+	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
+	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
+	
+	
+	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
+	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
+	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
+	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
+	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b ,$02,$03
+	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
+	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
+	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
+	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
+	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
+	
+	.byte $02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03
+	.byte $12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13
 
 ;0-blue
 ;1-green
