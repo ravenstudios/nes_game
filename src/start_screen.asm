@@ -131,3 +131,49 @@ TitleScreenData:
     .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
     .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
     
+
+
+
+
+
+
+    StartScreenStateUpdate:
+    JSR ReadController1
+
+    ; if *any* button is pressed, set start_screen=1 once
+    LDA start_screen
+    BNE skip                ; already set
+
+    LDA controller1
+    BEQ skip                ; no buttons this frame
+
+    LDA #$01
+    STA start_screen
+    LDA #10         ; place 10 random blocks
+    LDX #$04        ; meta-tile TL id = $04
+    JSR LoadRandomRoom
+    JSR LOADSPRITES
+    JSR LoadEnemies
+    JSR LoadBlocks
+    JSR UpdateHealth
+
+    
+skip:
+    ; advance state if start_screen==1
+    LDA start_screen
+    CMP #$01
+    BNE :+
+        INC state
+        
+        ; STA start_screen
+        
+    :
+    RTS
+
+
+StartScreenStateUpdatDraw:
+    ; LDA #$00
+    ; STA $2000
+    ; STA $2001  
+    RTS
+    

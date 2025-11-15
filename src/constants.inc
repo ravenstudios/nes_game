@@ -45,7 +45,7 @@ BULLET_OAM = $02a0
 BULLET_TILE = $84
 BULLET_SPEED = 2
 
-MAX_TIMER = 255
+
 TIMER_FPS = 60
 ;number tiles
 num_0_tile = $d9
@@ -59,15 +59,17 @@ num_7_tile = $e0
 num_8_tile = $e1
 num_9_tile = $e2
 
-TIMER_DIGIT_Y = $03
-TIMER_DIGIT_X1 = $18
-TIMER_DIGIT_X2 = $19
-TIMER_DIGIT_X3 = $1A     
+TIMER_DIGIT_Y = $01
+TIMER_DIGIT_X1 = $1b
+TIMER_DIGIT_X2 = $1d
+TIMER_DIGIT_X3 = $1e     
 
 DOOR_POS_X = $0c
 DOOR_POS_Y = $06
 
-HEALTH_Y = $03
-HEALTH_X = $03
+HEALTH_Y = $01
+HEALTH_X = $08
 HEALTH_TILE = $e4
 MAX_HEALTH = 5
+
+LEVEL_X = $13

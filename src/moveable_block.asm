@@ -220,3 +220,47 @@ RTS
 ;     STA collision_check_y
 
 ;     RTS
+
+
+
+LoadBlocks:
+    LDX #$00
+@loop:
+    CPX moveable_block_count
+    BCS @done                ; stop when X >= enemy_count
+
+    TXA                      ; A = X
+    ASL                      ; A = 2*X
+    TAY                      ; Y = 2*X
+
+    LDA BlockPos, Y          ; x
+    STA moveable_block_x, X
+    INY
+    LDA BlockPos, Y          ; y
+    STA moveable_block_y, X
+
+    TXA 
+    PHA
+
+    LDA moveable_block_x, X
+    LDY moveable_block_y, X
+
+    TAX
+    JSR SetTilePushable
+    
+
+    PLA
+    TAX
+    INX
+    BNE @loop                ; (enemy_count <= 255)
+@done:
+    RTS
+
+
+
+
+
+BlockPos:
+    .byte $50, $50
+    .byte $80, $50
+    .byte $a0, $a0

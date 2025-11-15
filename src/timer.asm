@@ -1,55 +1,68 @@
-Timer_Update:
+TimerUpdate:
+    INC $00f0
     DEC timer_tick_counter
+    LDA timer_tick_counter
+    STA $00f3
     BNE @skip
+        INC $00f1
         LDA #TIMER_FPS
-        STA timer_tick_counter
-        DEC timer_counter
-        LDA timer_counter
+        STA timer_tick_counter ;reset
+        
+        
+        ;get timer_s
+        LDA timer_s
+        BNE :+
+            LDA #$09
+            STA timer_s
+            DEC timer_ts
+        ;dec timer_s
+        :
 
-        ; TIMER_DIGIT_Y = $04
-        ; TIMER_DIGIT_X1 = $18
-        ; TIMER_DIGIT_X1 = $19
-        ; TIMER_DIGIT_X1 = $1A     
-
-        ; ; A=tile, X=col, Y=row
-
-        JSR GetDecimalDigits
-        LDX hundreds
-        LDA NumberTiles, X
-        STA loadedTile
-        LDY #TIMER_DIGIT_Y
-        LDX #TIMER_DIGIT_X1
-        JSR SetBGTile
-
-        JSR GetDecimalDigits
-        LDX tens
-        LDA NumberTiles, X
-        STA loadedTile
-        LDY #TIMER_DIGIT_Y
-        LDX #TIMER_DIGIT_X2
-        JSR SetBGTile
-
-        JSR GetDecimalDigits
-        LDX ones
-        LDA NumberTiles, X
-        STA loadedTile
-        LDY #TIMER_DIGIT_Y
-        LDX #TIMER_DIGIT_X3
-        JSR SetBGTile
-        ; LDA #num_1_tile
-        ; STA loadedTile
-        ; LDY #TIMER_DIGIT_Y
-        ; LDX #TIMER_DIGIT_X2
-        ; JSR SetBGTile
-
-        ; LDA #num_2_tile
-        ; STA loadedTile
-        ; LDY #TIMER_DIGIT_Y
-        ; LDX #TIMER_DIGIT_X3
-        ; JSR SetBGTile
-       
+        LDA timer_ts
+        BNE :+
+            LDA #$05
+            STA timer_ts
+            DEC timer_m
+        :
+    JSR TimerDraw
+    DEC timer_s
     
 @skip:
+    RTS
+
+
+TimerDraw:
+inc $00f5
+    LDX timer_m
+    LDA NumberTiles, X
+    STA loadedTile
+    LDY #TIMER_DIGIT_Y
+    LDX #TIMER_DIGIT_X1
+    JSR SetBGTile
+    
+    
+    LDX timer_ts
+    LDA NumberTiles, X
+    STA loadedTile
+    LDY #TIMER_DIGIT_Y
+    LDX #TIMER_DIGIT_X2
+    JSR SetBGTile
+
+    LDX timer_s
+    LDA NumberTiles, X
+    STA loadedTile
+    LDY #TIMER_DIGIT_Y
+    LDX #TIMER_DIGIT_X3
+    JSR SetBGTile
+
+
+    LDX level
+    LDA NumberTiles, X
+    STA loadedTile
+    LDY #TIMER_DIGIT_Y
+    LDX #LEVEL_X
+    JSR SetBGTile
+
     RTS
 
 NumberTiles:
@@ -57,28 +70,4 @@ NumberTiles:
 
 
 
-; input:  timer_counter (0–255)
-; output: hundreds, tens, ones
-; trashes: A, X, Y
-GetDecimalDigits:
-    LDA timer_counter
-    LDX #0          ; hundreds
-@hundreds:
-    CMP #100
-    BCC @tens_start
-    SBC #100
-    INX
-    JMP @hundreds
-@tens_start:
-    STX hundreds
-    LDX #0          ; tens
-@tens:
-    CMP #10
-    BCC @ones_start
-    SBC #10
-    INX
-    JMP @tens
-@ones_start:
-    STX tens
-    STA ones
-    RTS
+ 

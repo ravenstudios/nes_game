@@ -120,6 +120,11 @@ tmpy8:      .res 1
 
 enemy_loop_idx: .res 1
 
+timer_s: .res 1
+timer_ts: .res 1
+timer_m: .res 1
+level: .res 1
+
 .segment "BSS"
 
 COLLISIONTABLE: .res 240

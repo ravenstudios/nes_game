@@ -1,11 +1,11 @@
 Modules list:
 -------------
 main.o:
-    CODE              Offs=000000  Size=0009AC  Align=00001  Fill=0000
+    CODE              Offs=000000  Size=000980  Align=00001  Fill=0000
     BSS               Offs=000000  Size=0000F5  Align=00001  Fill=0000
-    ZEROPAGE          Offs=000000  Size=000062  Align=00001  Fill=0000
+    ZEROPAGE          Offs=000000  Size=000066  Align=00001  Fill=0000
     HEADER            Offs=000000  Size=000010  Align=00001  Fill=0000
-    STARTUP           Offs=000000  Size=000CAB  Align=00001  Fill=0000
+    STARTUP           Offs=000000  Size=000CE1  Align=00001  Fill=0000
     VECTORS           Offs=000000  Size=000006  Align=00001  Fill=0000
     CHARS             Offs=000000  Size=002000  Align=00001  Fill=0000
 
@@ -16,10 +16,10 @@ Name                   Start     End    Size  Align
 ----------------------------------------------------
 CHARS                 000000  001FFF  002000  00001
 HEADER                000000  00000F  000010  00001
-ZEROPAGE              000002  000063  000062  00001
+ZEROPAGE              000002  000067  000066  00001
 BSS                   000300  0003F4  0000F5  00001
-STARTUP               008000  008CAA  000CAB  00001
-CODE                  008CAB  009656  0009AC  00001
+STARTUP               008000  008CE0  000CE1  00001
+CODE                  008CE1  009660  000980  00001
 VECTORS               00FFFA  00FFFF  000006  00001
 
 

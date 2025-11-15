@@ -378,3 +378,32 @@ Deactivate:
     LDA #$f0
     STA enemy_y, X
     RTS
+
+
+
+LoadEnemies:
+    LDX #$00
+@loop:
+    CPX enemy_count
+    BCS @done                ; stop when X >= enemy_count
+
+    TXA                      ; A = X
+    ASL                      ; A = 2*X
+    TAY                      ; Y = 2*X
+
+    LDA EnemyPos, Y          ; x
+    STA enemy_x, X
+    INY
+    LDA EnemyPos, Y          ; y
+    STA enemy_y, X
+
+    INX
+    BNE @loop                ; (enemy_count <= 255)
+@done:
+    RTS
+
+
+EnemyPos:
+    .byte $20, $60
+    .byte $60, $60
+    .byte $20, $80
