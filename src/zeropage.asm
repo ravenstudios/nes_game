@@ -65,6 +65,9 @@ player_tile: .res 1
 PLAYERDIRECTION: .res 1
 player_health: .res 1
 
+tmp_frame_off: .res 1
+
+
 enemy_x: .res 3
 enemy_y: .res 3
 enemy_direction: .res 3

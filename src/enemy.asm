@@ -230,6 +230,97 @@ DrawEnemies:
     ; BEQ @advance
     
     ; --- load this ENEMY's X/Y and precompute x+8,y+8 ---
+    JMP @get_pointers
+
+@write_sprites:
+    ; compute frame offset = anim_frame * 4
+    LDA anim_frame        ; 0..3
+    ASL A                 ; *2
+    STA tmp_frame_off
+
+    LDY #0
+
+
+    ; TL
+    LDA tmpy                  ; Y
+    STA (oam_ptr_lo),Y
+    INY
+    LDA #ENEMY_TILE_TL        ; tile
+    CLC
+    ADC tmp_frame_off
+    ADC enemy_direction, X
+    STA (oam_ptr_lo),Y
+    INY
+    LDA #ENEMY_ATTR           ; attr
+    STA (oam_ptr_lo),Y
+    INY
+    LDA tmpx                  ; X
+    STA (oam_ptr_lo),Y
+    INY
+
+    ; TR
+    LDA tmpy
+    STA (oam_ptr_lo),Y
+    INY
+    LDA #ENEMY_TILE_TR
+    CLC
+    ADC tmp_frame_off
+    ADC enemy_direction, X
+    STA (oam_ptr_lo),Y
+    INY
+    LDA #ENEMY_ATTR
+    STA (oam_ptr_lo),Y
+    INY
+    LDA tmpx8
+    STA (oam_ptr_lo),Y
+    INY
+
+    ; BL
+    LDA tmpy8
+    STA (oam_ptr_lo),Y
+    INY
+    LDA #ENEMY_TILE_BL
+    CLC
+    ADC tmp_frame_off
+    ADC enemy_direction, X
+    STA (oam_ptr_lo),Y
+    INY
+    LDA #ENEMY_ATTR
+    STA (oam_ptr_lo),Y
+    INY
+    LDA tmpx
+    STA (oam_ptr_lo),Y
+    INY
+
+    ; BR
+    LDA tmpy8
+    STA (oam_ptr_lo),Y
+    INY
+    LDA #ENEMY_TILE_BR
+    CLC
+    ADC tmp_frame_off
+    ADC enemy_direction, X
+    STA (oam_ptr_lo),Y
+    INY
+    LDA #ENEMY_ATTR
+    STA (oam_ptr_lo),Y
+    INY
+    LDA tmpx8
+    STA (oam_ptr_lo),Y
+    ; INY not needed after last write
+    JMP @advance
+
+
+
+@advance:
+    INX
+    JMP @loop_enemies   
+    
+       ; (max 255 ENEMYs; you’ll cap earlier)
+@done:
+    RTS
+
+@get_pointers:
     LDA enemy_x, X   ; X
     STA tmpx
     CLC
@@ -251,79 +342,13 @@ DrawEnemies:
     ASL                       ; *16   (16*i)
     CLC
     ADC #(4*ENEMY_OAM_START)  ; + 4*start (sprite index→byte offset)
-    CLC
+    CLC 
     ADC #$00                  ; low of $0200
     STA oam_ptr_lo
     LDA #$02                  ; high of $0200
     ADC #$00                  ; carry won’t happen here, but keeps symmetry
     STA oam_ptr_hi
-
-    ; --- write 4 sprites (Y,tile,attr,X) using (oam_ptr),Y ---
-    LDY #0
-
-    ; TL
-    LDA tmpy                  ; Y
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #ENEMY_TILE_TL        ; tile
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #ENEMY_ATTR           ; attr
-    STA (oam_ptr_lo),Y
-    INY
-    LDA tmpx                  ; X
-    STA (oam_ptr_lo),Y
-    INY
-
-    ; TR
-    LDA tmpy
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #ENEMY_TILE_TR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #ENEMY_ATTR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA tmpx8
-    STA (oam_ptr_lo),Y
-    INY
-
-    ; BL
-    LDA tmpy8
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #ENEMY_TILE_BL
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #ENEMY_ATTR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA tmpx
-    STA (oam_ptr_lo),Y
-    INY
-
-    ; BR
-    LDA tmpy8
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #ENEMY_TILE_BR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #ENEMY_ATTR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA tmpx8
-    STA (oam_ptr_lo),Y
-    ; INY not needed after last write
-
-@advance:
-    INX
-    JMP @loop_enemies          ; (max 255 ENEMYs; you’ll cap earlier)
-@done:
-    RTS
-
-
+    JMP @write_sprites
 
 ; IN:  bullet_x, bullet_y, enemy_x, enemy_y (zero-page or RAM bytes)
 ; OUT: C=1 if overlap, C=0 if no overlap
