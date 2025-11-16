@@ -327,3 +327,49 @@ SetBGTile:
     LDA #%00011110
     STA $2001
     RTS
+
+
+ClearBackground:
+    INC $0081
+    ; disable rendering
+    LDA #$00
+    STA $2001
+
+    ; set VRAM addr = $2000
+    LDA $2002
+    LDA #$20
+    STA $2006
+    LDA #$00
+    STA $2006
+
+    ; 960 bytes = $03C0
+    LDY #$03       ; high byte
+    LDX #$C0       ; low byte
+ClearLoop:
+    INC $0083
+    LDA #$00
+    STA $2007      ; write blank tile
+
+    DEX
+    BNE ClearLoop  ; loop until X wraps to 0
+
+    DEY
+    BPL ClearLoop  ; run for Y = 3,2,1,0 (stop when Y becomes $FF)
+
+    ; re-enable rendering
+    LDA #%00011110
+    STA $2001
+    RTS
+
+
+
+
+
+ClearOAM:
+	LDA #$FF
+	LDX #$00
+	@loop:
+    STA $0200, X
+    INX
+    BNE @loop
+	RTS

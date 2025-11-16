@@ -7,6 +7,7 @@
 .include "bullet.asm"
 .include "timer.asm"
 .include "door.asm"
+.include "gameover.asm"
 
 INFLOOP:
 
@@ -22,7 +23,7 @@ INFLOOP:
     ;START STATE
     LDA state
     CMP #$00
-    BCC :+
+    BNE :+
     JSR StartScreenStateUpdate
     JSR StartScreenStateUpdatDraw
     :
@@ -30,11 +31,18 @@ INFLOOP:
     ;GAME STATE
     LDA state
     CMP #$01
-    BCC :+
+    BNE :+
         JSR UpdateGameLoop
         JSR DrawGameLoop
     :
-
+    
+    ;GAME OVER STATE
+    LDA state
+    CMP #$03
+    BNE :+
+        JSR GameoverUpdate
+        JSR DrawGameover
+    :
 JMP INFLOOP
 
 
@@ -62,7 +70,7 @@ DrawGameLoop:
     JSR DrawEnemies
     JSR DRAWPLAYER
     JSR DrawAllBlocks
-    JSR DrawBullet    
+    JSR DrawBullet   
 RTS
 
 

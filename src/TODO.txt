@@ -2,7 +2,7 @@
 []Health pickup
 []Make a room secret
 []First couple of levles for tut, no enemimes, push blocks, hidden tile
-
+[]Death screen is white with game over message then shows game running again with dead sprite and enimes walking over you. Your dead world keeps going.
 
 
 

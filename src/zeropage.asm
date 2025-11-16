@@ -56,6 +56,7 @@ is_bullet_active: .res 1
 timer_counter: .res 1
 timer_tick_counter: .res 1
 
+gameover: .res 1
 
 PLAYER_X: .res 1
 PLAYER_Y: .res 1

@@ -101,7 +101,7 @@ DRAWPLAYER:
 UpdatePlayer:
     LDA player_health
     BNE :+
-        JMP @dead
+        JSR Gameover
     :
 
     LDX #$00
@@ -152,10 +152,6 @@ UpdatePlayer:
 @done:
 RTS
 
-@dead:
-    LDA #$00
-    STA PLAYER_X
-    STA PLAYER_Y
 
 
 GetPlayerTile:
@@ -257,3 +253,9 @@ PlayerHitTimer:
 
 @done:
     RTS
+
+
+
+
+
+

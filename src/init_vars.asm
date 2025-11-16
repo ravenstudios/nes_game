@@ -19,6 +19,8 @@ INITVARS:
     STA timer_s
     LDA #$01
     STA timer_ts
+    ; LDA #$03
+    ; STA state
 
 LDA #$01
 STA level

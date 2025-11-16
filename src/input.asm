@@ -112,17 +112,13 @@ HandleDpad:
     AND #STARTBTN
     BEQ @select_btn
         
-        LDA #HitTimer
-        STA player_hit_timer
-        LDA #$01
-        STA is_player_hit
     RTS
 
 @select_btn:
     LDA controller1
     AND #SELECTBTN
     BEQ @a_btn
-
+        JSR Gameover
     RTS
 
 @a_btn:
