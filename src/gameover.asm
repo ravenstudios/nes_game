@@ -1,8 +1,9 @@
 Gameover:
     
     JSR ClearBackground
-    LDA #$03
+    LDA #$02
     STA state
+    JSR DrawGameover
     
     RTS
 
@@ -13,7 +14,7 @@ Gameover:
 gameover_string:
     .byte $c6, $c0, $cc, $c4, $ce, $d5, $c4, $d1
 DrawGameover:
-JSR ClearOAM
+
     LDX #$00
     inc $0080
     @loop:
@@ -40,10 +41,16 @@ JSR ClearOAM
 GameoverUpdate:
 
     JSR ReadController1
-    LDA controller1
+    LDA controller1_prev
     AND #STARTBTN
-    BNE :+
-        LDA #$00
-        STA state
-    :
+    BNE @done
+        LDA controller1
+        AND #STARTBTN
+        BEQ @done
+            
+            LDA #$00
+            STA state
+            STA start_screen
+            JSR LoadTitleScreenBackground
+@done:
     RTS

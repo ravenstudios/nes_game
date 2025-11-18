@@ -3,6 +3,8 @@
 ; and you’ve already loaded the palettes elsewhere.
 
 LoadTitleScreenBackground:
+    
+
     ; --- rendering/NMI OFF while we touch VRAM ---
     LDA #$00
     STA $2001                    ; render off
@@ -142,23 +144,21 @@ TitleScreenData:
 
     ; if *any* button is pressed, set start_screen=1 once
     LDA start_screen
-    BNE skip                ; already set
+    BNE @skip                ; already set
 
-    LDA controller1
-    BEQ skip                ; no buttons this frame
-
+    LDA controller1_prev
+    AND #STARTBTN
+    BNE @skip
+        LDA controller1
+        AND #STARTBTN
+        BEQ @skip
     LDA #$01
     STA start_screen
-    LDA #10         ; place 10 random blocks
-    LDX #$04        ; meta-tile TL id = $04
-    JSR LoadRandomRoom
-    JSR LOADSPRITES
-    JSR LoadEnemies
-    JSR LoadBlocks
-    JSR UpdateHealth
+
+    JSR LoadState1
 
     
-skip:
+@skip:
     ; advance state if start_screen==1
     LDA start_screen
     CMP #$01
@@ -177,3 +177,4 @@ StartScreenStateUpdatDraw:
     ; STA $2001  
     RTS
     
+

@@ -2,7 +2,7 @@
 
 
 ReadController1:
-LDA controller1
+    LDA controller1
     STA controller1_prev
     ; Latch
     LDA #$01

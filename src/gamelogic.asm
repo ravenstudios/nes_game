@@ -38,11 +38,14 @@ INFLOOP:
     
     ;GAME OVER STATE
     LDA state
-    CMP #$03
+    CMP #$02
     BNE :+
+        JSR ClearOAM
         JSR GameoverUpdate
-        JSR DrawGameover
+        ; JSR DrawGameover
     :
+lda state
+sta $0100
 JMP INFLOOP
 
 
@@ -114,3 +117,10 @@ no_xor:
 
 
 
+LoadState1:
+    JSR LoadRandomRoom
+    JSR LOADSPRITES
+    JSR LoadEnemies
+    JSR LoadBlocks
+    JSR UpdateHealth
+    RTS
