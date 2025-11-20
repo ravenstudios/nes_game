@@ -167,51 +167,71 @@ SetTileSolid1:
 
 
 
+SetTileDoor:
+
+	TYA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = y_tile (0..14)
+	ASL
+	ASL
+	ASL
+	ASL                  ; A = y_tile * 16
+	STA tmp              ; tmp = row offset
+
+	TXA
+	LSR
+	LSR
+	LSR
+	LSR                  ; A = x_tile (0..15)
+	CLC
+	ADC tmp              ; A = index (0..239)
+	TAX
+
+	LDA #$03         ; e.g., 2 = pushable block (or 1 if you treat it as solid)
+	STA COLLISIONTABLE,X
+	RTS
+
+
+
+
 PALETTEDATA:
-	.byte $20, $31, $22, $11, 	$20, $0A, $15, $01, 	$20, $29, $28, $27, 	$20, $34, $24, $14 	;background palettes
+	.byte $00, $05, $15, $1f, 	$20, $0A, $15, $01, 	$20, $29, $28, $27, 	$20, $34, $24, $14 	;background palettes
 	.byte $20, $27, $13, $0f, 	$20, $0F, $11, $30, 	$20, $0F, $30, $27, 	$20, $3C, $2C, $1C 	;sprite palettes
 
 BACKGROUNDDATA:
-	.byte $02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03
-	.byte $12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13
-	
-    .byte $8b,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8c,$8d
-    .byte $9b,$00,$00,$e4,$e4,$e4,$e4,$e4,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$d3,$c8,$cc,$c4,$e3,$dc,$d9,$d9,$00,$00,$00,$00,$9d
-	.byte $9b,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$9d
-	.byte $ab,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ac,$ad
-    
-	
-	
-	.byte $02,$03,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$02,$03
-	.byte $12,$13,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$12,$13
-	
-	.byte $02,$03,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$08,$09,$02,$03
-	.byte $12,$13,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$18,$19,$12,$13
-	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
-	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
-	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
-	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
-	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
-	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
-	
-	
-	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
-	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
-	
-	
-	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
-	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
-	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
-	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
-	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b ,$02,$03
-	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
-	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
-	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
-	.byte $02,$03, $0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b,$0a,$0b, $02,$03
-	.byte $12,$13, $1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b,$1a,$1b, $12,$13
-	
-	.byte $02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03,$02,$03
-	.byte $12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13,$12,$13
+
+.byte $EC,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EB,$EA
+.byte $E8,$FF,$CB,$C8,$D5,$C4,$D2,$FF,$FF,$FF,$FF,$FF,$FF,$CB,$C4,$D5,$C4,$CB,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$E3,$FF,$FF,$E9
+.byte $E7,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E6,$E5
+.byte $4B,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4E,$4F
+.byte $5B,$5C,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5D,$5E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$04,$05,$F4,$F4,$F4,$F4,$04,$05,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$14,$15,$F4,$F4,$F4,$F4,$14,$15,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$04,$05,$F4,$F4,$F4,$F4,$04,$05,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$14,$15,$F4,$F4,$F4,$F4,$14,$15,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$04,$05,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$14,$15,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$04,$05,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$14,$15,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$04,$05,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$04,$05,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$14,$15,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$14,$15,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $5B,$6C,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$F4,$6E,$7F
+.byte $7B,$7C,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7D,$7E,$7F
+.byte $8B,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8C,$8F
 
 ;0-blue
 ;1-green
@@ -221,42 +241,46 @@ BACKGROUNDDATA:
 
 BACKGROUNDATTRDATA:
   .byte $00, $00, $00, $00, $00, $00, $00, $00
-  .byte $40, $50, $50, $50, $50, $50, $50, $10
-  .byte $c4, $f5, $f5, $f5, $f5, $f5, $f5, $31
-  .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
-  .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
-  .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
-  .byte $cc, $ff, $ff, $ff, $ff, $ff, $ff, $33
-  .byte $c0, $f0, $f0, $f0, $f0, $f0, $f0, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
 
 
 COLLISIONTABLEDATA:
-	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
-	.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+	
+
+.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
+.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$00,$00,$00,$01,$00,$00,$01,$00,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$00,$00,$00,$01,$00,$00,$01,$00,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$00,$01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$00,$00,$00,$00,$00,$00,$00,$01,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$00,$01,$00,$00,$00,$00,$00,$00,$00,$00,$01,$00,$00,$00,$01
+.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01
+.byte $01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01,$01
 	
 
 LoadCollisionTable:
-   LDX #$00
+    LDX #$00
 @copy:
+    CPX #240            ; 16*15
+    BEQ @done
     LDA COLLISIONTABLEDATA, X
     STA COLLISIONTABLE, X
     INX
     BNE @copy
-
-    ; LDX #$F0
+@done:
+    RTS
 
 
 
@@ -266,7 +290,16 @@ LoadCollisionTable:
 ; A=tile, X=col, Y=row
 ; A = tile, X = col (0..31), Y = row (0..29)
 SetBGTile:
-    PHA                     ; save tile
+    ; --- wait for start of vblank ---
+@vbwait:
+    BIT $2002
+    BPL @vbwait          ; loop until vblank begins (bit7=1)
+
+    ; --- render OFF while touching VRAM ---
+    LDA #$00
+    STA $2001
+
+    ; PHA                  ; save tile in A
 
     ; addr = $2000 + row*32 + col
     TYA
@@ -274,15 +307,15 @@ SetBGTile:
     LDA #$00
     STA tmp1
     ASL tmp0
-	ROL tmp1     ; *2
+ 	ROL tmp1  ; *2
     ASL tmp0
-	ROL tmp1     ; *4
+ 	ROL tmp1  ; *4
     ASL tmp0
-	ROL tmp1     ; *8
+ 	ROL tmp1  ; *8
     ASL tmp0
-	ROL tmp1     ; *16
+ 	ROL tmp1  ; *16
     ASL tmp0
-	ROL tmp1     ; *32
+ 	ROL tmp1  ; *32
 
     CLC
     LDA tmp0
@@ -307,9 +340,62 @@ SetBGTile:
     LDA tmp0
     STA $2006
 
-    PLA
+    LDA loadedTile
     STA $2007
+
+    ; --- restore scroll & render ON (no scrolling: both 0) ---
+    LDA #$00
+    STA $2005
+    STA $2005
+    LDA #%00011110
+    STA $2001
     RTS
+
+
+ClearBackground:
+    INC $0081
+    ; disable rendering
+    LDA #$00
+    STA $2001
+
+    ; set VRAM addr = $2000
+    LDA $2002
+    LDA #$20
+    STA $2006
+    LDA #$00
+    STA $2006
+
+    ; 960 bytes = $03C0
+    LDY #$03       ; high byte
+    LDX #$C0       ; low byte
+ClearLoop:
+    INC $0083
+    LDA #$00
+    STA $2007      ; write blank tile
+
+    DEX
+    BNE ClearLoop  ; loop until X wraps to 0
+
+    DEY
+    BPL ClearLoop  ; run for Y = 3,2,1,0 (stop when Y becomes $FF)
+
+    ; re-enable rendering
+    LDA #%00011110
+    STA $2001
+    RTS
+
+
+
+
+
+ClearOAM:
+	LDA #$FF
+	LDX #$00
+	@loop:
+    STA $0200, X
+    INX
+    BNE @loop
+	RTS
 ===== bullet.asm =====
 
 
@@ -512,7 +598,6 @@ BulletHitSolid:
 
 
 
-
 CHASERENEMYWALK:
     ; -------- HORIZONTAL --------
     LDA PLAYER_X
@@ -643,7 +728,6 @@ INC $0088
     LDA CHASERDIRECTION
     STA collision_check_dir
 RTS
-
 ===== collision.asm =====
 ;-----------------------Tile Collision------------------------------
 TileCollision:
@@ -666,7 +750,6 @@ RTS
 
 ;all collision_check_vars are loaded before calling this sub routine
 @up:
-    INC $00a1
     ;tl
     LDA collision_check_y
     SEC
@@ -767,7 +850,7 @@ RTS
     RTS
 
 CheckTile:
-    ; x >> 4
+    ; x>>4, y>>4 -> index in X (unchanged from your code)
     LDA collision_check_x
     LSR
     LSR
@@ -775,7 +858,6 @@ CheckTile:
     LSR
     STA tile_x
 
-    ; y >> 4
     LDA collision_check_y
     LSR
     LSR
@@ -783,54 +865,70 @@ CheckTile:
     LSR
     STA tile_y
 
-    ; index = y*16 + x
+    ; index = y*16 + x  (to X)
     LDA tile_y
     ASL
     ASL
     ASL
-    ASL              ; <<4 (KEEP THIS IN A)
+    ASL
     CLC
     ADC tile_x
     TAX
 
+    ; --- read tile once and keep it ---
+    LDA COLLISIONTABLE, X
+    STA cur_tile           ; <- NEW: remember tile value
 
-    
-    ;if current tile == 2 - pushable block    
-    LDA COLLISIONTABLE,X
-    CMP #02
-    BNE @done
+    ; ---------- Door (tile = 3) ----------
+    LDA cur_tile
+    CMP #$03
+    BNE :+
+        JSR Exit
+        CLC                 ; usually treat as passable after teleport
+        RTS
+:
 
+    ; ---------- Pushable (tile = 2) ----------
+    LDA cur_tile
+    CMP #$02
+    BNE @decide_solid       ; not pushable → decide solid/empty below
+
+    ; pushable: only player may push
     LDA is_player_checking
-    BEQ @done
-    
+    BEQ @treat_as_solid     ; enemies (or no push intent) → solid
+
+    ; (player push logic)
     TXA
-    STA target_idx            ; save the front tile index
+    STA target_idx
 
     LDY moveable_block_count
-    BEQ @done
-    DEY                        ; start at count-1
+    BEQ @decide_solid
+    DEY
 
 @loop:
-    ; tx = (moveable_block_x[Y] >> 4)
-    LDA moveable_block_x,Y
+    LDA is_moveable_block_moved, Y
+    BNE @next
+
+    ; tx = (x>>4)
+    LDA moveable_block_x, Y
     LSR
     LSR
     LSR
     LSR
     STA tx
 
-    ; A = index = ((moveable_block_y[Y] >> 4) * 16) + tx
-    LDA moveable_block_y,Y
+    ; idx = (y>>4)*16 + (x>>4)
+    LDA moveable_block_y, Y
     LSR
     LSR
     LSR
-    LSR                        ; y>>4
+    LSR
     ASL
     ASL
     ASL
-    ASL                        ; (y>>4)*16
+    ASL
     CLC
-    ADC tx                     ; + x>>4
+    ADC tx
 
     CMP target_idx
     BEQ @hit
@@ -838,23 +936,31 @@ CheckTile:
 @next:
     DEY
     BPL @loop
-    JMP @done
+    ; no push target matched → just treat as solid unless your design says otherwise
+@treat_as_solid:
+    SEC
+    RTS
 
 @hit:
+    ; mark moved + clear flag for this frame if you want
     LDA #$01
-    STA is_moveable_block_moved,Y   ; or pushable_contact,Y if that’s your latch
-    LDA #00
-    STA is_player_checking
+    STA is_moveable_block_moved, Y
+    ; typically still block movement this frame:
+    SEC
+    RTS
 
-
-@done:
-    CMP #$01
+@decide_solid:
+    ; ---------- Final solidity decision from tile value ----------
+    LDA cur_tile           ; <- use the cached tile value
+    CMP #$01               ; 1 = solid wall?
     BEQ @solid
-    CLC
+    CLC                    ; anything else (0=empty, etc.) → no collision
     RTS
 @solid:
     SEC
     RTS
+
+
 
 
 ; ---- Tile-range overlap on a 16x15 grid -----------------------
@@ -957,6 +1063,107 @@ CheckCollision:
     CLC
     RTS
 
+Exit:
+    LDA #$60
+    STA PLAYER_X
+    LDA #$e0
+    STA PLAYER_Y
+    RTS
+===== door.asm =====
+DoorData:
+    .byte $0d, $0e, $1d, $1e, $2d, $2e, $3d, $3e
+DoorLocation:
+    .word $20CC, $20CD, $20EC, $20ED, $210C, $210D, $212C, $212D
+
+
+PPUSTATUS = $2002
+PPUADDR   = $2006
+PPUDATA   = $2007
+
+
+DrawDoor:
+@vbwait:
+    BIT $2002
+    BPL @vbwait          ; loop until vblank begins (bit7=1)
+
+LDX #$00
+@loop:
+    CPX #$08
+    BCS @done
+
+    ; Y = X * 2  (byte index into word table)
+    TXA
+    ASL A
+    TAY
+
+    ; Set PPU address from word (write HI then LO)
+    LDA PPUSTATUS          ; reset latch
+    LDA DoorLocation+1, Y  ; HI byte of address
+    STA PPUADDR
+    LDA DoorLocation, Y    ; LO byte of address
+    STA PPUADDR
+
+    ; Write tile
+    LDA DoorData, X
+    STA PPUDATA
+
+    INX
+    JMP @loop
+
+
+
+@done:
+    ; Optional: reset scroll to 0,0 if you really need it (not required for VRAM writes)
+    LDA #$00
+    STA $2005
+    STA $2005
+    
+    LDX #$60
+    LDY #$40
+    ; JSR SetTileSolid1
+    JSR SetTileDoor
+    INX
+    JSR SetTileDoor
+
+    
+    RTS
+
+
+DoorUpdate:
+    LDA is_door_unlocked
+    CMP #$01
+    BEQ @done
+        LDA PLAYER_Y
+        LSR
+        LSR
+        LSR
+        LSR         ; A = tile_y
+        STA tile_y
+
+        LDA PLAYER_X
+        LSR
+        LSR
+        LSR
+        LSR         ; A = tile_x
+        STA tile_x
+
+        LDA tile_y
+        ASL
+        ASL
+        ASL
+        ASL         ; A = y*16
+        CLC
+        ADC tile_x
+
+
+        CMP secret_tile
+        BNE @done
+            LDA #$01
+            STA is_door_unlocked
+            JSR DrawDoor
+
+@done:
+RTS
 ===== enemy.asm =====
 
 ;----------------------Enemy Walk--------------------------------------
@@ -964,26 +1171,17 @@ EnemyUpdate:
 
 
 LDA enemy_x
-STA $0080
 LDA enemy_y
-STA $0081
 
 LDA enemy_x+1
-STA $0082
 LDA enemy_y+1
-STA $0083
 
 LDA enemy_x+2
-STA $0084
 LDA enemy_y+2
-STA $0085
 
 LDA is_enemy_active
-STA $0090
 LDA is_enemy_active+1
-STA $0091
 LDA is_enemy_active+2
-STA $0092
 
     LDA #$00
     STA enemy_loop_idx
@@ -1017,12 +1215,25 @@ STA $0092
      JMP @advance
 
 
+@done:
+    LDA #$00
+    STA enemy_loop_idx
+    RTS
+
+ @advance:
+    INC enemy_loop_idx
+    JMP @loop_enemies
+
+
+
 @move_up:
 TXA
 PHA
 TYA
 PHA
 JSR LoadEnemyCollisionValues   ; OK if uses A only
+LDA #$00
+STA is_player_checking
 JSR TileCollision              ; this will clobber X/Y
 
 PLA
@@ -1040,6 +1251,8 @@ TYA
 PHA
 
 JSR LoadEnemyCollisionValues   ; OK if uses A only
+LDA #$00
+STA is_player_checking
 JSR TileCollision              ; this will clobber X/Y
 
 PLA
@@ -1055,6 +1268,8 @@ PHA
 TYA
 PHA
 JSR LoadEnemyCollisionValues   ; OK if uses A only
+LDA #$00
+STA is_player_checking
 JSR TileCollision              ; this will clobber X/Y
 
 PLA
@@ -1070,6 +1285,8 @@ PHA
 TYA
 PHA
 JSR LoadEnemyCollisionValues   ; OK if uses A only
+LDA #$00
+STA is_player_checking
 JSR TileCollision              ; this will clobber X/Y
 
 PLA
@@ -1080,13 +1297,7 @@ TAX
     INC enemy_x, X
  JMP @advance
 
- @advance:
-    INC enemy_loop_idx
-    JMP @loop_enemies
-@done:
-    LDA #$00
-    STA enemy_loop_idx
-    RTS
+
 
 @change_direction:
     LDX enemy_loop_idx
@@ -1186,40 +1397,25 @@ DrawEnemies:
     ; BEQ @advance
     
     ; --- load this ENEMY's X/Y and precompute x+8,y+8 ---
-    LDA enemy_x, X   ; X
-    STA tmpx
-    CLC
-    ADC #8
-    STA tmpx8
+    JMP @get_pointers
 
-    LDA enemy_y,X   ; Y
-    STA tmpy
-    CLC
-    ADC #8
-    STA tmpy8
-    TXA
-    ; --- compute OAM pointer = $0200 + ENEMY_OAM_START    TXA                       ; A = i
-    ASL                       ; *2
-    ASL                       ; *4
-    ASL                       ; *8
-    ASL                       ; *16   (16*i)
-    CLC
-    ADC #(4*ENEMY_OAM_START)  ; + 4*start (sprite index→byte offset)
-    CLC
-    ADC #$00                  ; low of $0200
-    STA oam_ptr_lo
-    LDA #$02                  ; high of $0200
-    ADC #$00                  ; carry won’t happen here, but keeps symmetry
-    STA oam_ptr_hi
+@write_sprites:
+    ; compute frame offset = anim_frame * 4
+    LDA anim_frame        ; 0..3
+    ASL A                 ; *2
+    STA tmp_frame_off
 
-    ; --- write 4 sprites (Y,tile,attr,X) using (oam_ptr),Y ---
     LDY #0
+
 
     ; TL
     LDA tmpy                  ; Y
     STA (oam_ptr_lo),Y
     INY
     LDA #ENEMY_TILE_TL        ; tile
+    CLC
+    ADC tmp_frame_off
+    ADC enemy_direction, X
     STA (oam_ptr_lo),Y
     INY
     LDA #ENEMY_ATTR           ; attr
@@ -1234,6 +1430,9 @@ DrawEnemies:
     STA (oam_ptr_lo),Y
     INY
     LDA #ENEMY_TILE_TR
+    CLC
+    ADC tmp_frame_off
+    ADC enemy_direction, X
     STA (oam_ptr_lo),Y
     INY
     LDA #ENEMY_ATTR
@@ -1248,6 +1447,9 @@ DrawEnemies:
     STA (oam_ptr_lo),Y
     INY
     LDA #ENEMY_TILE_BL
+    CLC
+    ADC tmp_frame_off
+    ADC enemy_direction, X
     STA (oam_ptr_lo),Y
     INY
     LDA #ENEMY_ATTR
@@ -1262,6 +1464,9 @@ DrawEnemies:
     STA (oam_ptr_lo),Y
     INY
     LDA #ENEMY_TILE_BR
+    CLC
+    ADC tmp_frame_off
+    ADC enemy_direction, X
     STA (oam_ptr_lo),Y
     INY
     LDA #ENEMY_ATTR
@@ -1270,14 +1475,47 @@ DrawEnemies:
     LDA tmpx8
     STA (oam_ptr_lo),Y
     ; INY not needed after last write
+    JMP @advance
+
+
 
 @advance:
     INX
-    JMP @loop_enemies          ; (max 255 ENEMYs; you’ll cap earlier)
+    JMP @loop_enemies   
+    
+       ; (max 255 ENEMYs; you’ll cap earlier)
 @done:
     RTS
 
+@get_pointers:
+    LDA enemy_x, X   ; X
+    STA tmpx
+    CLC
+    ADC #8
+    STA tmpx8
 
+    LDA enemy_y,X   ; Y
+    STA tmpy
+    DEC tmpy
+    CLC
+    ADC #8
+    STA tmpy8
+    DEC tmpy8
+    TXA
+    ; --- compute OAM pointer = $0200 + ENEMY_OAM_START    TXA                       ; A = i
+    ASL                       ; *2
+    ASL                       ; *4
+    ASL                       ; *8
+    ASL                       ; *16   (16*i)
+    CLC
+    ADC #(4*ENEMY_OAM_START)  ; + 4*start (sprite index→byte offset)
+    CLC 
+    ADC #$00                  ; low of $0200
+    STA oam_ptr_lo
+    LDA #$02                  ; high of $0200
+    ADC #$00                  ; carry won’t happen here, but keeps symmetry
+    STA oam_ptr_hi
+    JMP @write_sprites
 
 ; IN:  bullet_x, bullet_y, enemy_x, enemy_y (zero-page or RAM bytes)
 ; OUT: C=1 if overlap, C=0 if no overlap
@@ -1332,85 +1570,7 @@ Deactivate:
     LDA #$f0
     STA enemy_y, X
     RTS
-===== gamelogic.asm =====
-.include "player.asm"
-.include "input.asm"
-.include "enemy.asm"
-.include "chaser.asm"
-.include "animate.asm"
-.include "moveable_block.asm"
-.include "bullet.asm"
-.include "timer.asm"
 
-
-INFLOOP:
-
-
-@wait_vblank:
-    LDA vblank_flag
-    BEQ @wait_vblank
-    LDA #0
-    STA vblank_flag
-
-    LDA #HitTimer
-    INC frame_counter
-
-    ; --- hit flash timer (safe, no underflow) ---
-    LDA is_player_hit
-    BEQ @done                ; not active → skip
-
-    LDA player_hit_timer
-    BEQ @clear               ; already 0 → clear & stop
-
-    DEC player_hit_timer     ; count down once per frame
-    LDA player_hit_timer
-    
-    BNE @done                ; still >0 → done
-
-@clear:
-    LDA #$00
-    STA is_player_hit
-    STA player_hit_timer     ; keep it at 0
-
-@done:
-
-
-    LDA state
-    CMP #$00
-    BCC :+
-    JSR StartScreenStateUpdate
-    JSR StartScreenStateUpdatDraw
-    :
-
-    LDA state
-    CMP #$01
-    BCC :+
-    JSR UpdateGameLoop
-    JSR DrawGameLoop
-    :
-
-    ; LDA ENEMYDIRECTION
-JMP INFLOOP
-
-
-StartScreenStateUpdate:
-    JSR ReadController1
-
-    ; if *any* button is pressed, set start_screen=1 once
-    LDA start_screen
-    BNE skip                ; already set
-
-    LDA controller1
-    BEQ skip                ; no buttons this frame
-
-    LDA #$01
-    STA start_screen
-    LDA #10         ; place 10 random blocks
-    LDX #$04        ; meta-tile TL id = $04
-    JSR LoadRandomRoom
-    JSR LOADSPRITES
-    JSR LoadEnemies
-    JSR LoadBlocks
 
 
 LoadEnemies:
@@ -1435,98 +1595,78 @@ LoadEnemies:
     RTS
 
 
+EnemyPos:
+    .byte $20, $60
+    .byte $60, $60
+    .byte $20, $80
+===== gamelogic.asm =====
+.include "player.asm"
+.include "input.asm"
+.include "enemy.asm"
+.include "chaser.asm"
+.include "animate.asm"
+.include "moveable_block.asm"
+.include "bullet.asm"
+.include "timer.asm"
+.include "door.asm"
+.include "gameover.asm"
+.include "map_loader.asm"
 
-; LDX #$00
 
-; LDA #$20
-; STA moveable_block_x, X
-; STA moveable_block_y, X
-; LDY moveable_block_y, X
-; LDA moveable_block_x, X
-; TAX
-; JSR SetTilePushable
+INFLOOP:
 
-; LDX #$01
-; LDA #$30
-; STA moveable_block_x, X
-; STA moveable_block_y, X
-; LDY moveable_block_y, X
-; LDA moveable_block_x, X
-; TAX
-; JSR SetTilePushable
 
-LoadBlocks:
-    LDX #$00
-@loop:
-    CPX moveable_block_count
-    BCS @done                ; stop when X >= enemy_count
+@wait_vblank:
+    LDA vblank_flag
+    BEQ @wait_vblank
+    LDA #0
+    STA vblank_flag
 
-    TXA                      ; A = X
-    ASL                      ; A = 2*X
-    TAY                      ; Y = 2*X
+    INC frame_counter
 
-    LDA BlockPos, Y          ; x
-    STA moveable_block_x, X
-    INY
-    LDA BlockPos, Y          ; y
-    STA moveable_block_y, X
+    ;START STATE
+    LDA state
+    CMP #$00
+    BNE :+
+    JSR StartScreenStateUpdate
+    JSR StartScreenStateUpdatDraw
+    :
 
-    TXA 
-    PHA
-
-    LDA moveable_block_x, X
-    LDY moveable_block_y, X
-
-    TAX
-    JSR SetTilePushable
-
-    PLA
-    TAX
-    INX
-    BNE @loop                ; (enemy_count <= 255)
-@done:
-    RTS
-
-    
-skip:
-    ; advance state if start_screen==1
-    LDA start_screen
+    ;GAME STATE
+    LDA state
     CMP #$01
     BNE :+
-        INC state
-        
-        ; STA start_screen
-        
+        JSR UpdateGameLoop
+        JSR DrawGameLoop
     :
-    RTS
+    
+    ;GAME OVER STATE
+    LDA state
+    CMP #$02
+    BNE :+
+        JSR ClearOAM
+        JSR GameoverUpdate
+        ; JSR DrawGameover
+    :
+lda state
+sta $0100
+JMP INFLOOP
 
 
-StartScreenStateUpdatDraw:
-    ; LDA #$00
-    ; STA $2000
-    ; STA $2001  
-    RTS
+
 
 UpdateGameLoop:
-    
+    JSR TimerUpdate
+    JSR PlayerHitTimer
     JSR GetRandom
     JSR ReadController1
     JSR HandleDpad
     JSR EnemyUpdate
-    
     JSR GetNewEnemyRandomWalkTimer
-
-
-    ; INC CHASERSPEEDCOUNTER
-    ; LDA CHASERSPEEDCOUNTER
-    ; CMP #$04
-    ; BNE @return
-    ;     JSR CHASERENEMYWALK
-    ;     LDA #$00
-    ;     STA CHASERSPEEDCOUNTER
-
     JSR UpdateMoveableBlock
     JSR UpdateBulet
+    JSR DoorUpdate
+    JSR UpdatePlayer
 @return:
     RTS
 
@@ -1535,13 +1675,9 @@ UpdateGameLoop:
 DrawGameLoop:
     JSR ANITMATION
     JSR DrawEnemies
-    ; JSR DRAWCHASERENEMY
     JSR DRAWPLAYER
-    ; JSR DrawMoveableBlock
     JSR DrawAllBlocks
-    JSR DrawBullet
-     JSR Timer_Update
-    
+    JSR DrawBullet   
 RTS
 
 
@@ -1581,17 +1717,76 @@ no_xor:
     RTS
 
 
-EnemyPos:
-    .byte $20, $60
-    .byte $60, $60
-    .byte $20, $80
 
 
-BlockPos:
-    .byte $50, $60
-    .byte $80, $60
-    .byte $a0, $a0
 
+
+LoadState1:
+    ; JSR LoadRandomRoom
+    ; JSR LOADSPRITES
+    JSR LoadLevel
+    JSR LoadEnemies
+    JSR LoadBlocks
+    JSR UpdateHealth
+    JSR LoadPlayer
+    RTS
+===== gameover.asm =====
+Gameover:
+    
+    JSR ClearBackground
+    LDA #$02
+    STA state
+    JSR DrawGameover
+    
+    RTS
+
+
+
+; GAMEOVER_TEXT_X = #$7b
+; GAMEOVER_TEXT_Y = $#78
+gameover_string:
+    .byte $c6, $c0, $cc, $c4, $ce, $d5, $c4, $d1
+DrawGameover:
+
+    LDX #$00
+    inc $0080
+    @loop:
+        CPX #$08
+        BEQ @done
+            LDA gameover_string, X
+            STA loadedTile
+
+            LDY #GAMEOVER_TEXT_Y
+            TXA
+            PHA
+            CLC
+            ADC #GAMEOVER_TEXT_X
+            TAX
+            JSR SetBGTile
+            PLA
+            TAX
+            INX
+            JMP @loop
+
+    @done:
+        RTS
+
+GameoverUpdate:
+
+    JSR ReadController1
+    LDA controller1_prev
+    AND #STARTBTN
+    BNE @done
+        LDA controller1
+        AND #STARTBTN
+        BEQ @done
+            
+            LDA #$00
+            STA state
+            STA start_screen
+            JSR LoadTitleScreenBackground
+@done:
+    RTS
 ===== header.asm =====
 .byte "NES"		;identification string
 .byte $1A
@@ -1614,15 +1809,29 @@ INITVARS:
     STA frame_counter
     STA player_hit_timer
     STA is_player_checking
-    LDA MAX_TIMER
+
     STA timer_counter
     LDA TIMER_FPS
-    STA timer_tick_counter
+    
+    STA is_door_unlocked
+    STA timer_s
+    LDA #$01
+    STA timer_ts
+    ; LDA #$03
+    ; STA state
 
-; LDA #$30
-; STA bullet_x
-; LDA #$a0
-; STA bullet_y
+LDA #$01
+STA level
+STA timer_tick_counter
+
+LDA #(12*16+2)
+STA secret_tile
+
+
+LDA #$00
+STA bullet_x
+LDA #$f0
+STA bullet_y
 LDA #$04
 STA bullet_w
 STA bullet_h
@@ -1698,18 +1907,24 @@ STA is_enemy_active+2
 
 
 
+    LDA #$03
+    STA player_health
+    STA timer_m
+
     RTS
 ===== input.asm =====
 
 
 
 ReadController1:
+    LDA controller1
+    STA controller1_prev
     ; Latch
     LDA #$01
     STA $4016
     LDA #$00
     STA $4016
-
+    
     ; Build controller1 by shifting in 8 bits (LSB-first)
     LDA #$00
     STA controller1
@@ -1812,17 +2027,13 @@ HandleDpad:
     AND #STARTBTN
     BEQ @select_btn
         
-        LDA #HitTimer
-        STA player_hit_timer
-        LDA #$01
-        STA is_player_hit
     RTS
 
 @select_btn:
     LDA controller1
     AND #SELECTBTN
     BEQ @a_btn
-
+        JSR Gameover
     RTS
 
 @a_btn:
@@ -1861,6 +2072,25 @@ LoadPlayerCollisionValues:
     LDA PLAYERDIRECTION
     STA collision_check_dir
 RTS
+===== levels.asm =====
+.include "levels/level_1.asm"
+.include "levels/level_2.asm"
+.include "levels/level_3.asm"
+
+.macro LEVEL_ENTRY bgLabel, collLabel
+    .byte <bgLabel, >bgLabel, <collLabel, >collLabel
+.endmacro
+
+
+
+LevelTable:
+    LEVEL_ENTRY Level_1_Data, Level_1_CollisionData   ; level = 0
+    LEVEL_ENTRY Level_2_Data, Level_2_CollisionData   ; level = 1
+    LEVEL_ENTRY Level_3_Data, Level_3_CollisionData   ; level = 2
+
+
+
+
 ===== main.asm =====
 ; .include "ppu.asm"
 ; .include "audio.asm"
@@ -1898,6 +2128,204 @@ IRQ:
 
 .segment "CHARS"
 	.incbin "romx.chr"
+
+
+===== map_loader.asm =====
+.include "levels.asm"
+
+
+; ===== LoadLevel: sets bgPtr + collPtr based on current level, then loads data =====
+
+LoadLevel:
+    ; A or memory "level" holds the current level index (0-based)
+    LDA level        ; 0,1,2,...
+    ASL A            ; *2
+    ASL A            ; *4  (4 bytes per entry)
+    TAX              ; X = offset into LevelTable
+
+    ; --- bgPtr = pointer to this level's BG data ---
+    LDA LevelTable, X     ; BG low
+    STA bgPtrLo
+    INX
+    LDA LevelTable, X     ; BG high
+    STA bgPtrHi
+    INX
+
+    ; --- collPtr = pointer to this level's collision data ---
+    LDA LevelTable, X     ; COLL low
+    STA collPtrLo
+    INX
+    LDA LevelTable, X     ; COLL high
+    STA collPtrHi
+
+    ; now we have pointers for this level
+    JSR LoadCollisionTable
+    JSR LoadBackground
+    JSR LoadBKAtr
+    RTS
+
+
+; ===== LoadBackground: copy 1024 bytes from ROM → PPU nametable $2000 =====
+
+LoadBackground:
+    ; set PPU address to $2000 (nametable 0)
+    LDA $2002          ; reset latch
+    LDA #$20
+    STA $2006
+    LDA #$00
+    STA $2006
+
+    ; copy bgPtr into tempPtr so we don't modify bgPtr itself
+    LDA bgPtrLo
+    STA tempPtrLo
+    LDA bgPtrHi
+    STA tempPtrHi
+
+    ; --- 3 full pages (3 * 256 = 768 bytes) ---
+    LDY #$00
+    LDX #$03           ; 3 pages
+
+@page_loop:
+@byte_loop:
+    LDA (tempPtrLo), Y
+    STA $2007
+    INY
+    BNE @byte_loop     ; when Y wraps, page done
+
+    INC tempPtrHi      ; move to next 256-byte page
+    DEX
+    BNE @page_loop
+
+    ; --- last 192 bytes (960 - 768 = 192) ---
+    LDY #$00
+@last_chunk:
+    CPY #192           ; $C0
+    BEQ @done_bg
+    LDA (tempPtrLo), Y
+    STA $2007
+    INY
+    BNE @last_chunk
+
+@done_bg:
+    ; reset scroll
+    LDA #$00
+    STA $2005
+    STA $2005
+
+    RTS
+
+
+;LOAD BACKGROUND PALETTEDATA
+	
+
+LoadBKAtr:
+    LDA #$23	
+	STA $2006
+	LDA #$c0
+	STA $2006
+	LDX #$00
+    @loop:
+	LDA BKAttrTableData, X
+	STA $2007
+	INX
+	CPX #$40
+	BNE @loop
+
+	;RESET SCROLL
+	LDA #$00
+	STA $2005
+	STA $2005
+RTS
+
+
+BKAttrTableData:
+  .byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $00, $00, $00, $00, $00
+
+; LOADBACKGROUND:
+
+; 	LDA $2002		;read PPU status to reset high/low latch
+; 	LDA #$20	;start of nametable "canvas" as the high bit
+; 	STA $2006	
+; 	LDA #$00	;sets low bit
+; 	STA $2006	;what adress to write to starting at $2100
+; 	LDX #$00	;bad code that uses wraparound to hit 0 in the loop
+; LOADBACKGROUNDP1:
+; 	LDA BACKGROUNDDATA, X ;loop through BACKGROUNDDATA
+; 	STA $2007 ; store byte
+; 	LDA COLLISIONTABLEDATA, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$00 ;wrap around
+; 	BNE LOADBACKGROUNDP1 ; if x == 0 break
+; LOADBACKGROUNDP2:
+; 	LDA BACKGROUNDDATA+256, X
+; 	STA $2007
+; 	LDA COLLISIONTABLEDATA+256, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$00
+; 	BNE LOADBACKGROUNDP2
+; LOADBACKGROUNDP3:
+; 	LDA BACKGROUNDDATA+512, X
+; 	STA $2007
+; 	LDA COLLISIONTABLEDATA+512, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$00
+; 	BNE LOADBACKGROUNDP3
+; LOADBACKGROUNDP4:
+; 	LDA BACKGROUNDDATA+768, X
+; 	STA $2007
+; 	LDA COLLISIONTABLEDATA+768, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$c0
+; 	BNE LOADBACKGROUNDP4
+; ;192
+
+; ;LOAD BACKGROUND PALETTEDATA
+; 	LDA #$23	
+; 	STA $2006
+; 	LDA #$c0
+; 	STA $2006
+; 	LDX #$00
+; LOADBACKGROUNDATTRDATA:
+; 	LDA BACKGROUNDATTRDATA, X
+; 	STA $2007
+; 	INX
+; 	CPX #$40
+; 	BNE LOADBACKGROUNDATTRDATA
+
+; 	;RESET SCROLL
+; 	LDA #$00
+; 	STA $2005
+; 	STA $2005
+
+
+
+; RTS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ===== moveable_block.asm =====
@@ -2123,6 +2551,50 @@ RTS
 ;     STA collision_check_y
 
 ;     RTS
+
+
+
+LoadBlocks:
+    LDX #$00
+@loop:
+    CPX moveable_block_count
+    BCS @done                ; stop when X >= enemy_count
+
+    TXA                      ; A = X
+    ASL                      ; A = 2*X
+    TAY                      ; Y = 2*X
+
+    LDA BlockPos, Y          ; x
+    STA moveable_block_x, X
+    INY
+    LDA BlockPos, Y          ; y
+    STA moveable_block_y, X
+
+    TXA 
+    PHA
+
+    LDA moveable_block_x, X
+    LDY moveable_block_y, X
+
+    TAX
+    JSR SetTilePushable
+    
+
+    PLA
+    TAX
+    INX
+    BNE @loop                ; (enemy_count <= 255)
+@done:
+    RTS
+
+
+
+
+
+BlockPos:
+    .byte $50, $50
+    .byte $80, $50
+    .byte $a0, $a0
 ===== player.asm =====
 DRAWPLAYER:
 	LDA anim_frame
@@ -2215,6 +2687,196 @@ DRAWPLAYER:
 
     
     RTS
+
+; enemy_x: .res 3
+; enemy_y: .res 3
+; enemy_direction: .res 3
+; enemy_random_walk_timer: .res 3
+; is_enemy_active: .res 3
+; enemy_count: .res 1
+
+
+UpdatePlayer:
+    LDA player_health
+    BNE :+
+        JSR Gameover
+    :
+
+    LDX #$00
+    @loop:
+    CPX enemy_count
+    BEQ @done
+        LDA enemy_y, X
+        LSR
+        LSR
+        LSR
+        LSR         ; A = tile_y
+        STA tile_y
+
+        LDA enemy_x, X
+        LSR
+        LSR
+        LSR
+        LSR         ; A = tile_x
+        STA tile_x
+
+        LDA tile_y
+        ASL
+        ASL
+        ASL
+        ASL         ; A = y*16
+        CLC
+        ADC tile_x
+        STA tmp_tile
+        
+        JSR GetPlayerTile
+        LDA tmp_tile
+        CMP player_tile
+        BNE @next
+            LDA is_player_hit
+            BNE @next
+            LDA #HitTimer
+            STA player_hit_timer
+            LDA #$01
+            STA is_player_hit
+            DEC player_health
+            JSR UpdateHealth
+
+
+    @next:
+        INX
+        JMP @loop
+
+@done:
+RTS
+
+
+
+GetPlayerTile:
+    LDA PLAYER_Y
+    LSR
+    LSR
+    LSR
+    LSR         ; A = tile_y
+    STA player_tile_y
+
+    LDA PLAYER_X
+    LSR
+    LSR
+    LSR
+    LSR         ; A = tile_x
+    STA player_tile_x
+
+    LDA player_tile_y
+    ASL
+    ASL
+    ASL
+    ASL         ; A = y*16
+    CLC
+    ADC player_tile_x
+    STA player_tile
+
+    RTS
+
+
+
+
+
+; draws a row of hearts starting at HEALTH_X, row HEALTH_Y
+; heart if i < player_health, else blank
+
+UpdateHealth:
+    LDX #$00
+    LDA #HEALTH_X         ; base X (tile column)
+    STA tmp               ; tmp holds current draw X
+
+@health_loop:
+    CPX #MAX_HEALTH
+    BCS @health_done      ; exit if X >= MAX_HEALTH
+
+    ; --- choose tile: heart if X < player_health, else blank ---
+    CPX player_health
+    BCC @draw_heart       ; X < player_health → heart
+@draw_blank:
+    LDA #$00              ; blank tile (adjust as needed)
+    STA loadedTile
+    JMP @emit
+@draw_heart:
+    LDA #HEALTH_TILE
+    STA loadedTile
+
+@emit:
+    ; preserve loop index, use tmp as draw X for SetBGTile
+    TXA
+    PHA
+
+    LDX tmp               ; draw column
+    LDY #HEALTH_Y         ; draw row
+    JSR SetBGTile
+
+    PLA
+    TAX                   ; restore loop index
+
+    ; advance draw X and loop index
+    LDA tmp
+    CLC
+    ADC #1
+    STA tmp
+    INX
+    JMP @health_loop
+
+@health_done:
+    RTS
+
+
+
+
+PlayerHitTimer:
+    ; --- hit flash timer (safe, no underflow) ---
+    LDA is_player_hit
+    BEQ @done                ; not active → skip
+
+    LDA player_hit_timer
+    BEQ @clear               ; already 0 → clear & stop
+
+    DEC player_hit_timer     ; count down once per frame
+    LDA player_hit_timer
+    
+    BNE @done                ; still >0 → done
+
+@clear:
+    LDA #$00
+    STA is_player_hit
+    STA player_hit_timer     ; keep it at 0
+
+@done:
+    RTS
+
+
+
+
+
+
+LoadPlayer:
+    LDX #$00
+    @loop:
+        LDA PlayerSpriteData, X
+        STA $0200, X
+        INX
+        CPX #$10	;16bytes (4 bytes per sprite, 8 sprites total)
+        BNE @loop
+        
+    RTS
+
+    PlayerSpriteData:
+    ;   $Y, $SpriteI, $attrs, $X
+
+
+        ;Player_________________________
+        .byte $40, $00, $00, $40
+        .byte $40, $01, $00, $48
+        .byte $48, $10, $00, $40
+        .byte $48, $11, $00, $48
 ===== ppu.asm =====
 
 ===== random_room.asm =====
@@ -2564,6 +3226,8 @@ LOADSPRITES:
 ; and you’ve already loaded the palettes elsewhere.
 
 LoadTitleScreenBackground:
+    
+
     ; --- rendering/NMI OFF while we touch VRAM ---
     LDA #$00
     STA $2001                    ; render off
@@ -2668,8 +3332,8 @@ TitleScreenData:
     .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$00,$00,$00,$00,$00,$00,$00,$00,$00
     .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$01,$00,$00,$00,$00,$00,$00,$00,$00,$00
 
-    .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$80,$81,$82,$83,$84,$85,$86,$87,$88,$89,$8a,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-    .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$90,$91,$92,$93,$94,$95,$96,$97,$98,$99,$9a,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+    .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$80,$81,$82,$83,$84,$85,$86,$87,$88,$89,$a8,$a9,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+    .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$90,$91,$92,$93,$94,$95,$96,$97,$98,$99,$b8,$b9,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
     .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$a0,$a1,$a2,$a3,$a4,$a5,$80,$81,$84,$85,$a6,$a7,$a4,$a5,$00,$00,$00,$00,$00,$00,$00,$00
     .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$b0,$b1,$b2,$b3,$b4,$b5,$90,$91,$94,$95,$b6,$b7,$b4,$b5,$00,$00,$00,$00,$00,$00,$00,$00
 
@@ -2692,6 +3356,52 @@ TitleScreenData:
     .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
     .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
     
+
+
+
+
+
+
+    StartScreenStateUpdate:
+    JSR ReadController1
+
+    ; if *any* button is pressed, set start_screen=1 once
+    LDA start_screen
+    BNE @skip                ; already set
+
+    LDA controller1_prev
+    AND #STARTBTN
+    BNE @skip
+        LDA controller1
+        AND #STARTBTN
+        BEQ @skip
+    LDA #$01
+    STA start_screen
+
+    JSR LoadState1
+
+    
+@skip:
+    ; advance state if start_screen==1
+    LDA start_screen
+    CMP #$01
+    BNE :+
+        INC state
+        
+        ; STA start_screen
+        
+    :
+    RTS
+
+
+StartScreenStateUpdatDraw:
+    ; LDA #$00
+    ; STA $2000
+    ; STA $2001  
+    RTS
+    
+
+
 ===== test_room.asm =====
 
 
@@ -2822,29 +3532,79 @@ BACKGROUNDATTRDATA:
 .byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 ===== timer.asm =====
-Timer_Update:
+TimerUpdate:
+    INC $00f0
     DEC timer_tick_counter
+    LDA timer_tick_counter
+    STA $00f3
     BNE @skip
-        LDA TIMER_FPS
-        STA timer_tick_counter
-        DEC timer_counter
-        LDA timer_counter
-        STA $0050
-
-
-        ; ; A=tile, X=col, Y=row
-        LDA #num_0_tile
-        LDX $06
-        LDY $06
+        INC $00f1
+        LDA #TIMER_FPS
+        STA timer_tick_counter ;reset
         
-        LDA #$01
-        STA vram_busy
-        JSR SetBGTile
-        LDA #$00
-        STA vram_busy
+        
+        ;get timer_s
+        LDA timer_s
+        BNE :+
+            LDA #$09
+            STA timer_s
+            DEC timer_ts
+        ;dec timer_s
+        :
+
+        LDA timer_ts
+        BNE :+
+            LDA #$05
+            STA timer_ts
+            DEC timer_m
+        :
+    JSR TimerDraw
+    DEC timer_s
     
 @skip:
     RTS
+
+
+TimerDraw:
+inc $00f5
+    LDX timer_m
+    LDA NumberTiles, X
+    STA loadedTile
+    LDY #TIMER_DIGIT_Y
+    LDX #TIMER_DIGIT_X1
+    JSR SetBGTile
+    
+    
+    LDX timer_ts
+    LDA NumberTiles, X
+    STA loadedTile
+    LDY #TIMER_DIGIT_Y
+    LDX #TIMER_DIGIT_X2
+    JSR SetBGTile
+
+    LDX timer_s
+    LDA NumberTiles, X
+    STA loadedTile
+    LDY #TIMER_DIGIT_Y
+    LDX #TIMER_DIGIT_X3
+    JSR SetBGTile
+
+
+    LDX level
+    LDA NumberTiles, X
+    STA loadedTile
+    LDY #TIMER_DIGIT_Y
+    LDX #LEVEL_X
+    JSR SetBGTile
+
+    RTS
+
+NumberTiles:
+    .byte $d9,$da,$db,$dc,$dd,$de,$df,$e0,$e1,$e2
+
+
+
+ 
 ===== zeropage.asm =====
 ; ===== ZEROPAGE: tiny & hot stuff only =====
 .segment "ZEROPAGE"
@@ -2856,8 +3616,8 @@ rand8:              .res 1
 tmp:                .res 1   ; scratch
 tile_x:             .res 1
 tile_y:             .res 1
-
-
+tmp_tile:.res 1
+cur_tile: .res 1
 moveable_block_x: .res 3
 moveable_block_y: .res 3
 moveable_block_count: .res 1
@@ -2903,10 +3663,19 @@ is_bullet_active: .res 1
 
 timer_counter: .res 1
 timer_tick_counter: .res 1
+
+gameover: .res 1
+
 PLAYER_X: .res 1
 PLAYER_Y: .res 1
-
+player_tile_x: .res 1
+player_tile_y: .res 1
+player_tile: .res 1
 PLAYERDIRECTION: .res 1
+player_health: .res 1
+
+tmp_frame_off: .res 1
+
 
 enemy_x: .res 3
 enemy_y: .res 3
@@ -2963,11 +3732,29 @@ tmpy8:      .res 1
 
 enemy_loop_idx: .res 1
 
+timer_s: .res 1
+timer_ts: .res 1
+timer_m: .res 1
+level: .res 1
+
 .segment "BSS"
 
 COLLISIONTABLE: .res 240
 
+bgPtr       = $10        ; 2 bytes: low + high
+bgPtrLo     = bgPtr
+bgPtrHi     = bgPtr+1
 
+collPtr     = $12
+collPtrLo   = collPtr
+collPtrHi   = collPtr+1
 
+tempPtrLo = $14
+tempPtrHi = $15
 
+hundreds: .res 1
+tens:     .res 1
+ones:     .res 1
 
+secret_tile: .res 1
+is_door_unlocked: .res 1

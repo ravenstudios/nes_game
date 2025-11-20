@@ -129,12 +129,32 @@ timer_ts: .res 1
 timer_m: .res 1
 level: .res 1
 
+
+bgPtrLo:   .res 1
+bgPtrHi:   .res 1
+collPtrLo: .res 1
+collPtrHi: .res 1
+tempPtrLo: .res 1
+tempPtrHi: .res 1
+
+
 .segment "BSS"
 
 COLLISIONTABLE: .res 240
 
 
 
+
+; bgPtr       = $10        ; 2 bytes: low + high
+; bgPtrLo     = bgPtr
+; bgPtrHi     = bgPtr+1
+
+; collPtr     = $12
+; collPtrLo   = collPtr
+; collPtrHi   = collPtr+1
+
+; tempPtrLo = $14
+; tempPtrHi = $15
 
 hundreds: .res 1
 tens:     .res 1

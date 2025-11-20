@@ -22,7 +22,7 @@ INITVARS:
     ; LDA #$03
     ; STA state
 
-LDA #$01
+LDA #$00
 STA level
 STA timer_tick_counter
 
@@ -81,8 +81,11 @@ STA is_enemy_active+2
     
     LDA #$40
     STA enemy_direction
-    LDA #$90
+
+
+    LDA #$60
     STA PLAYER_X
+    LDA #$a0
     STA PLAYER_Y
 
     LDA #$10

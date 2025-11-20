@@ -8,6 +8,8 @@
 .include "timer.asm"
 .include "door.asm"
 .include "gameover.asm"
+.include "map_loader.asm"
+
 
 INFLOOP:
 
@@ -118,9 +120,11 @@ no_xor:
 
 
 LoadState1:
-    JSR LoadRandomRoom
-    JSR LOADSPRITES
-    JSR LoadEnemies
-    JSR LoadBlocks
+    ; JSR LoadRandomRoom
+    ; JSR LOADSPRITES
+    JSR LoadLevel
+    ; JSR LoadEnemies
+    ; JSR LoadBlocks
     JSR UpdateHealth
+    JSR LoadPlayer
     RTS

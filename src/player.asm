@@ -259,3 +259,23 @@ PlayerHitTimer:
 
 
 
+LoadPlayer:
+    LDX #$00
+    @loop:
+        LDA PlayerSpriteData, X
+        STA $0200, X
+        INX
+        CPX #$10	;16bytes (4 bytes per sprite, 8 sprites total)
+        BNE @loop
+        
+    RTS
+
+    PlayerSpriteData:
+    ;   $Y, $SpriteI, $attrs, $X
+
+
+        ;Player_________________________
+        .byte $40, $00, $00, $40
+        .byte $40, $01, $00, $48
+        .byte $48, $10, $00, $40
+        .byte $48, $11, $00, $48

@@ -2,7 +2,6 @@
 
 
 
-
 CHASERENEMYWALK:
     ; -------- HORIZONTAL --------
     LDA PLAYER_X

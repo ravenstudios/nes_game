@@ -1,9 +1,17 @@
+###############Main Idea##################
+Player is searching for a missing person and reasearh leads player to the house.
+Player needs 10 things to unlock door to exit with final boss.
+Teasing final boss in some rooms like flashing screen or boss passing through room. 
+Maybe boss will be seen in a window during a lighting strike.
+
+
+
 ###############Features To Add#############
 []Health pickup
 []Make a room secret
 []First couple of levles for tut, no enemimes, push blocks, hidden tile
 []Death screen is white with game over message then shows game running again with dead sprite and enimes walking over you. Your dead world keeps going.
-
+[]Final door in every room waiting to be unlocked, will only unlock when at last level
 
 
 
@@ -11,4 +19,5 @@
 [x]push enemies meta sprites 1 block up
 [x]Fix enemies able to push blocks
 [x]Fix enemies collision on blocks
-[]Make time show minutes and secends
+[x]Make time show minutes and secends
+[]Fix map layout or collision, top of map is off 1 row. Fix by makeing hub 4 rows not 3

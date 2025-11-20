@@ -1,7 +1,7 @@
 DoorData:
-    .byte $0d, $0e, $1d, $1e, $2d, $2e, $3d, $3e
+    .byte $0d, $0e, $1d, $1e
 DoorLocation:
-    .word $20CC, $20CD, $20EC, $20ED, $210C, $210D, $212C, $212D
+    .word $206C, $206D, $208C, $208D
 
 
 PPUSTATUS = $2002
@@ -47,7 +47,7 @@ LDX #$00
     STA $2005
     
     LDX #$60
-    LDY #$40
+    LDY #$30
     ; JSR SetTileSolid1
     JSR SetTileDoor
     INX
