@@ -166,7 +166,6 @@ CheckTile:
     LDA #$01
     STA is_door_unlocked
     JSR DrawDoor
-    inc $00d0
 @up:
     LDA player_direction
     CMP #FACINGUP

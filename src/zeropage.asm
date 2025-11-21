@@ -75,7 +75,7 @@ enemy_direction: .res 3
 enemy_random_walk_timer: .res 3
 is_enemy_active: .res 3
 enemy_count: .res 1
-
+enemy_kill_count: .res 1
 
 CHASERENEMY_X: .res 1
 CHASERENEMY_Y: .res 1

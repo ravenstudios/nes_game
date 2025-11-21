@@ -65,6 +65,7 @@ UpdateGameLoop:
     JSR UpdateBulet
     JSR DoorUpdate
     JSR UpdatePlayer
+    JSR UpdateMapLoader
 @return:
     RTS
 

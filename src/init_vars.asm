@@ -11,10 +11,10 @@ INITVARS:
     STA frame_counter
     STA player_hit_timer
     STA is_player_checking
-
+    STA enemy_kill_count
     STA timer_counter
     LDA TIMER_FPS
-    STA level
+    
     
 
     STA is_door_unlocked
@@ -120,4 +120,7 @@ STA is_enemy_active+2
     STA player_health
     STA timer_m
 
+
+    LDA #$02
+    STA level
     RTS

@@ -48,12 +48,12 @@ LoadLevel:
         JMP @done
     
     :
-    ; LDA level
-    ; CMP #$02
-    ; BNE @done
-    ;     JSR Level_3_init
-    ;     JMP @done
-    ; :
+    LDA level
+    CMP #$02
+    BNE :+
+        JSR Level_3_init
+        JMP @done
+    :
 
 
     @done:
@@ -164,70 +164,22 @@ LoadCollisionTable:
 
 
 
+UpdateMapLoader:
+inc $00c0
+    ;Level 3
+    LDA level
+    CMP #$02
+    BNE @done
+        ;check if all enemies are dead
+        LDA enemy_kill_count
+        CMP #$03
+        BNE @done
+            LDA #$01
+            STA is_door_unlocked
+            JSR DrawDoor
 
-; LOADBACKGROUND:
-
-; 	LDA $2002		;read PPU status to reset high/low latch
-; 	LDA #$20	;start of nametable "canvas" as the high bit
-; 	STA $2006	
-; 	LDA #$00	;sets low bit
-; 	STA $2006	;what adress to write to starting at $2100
-; 	LDX #$00	;bad code that uses wraparound to hit 0 in the loop
-; LOADBACKGROUNDP1:
-; 	LDA BACKGROUNDDATA, X ;loop through BACKGROUNDDATA
-; 	STA $2007 ; store byte
-; 	LDA COLLISIONTABLEDATA, X
-; 	; STA COLLISIONTABLE
-; 	INX
-; 	CPX #$00 ;wrap around
-; 	BNE LOADBACKGROUNDP1 ; if x == 0 break
-; LOADBACKGROUNDP2:
-; 	LDA BACKGROUNDDATA+256, X
-; 	STA $2007
-; 	LDA COLLISIONTABLEDATA+256, X
-; 	; STA COLLISIONTABLE
-; 	INX
-; 	CPX #$00
-; 	BNE LOADBACKGROUNDP2
-; LOADBACKGROUNDP3:
-; 	LDA BACKGROUNDDATA+512, X
-; 	STA $2007
-; 	LDA COLLISIONTABLEDATA+512, X
-; 	; STA COLLISIONTABLE
-; 	INX
-; 	CPX #$00
-; 	BNE LOADBACKGROUNDP3
-; LOADBACKGROUNDP4:
-; 	LDA BACKGROUNDDATA+768, X
-; 	STA $2007
-; 	LDA COLLISIONTABLEDATA+768, X
-; 	; STA COLLISIONTABLE
-; 	INX
-; 	CPX #$c0
-; 	BNE LOADBACKGROUNDP4
-; ;192
-
-; ;LOAD BACKGROUND PALETTEDATA
-; 	LDA #$23	
-; 	STA $2006
-; 	LDA #$c0
-; 	STA $2006
-; 	LDX #$00
-; LOADBACKGROUNDATTRDATA:
-; 	LDA BACKGROUNDATTRDATA, X
-; 	STA $2007
-; 	INX
-; 	CPX #$40
-; 	BNE LOADBACKGROUNDATTRDATA
-
-; 	;RESET SCROLL
-; 	LDA #$00
-; 	STA $2005
-; 	STA $2005
-
-
-
-; RTS
+    @done:
+    RTS
 
 
 

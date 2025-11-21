@@ -396,6 +396,7 @@ BulletVsEnemyOverlap:
 
 
 Deactivate:
+    INC enemy_kill_count
     LDX enemy_loop_idx
     LDA #$00
     JSR DeactivateBullet
@@ -435,7 +436,7 @@ Move_enemies_off_screen:
     LDX #$00
    
 @loop:
-        CPX enemy_count
+    CPX enemy_count
     BEQ @done
     LDA #$F0
     STA enemy_y, X
