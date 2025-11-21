@@ -137,7 +137,7 @@ collPtrHi: .res 1
 tempPtrLo: .res 1
 tempPtrHi: .res 1
 
-
+can_move_block: .res 1
 .segment "BSS"
 
 COLLISIONTABLE: .res 240

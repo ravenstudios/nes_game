@@ -160,6 +160,7 @@ CheckTile:
     ; ---------- Pushable (tile = 2) ----------
     LDA cur_tile
     CMP #$02
+    
     BNE @decide_solid       ; not pushable → decide solid/empty below
 
     ; pushable: only player may push
@@ -169,7 +170,7 @@ CheckTile:
     ; (player push logic)
     TXA
     STA target_idx
-
+    inc $0086
     LDY moveable_block_count
     BEQ @decide_solid
     DEY

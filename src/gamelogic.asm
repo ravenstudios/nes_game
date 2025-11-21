@@ -61,7 +61,7 @@ UpdateGameLoop:
     JSR HandleDpad
     JSR EnemyUpdate
     JSR GetNewEnemyRandomWalkTimer
-    ; JSR UpdateMoveableBlock
+    JSR UpdateMoveableBlock
     JSR UpdateBulet
     JSR DoorUpdate
     JSR UpdatePlayer

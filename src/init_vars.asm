@@ -15,19 +15,21 @@ INITVARS:
     STA timer_counter
     LDA TIMER_FPS
     
+    
+
     STA is_door_unlocked
     STA timer_s
+
     LDA #$01
     STA timer_ts
+    STA can_move_block
     ; LDA #$03
     ; STA state
 
-LDA #$00
+LDA #$01
 STA level
 STA timer_tick_counter
 
-LDA #(12*16+2)
-STA secret_tile
 
 
 LDA #$00

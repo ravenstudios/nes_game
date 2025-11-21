@@ -1,8 +1,8 @@
 
 Level_1_init:
-inc $0085
     LDA #(6*16+6)
     STA secret_tile
+    
     RTS
 
 Level_1_Data:

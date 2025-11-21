@@ -36,10 +36,24 @@ LoadLevel:
 
     LDA level
     CMP #$00
-    BNE :+
+    BNE @done
         JSR Level_1_init
         JMP @done
-    :
+    
+
+    LDA level
+    CMP #$01
+    BNE @done
+        JSR Level_2_init
+        JMP @done
+    
+
+    ; LDA level
+    ; CMP #$02
+    ; BNE @done
+    ;     JSR Level_3_init
+    ;     JMP @done
+    ; :
 
 
     @done:
