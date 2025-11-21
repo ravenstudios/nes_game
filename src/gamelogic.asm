@@ -61,7 +61,7 @@ UpdateGameLoop:
     JSR HandleDpad
     JSR EnemyUpdate
     JSR GetNewEnemyRandomWalkTimer
-    JSR UpdateMoveableBlock
+    ; JSR UpdateMoveableBlock
     JSR UpdateBulet
     JSR DoorUpdate
     JSR UpdatePlayer
@@ -74,7 +74,7 @@ DrawGameLoop:
     JSR ANITMATION
     JSR DrawEnemies
     JSR DRAWPLAYER
-    JSR DrawAllBlocks
+    ; JSR DrawAllBlocks
     JSR DrawBullet   
 RTS
 
@@ -123,8 +123,9 @@ LoadState1:
     ; JSR LoadRandomRoom
     ; JSR LOADSPRITES
     JSR LoadLevel
-    ; JSR LoadEnemies
+    JSR LoadEnemies
     ; JSR LoadBlocks
     JSR UpdateHealth
     JSR LoadPlayer
+    JSR Move_enemies_off_screen
     RTS

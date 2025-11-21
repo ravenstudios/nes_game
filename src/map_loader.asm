@@ -34,6 +34,15 @@ LoadLevel:
     JSR LoadBackground
     JSR LoadBKAtr
 
+    LDA level
+    CMP #$00
+    BNE :+
+        JSR Level_1_init
+        JMP @done
+    :
+
+
+    @done:
     ; turn rendering back ON
     LDA #%00011110
     STA $2001

@@ -2,7 +2,7 @@ DRAWPLAYER:
 	LDA anim_frame
     ASL A
     CLC
-    ADC PLAYERDIRECTION
+    ADC player_direction
     TAX                        ; X = frame_base
 
     ;load next sprite for animation
@@ -28,7 +28,7 @@ DRAWPLAYER:
     ; STA $020D                  ; BR    
 
     ; write X
-    LDA PLAYER_X
+    LDA player_x
     STA $0203
     STA $020b
     CLC
@@ -51,7 +51,7 @@ DRAWPLAYER:
 ; OAM: TL=$0200, TR=$0204, BL=$0208, BR=$020C
 
     ; cache player Y for this frame
-    LDA PLAYER_Y
+    LDA player_y
     STA player_y_pos
 
     ; decide blink
@@ -155,14 +155,14 @@ RTS
 
 
 GetPlayerTile:
-    LDA PLAYER_Y
+    LDA player_y
     LSR
     LSR
     LSR
     LSR         ; A = tile_y
     STA player_tile_y
 
-    LDA PLAYER_X
+    LDA player_x
     LSR
     LSR
     LSR
@@ -279,3 +279,7 @@ LoadPlayer:
         .byte $40, $01, $00, $48
         .byte $48, $10, $00, $40
         .byte $48, $11, $00, $48
+
+
+
+

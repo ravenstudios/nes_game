@@ -334,7 +334,7 @@ CheckCollision:
 
 Exit:
     LDA #$60
-    STA PLAYER_X
+    STA player_x
     LDA #$e0
-    STA PLAYER_Y
+    STA player_y
     RTS

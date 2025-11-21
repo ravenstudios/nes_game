@@ -145,7 +145,7 @@ LDX #$00
     PLA
     TAX
     ;move block
-    LDA PLAYERDIRECTION
+    LDA player_direction
 
     CMP #FACINGUP
     BEQ @up

@@ -58,12 +58,12 @@ timer_tick_counter: .res 1
 
 gameover: .res 1
 
-PLAYER_X: .res 1
-PLAYER_Y: .res 1
+player_x: .res 1
+player_y: .res 1
 player_tile_x: .res 1
 player_tile_y: .res 1
 player_tile: .res 1
-PLAYERDIRECTION: .res 1
+player_direction: .res 1
 player_health: .res 1
 
 tmp_frame_off: .res 1

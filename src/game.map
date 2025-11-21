@@ -1,7 +1,7 @@
 Modules list:
 -------------
 main.o:
-    CODE              Offs=000000  Size=00190C  Align=00001  Fill=0000
+    CODE              Offs=000000  Size=001959  Align=00001  Fill=0000
     BSS               Offs=000000  Size=0000F5  Align=00001  Fill=0000
     ZEROPAGE          Offs=000000  Size=00006E  Align=00001  Fill=0000
     HEADER            Offs=000000  Size=000010  Align=00001  Fill=0000
@@ -19,7 +19,7 @@ HEADER                000000  00000F  000010  00001
 ZEROPAGE              000002  00006F  00006E  00001
 BSS                   000300  0003F4  0000F5  00001
 STARTUP               008000  008D00  000D01  00001
-CODE                  008D01  00A60C  00190C  00001
+CODE                  008D01  00A659  001959  00001
 VECTORS               00FFFA  00FFFF  000006  00001
 
 

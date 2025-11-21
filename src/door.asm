@@ -1,7 +1,7 @@
 DoorData:
     .byte $0d, $0e, $1d, $1e
 DoorLocation:
-    .word $206C, $206D, $208C, $208D
+    .word $208C, $208D, $20aC, $20aD
 
 
 PPUSTATUS = $2002
@@ -16,7 +16,7 @@ DrawDoor:
 
 LDX #$00
 @loop:
-    CPX #$08
+    CPX #$04
     BCS @done
 
     ; Y = X * 2  (byte index into word table)
@@ -47,7 +47,7 @@ LDX #$00
     STA $2005
     
     LDX #$60
-    LDY #$30
+    LDY #$20
     ; JSR SetTileSolid1
     JSR SetTileDoor
     INX
@@ -61,14 +61,14 @@ DoorUpdate:
     LDA is_door_unlocked
     CMP #$01
     BEQ @done
-        LDA PLAYER_Y
+        LDA player_y
         LSR
         LSR
         LSR
         LSR         ; A = tile_y
         STA tile_y
 
-        LDA PLAYER_X
+        LDA player_x
         LSR
         LSR
         LSR

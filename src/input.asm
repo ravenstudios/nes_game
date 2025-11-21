@@ -32,14 +32,16 @@ HandleDpad:
     BEQ @down
     
     LDA #FACINGUP
-    STA PLAYERDIRECTION
+    STA player_direction
+
+    JSR Snap_x
 
     JSR LoadPlayerCollisionValues
     LDA #$01
     STA is_player_checking
     JSR TileCollision
     BCS @down  
-    DEC PLAYER_Y
+    DEC player_y
     
     LDA #$00
     STA is_player_checking
@@ -52,14 +54,15 @@ HandleDpad:
     BEQ @left
 
     LDA #FACINGDOWN
-    STA PLAYERDIRECTION
+    STA player_direction
+    JSR Snap_x
 
     JSR LoadPlayerCollisionValues
     LDA #$01
     STA is_player_checking
     JSR TileCollision
     BCS @left
-    INC PLAYER_Y
+    INC player_y
     
     LDA #$00
     STA is_player_checking
@@ -72,14 +75,16 @@ HandleDpad:
     BEQ @right
 
     LDA #FACINGLEFT
-    STA PLAYERDIRECTION
+    STA player_direction
+
+    JSR Snap_y
 
     JSR LoadPlayerCollisionValues
     LDA #$01
     STA is_player_checking
     JSR TileCollision
     BCS @right
-    DEC PLAYER_X
+    DEC player_x
     
     LDA #$00
     STA is_player_checking
@@ -92,15 +97,16 @@ HandleDpad:
     BEQ @start_btn
 
     LDA #FACINGRIGHT
-    STA PLAYERDIRECTION
-    
+    STA player_direction
+    JSR Snap_y
+
     JSR LoadPlayerCollisionValues
     LDA #$01
     STA is_player_checking
     JSR TileCollision
     BCS @start_btn
 
-    INC PLAYER_X
+    INC player_x
     LDA #$00
     STA is_player_checking
     
@@ -118,18 +124,18 @@ HandleDpad:
     LDA controller1
     AND #SELECTBTN
     BEQ @a_btn
-        JSR Gameover
+        
     RTS
 
 @a_btn:
     LDA controller1
     AND #ABTN
     BEQ @b_btn
-        LDA PLAYER_X
+        LDA player_x
         STA bullet_x
-        LDA PLAYER_Y
+        LDA player_y
         STA bullet_y
-        LDA PLAYERDIRECTION
+        LDA player_direction
         STA bullet_direction
         LDA #$01
         STA is_bullet_active
@@ -149,11 +155,52 @@ HandleDpad:
 
 
 LoadPlayerCollisionValues:
-    LDA PLAYER_X
+    LDA player_x
     STA collision_check_x
-    LDA PLAYER_Y
+    LDA player_y
     STA collision_check_y
     
-    LDA PLAYERDIRECTION
+    LDA player_direction
     STA collision_check_dir
+RTS
+
+
+
+
+
+
+
+Snap_x:
+    LDA player_x
+    CLC
+    ADC #$04
+    LSR A
+    LSR A
+    LSR A
+    STA player_tile_x
+
+   
+   LDA player_tile_x
+   ASL A
+   ASL A
+   ASL A
+   STA player_x
+RTS
+
+
+Snap_y:
+    LDA player_y
+    CLC
+    ADC #$04
+    LSR A
+    LSR A
+    LSR A
+    STA player_tile_y
+
+   
+   LDA player_tile_y
+   ASL A
+   ASL A
+   ASL A
+   STA player_y
 RTS

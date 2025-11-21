@@ -428,7 +428,25 @@ LoadEnemies:
     RTS
 
 
+
+
+Move_enemies_off_screen:
+    inc $0080
+    LDX #$00
+   
+@loop:
+        CPX enemy_count
+    BEQ @done
+    LDA #$F0
+    STA enemy_y, X
+    INX
+    JMP @loop
+
+@done:
+RTS
+
 EnemyPos:
     .byte $20, $60
     .byte $60, $60
     .byte $20, $80
+

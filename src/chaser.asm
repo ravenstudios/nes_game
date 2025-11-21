@@ -4,7 +4,7 @@
 
 CHASERENEMYWALK:
     ; -------- HORIZONTAL --------
-    LDA PLAYER_X
+    LDA player_x
     CMP CHASERENEMY_X
     BEQ @VERT                   ; same column → skip horizontal
 
@@ -39,7 +39,7 @@ CHASERENEMYWALK:
     JMP @VERT
 @VERT:
     ; -------- VERTICAL --------
-    LDA PLAYER_Y
+    LDA player_y
     CMP CHASERENEMY_Y
     BEQ @DONE                   ; same row → skip vertical
 

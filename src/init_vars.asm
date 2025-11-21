@@ -83,10 +83,11 @@ STA is_enemy_active+2
     STA enemy_direction
 
 
-    LDA #$60
-    STA PLAYER_X
-    LDA #$a0
-    STA PLAYER_Y
+
+    LDA #PLAYER_X_START
+    STA player_x
+    LDA #PLAYER_Y_START
+    STA player_y
 
     LDA #$10
     STA enemy_random_walk_timer
@@ -107,7 +108,8 @@ STA is_enemy_active+2
     STA CHASERSPEEDCOUNTER
 
     LDA #$20
-	STA PLAYERDIRECTION
+	STA player_direction
+
     STA CHASERDIRECTION
 
 
