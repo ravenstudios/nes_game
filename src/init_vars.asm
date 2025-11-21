@@ -14,7 +14,7 @@ INITVARS:
 
     STA timer_counter
     LDA TIMER_FPS
-    
+    STA level
     
 
     STA is_door_unlocked
@@ -27,7 +27,7 @@ INITVARS:
     ; STA state
 
 LDA #$01
-STA level
+
 STA timer_tick_counter
 
 

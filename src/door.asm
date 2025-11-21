@@ -2,7 +2,8 @@ DoorData:
     .byte $0d, $0e, $1d, $1e
 DoorLocation:
     .word $208C, $208D, $20aC, $20aD
-
+WallData:
+    .byte $4d, $4d, $5d, $5d
 
 PPUSTATUS = $2002
 PPUADDR   = $2006
@@ -53,7 +54,53 @@ LDX #$00
     INX
     JSR SetTileDoor
 
+    RTS
+
+
+Undraw_door:
+@vbwait:
+    BIT $2002
+    BPL @vbwait          ; loop until vblank begins (bit7=1)
+
+LDX #$00
+@loop:
+    CPX #$04
+    BCS @done
+
+    ; Y = X * 2  (byte index into word table)
+    TXA
+    ASL A
+    TAY
+
+    ; Set PPU address from word (write HI then LO)
+    LDA PPUSTATUS          ; reset latch
+    LDA DoorLocation+1, Y  ; HI byte of address
+    STA PPUADDR
+    LDA DoorLocation, Y    ; LO byte of address
+    STA PPUADDR
+
+    ; Write tile
+    LDA WallData, X
+    STA PPUDATA
+
+    INX
+    JMP @loop
+
+
+
+@done:
+    ; Optional: reset scroll to 0,0 if you really need it (not required for VRAM writes)
+    LDA #$00
+    STA $2005
+    STA $2005
     
+    LDX #$60
+    LDY #$20
+    ; JSR SetTileSolid1
+    JSR UnsetTileDoor
+    INX
+    JSR UnsetTileDoor
+
     RTS
 
 

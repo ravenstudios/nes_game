@@ -1,7 +1,7 @@
 Level_2_init:
-    LDA #(15*16)
+    LDA #0
     STA secret_tile
-    
+    JSR Move_enemies_off_screen
     RTS
 
 

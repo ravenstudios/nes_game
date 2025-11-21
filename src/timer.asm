@@ -57,6 +57,7 @@ inc $00f5
 
 
     LDX level
+    INX
     LDA NumberTiles, X
     STA loadedTile
     LDY #TIMER_DIGIT_Y

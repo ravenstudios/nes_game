@@ -275,10 +275,10 @@ LoadPlayer:
 
 
         ;Player_________________________
-        .byte $40, $00, $00, $40
-        .byte $40, $01, $00, $48
-        .byte $48, $10, $00, $40
-        .byte $48, $11, $00, $48
+        .byte PLAYER_Y_START, $00, $00, PLAYER_X_START
+        .byte PLAYER_Y_START, $01, $00, (PLAYER_X_START+8)
+        .byte (PLAYER_Y_START+8), $10, $00, PLAYER_X_START
+        .byte (PLAYER_Y_START+8), $11, $00, (PLAYER_X_START+8)
 
 
 

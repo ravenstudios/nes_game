@@ -123,9 +123,8 @@ LoadState1:
     ; JSR LoadRandomRoom
     ; JSR LOADSPRITES
     JSR LoadLevel
-    JSR LoadEnemies
+    ; JSR LoadEnemies
     ; JSR LoadBlocks
     JSR UpdateHealth
     JSR LoadPlayer
-    JSR Move_enemies_off_screen
     RTS

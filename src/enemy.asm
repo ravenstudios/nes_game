@@ -439,6 +439,8 @@ Move_enemies_off_screen:
     BEQ @done
     LDA #$F0
     STA enemy_y, X
+    LDA #$00
+    STA is_enemy_active, X
     INX
     JMP @loop
 
