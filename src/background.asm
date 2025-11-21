@@ -91,55 +91,19 @@ SetTilePushable:
 	RTS
 
 
+; Clear the collision tile we just checked in CheckTile
 UnsetTileSolid:
-	TYA
-	LSR
-	LSR
-	LSR
-	LSR                  ; A = y_tile (0..14)
-	ASL
-	ASL
-	ASL
-	ASL                  ; A = y_tile * 16
-	STA tmp              ; tmp = row offset
+    TAX
+    LDA #$00
+    STA COLLISIONTABLE, X
+    RTS
 
-	TXA
-	LSR
-	LSR
-	LSR
-	LSR                  ; A = x_tile (0..15)
-	CLC
-	ADC tmp              ; A = index (0..239)
-	TAX
-
-	LDA #$00             ; e.g., 2 = pushable block (or 1 if you treat it as solid)
-	STA COLLISIONTABLE,X
-	RTS
 
 SetTileSolid1:
-	TYA
-	LSR
-	LSR
-	LSR
-	LSR                  ; A = y_tile (0..14)
-	ASL
-	ASL
-	ASL
-	ASL                  ; A = y_tile * 16
-	STA tmp              ; tmp = row offset
-
-	TXA
-	LSR
-	LSR
-	LSR
-	LSR                  ; A = x_tile (0..15)
-	CLC
-	ADC tmp              ; A = index (0..239)
-	TAX
-
-	LDA #$01             ; e.g., 2 = pushable block (or 1 if you treat it as solid)
-	STA COLLISIONTABLE,X
-	RTS
+    TAX
+    LDA #$01
+    STA COLLISIONTABLE, X
+    RTS
 
 
 

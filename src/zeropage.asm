@@ -138,6 +138,9 @@ tempPtrLo: .res 1
 tempPtrHi: .res 1
 
 can_move_block: .res 1
+
+temp_col: .res 1
+current_tile_index: .res 1
 .segment "BSS"
 
 COLLISIONTABLE: .res 240

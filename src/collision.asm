@@ -147,6 +147,7 @@ CheckTile:
     ; --- read tile once and keep it ---
     LDA COLLISIONTABLE, X
     STA cur_tile           ; <- NEW: remember tile value
+    STX current_tile_index
 
     ; ---------- Door (tile = 3) ----------
     LDA cur_tile
@@ -163,61 +164,95 @@ CheckTile:
     
     BNE @decide_solid       ; not pushable → decide solid/empty below
 
-    ; pushable: only player may push
-    LDA is_player_checking
-    BEQ @treat_as_solid     ; enemies (or no push intent) → solid
+@up:
+    LDA player_direction
+    CMP #FACINGUP
+    BNE @down
+        ;change current tile to floor and convert tiles above to block tile and set solid
+        LDA #$6d
+        STA loadedTile
+        ; LDA cur_tile
+        LDA current_tile_index
+        JSR UnsetTileSolid
+      
+        JSR Get_x_and_y ;load cur_tile into A
+        ;tl
+        LDX tile_x
+        LDY tile_y
+        
+        JSR SetBGTile
 
-    ; (player push logic)
-    TXA
-    STA target_idx
-    inc $0086
-    LDY moveable_block_count
-    BEQ @decide_solid
-    DEY
+        ;tr
+        LDX tile_x
+        INX
+        LDY tile_y
+        JSR SetBGTile
+        DEX
 
-@loop:
-    LDA is_moveable_block_moved, Y
-    BNE @next
 
-    ; tx = (x>>4)
-    LDA moveable_block_x, Y
-    LSR
-    LSR
-    LSR
-    LSR
-    STA tx
+        ;bl
+        LDX tile_x
+        LDY tile_y
+        INY
+        JSR SetBGTile
+        DEY
 
-    ; idx = (y>>4)*16 + (x>>4)
-    LDA moveable_block_y, Y
-    LSR
-    LSR
-    LSR
-    LSR
-    ASL
-    ASL
-    ASL
-    ASL
-    CLC
-    ADC tx
+        ;br
+        LDX tile_x
+        INX
+        LDY tile_y
+        INY
+        JSR SetBGTile
+        DEX
+        DEY
 
-    CMP target_idx
-    BEQ @hit
 
-@next:
-    DEY
-    BPL @loop
-    ; no push target matched → just treat as solid unless your design says otherwise
-@treat_as_solid:
-    SEC
-    RTS
+        ;block
+        LDA current_tile_index
+        SEC
+        SBC #$10
+        JSR SetTileSolid1
+        DEC tile_y
+        DEC tile_y
+        LDA #$04
+        STA loadedTile
+        LDX tile_x
+        LDY tile_y
+        
+        JSR SetBGTile
 
-@hit:
-    ; mark moved + clear flag for this frame if you want
-    LDA #$01
-    STA is_moveable_block_moved, Y
-    ; typically still block movement this frame:
-    SEC
-    RTS
+        ;tr
+        LDA #$05
+        STA loadedTile
+        LDX tile_x
+        INX
+        LDY tile_y
+        JSR SetBGTile
+        DEX
+
+        ;bl
+        LDA #$14
+        STA loadedTile
+        LDX tile_x
+        LDY tile_y
+        INY
+        JSR SetBGTile
+        DEY
+
+        ;br
+        LDA #$15
+        STA loadedTile
+        LDX tile_x
+        INX
+        LDY tile_y
+        INY
+        JSR SetBGTile
+        DEX
+        DEY
+
+
+@down:
+
 
 @decide_solid:
     ; ---------- Final solidity decision from tile value ----------
@@ -338,4 +373,26 @@ Exit:
     STA player_x
     LDA #$e0
     STA player_y
+    RTS
+
+
+Get_x_and_y:
+    ; tile_y = index / 16  (row)
+    LDA current_tile_index
+    STA $0092
+    LSR A
+    LSR A
+    LSR A
+    LSR A
+    ASL A   
+    STA $0091
+    STA tile_y          ; 0..14
+
+    ; tile_x = index % 16  (col)
+    LDA current_tile_index
+    AND #$0F
+    STA $0090
+    ASL A   
+    STA tile_x          ; 0..15
+
     RTS
