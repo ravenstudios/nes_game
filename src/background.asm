@@ -162,8 +162,15 @@ UnsetTileDoor:
 
 
 PALETTEDATA:
-	.byte $00, $05, $15, $1f, 	$20, $0A, $15, $01, 	$20, $29, $28, $27, 	$20, $34, $24, $14 	;background palettes
-	.byte $20, $27, $13, $0f, 	$20, $0F, $11, $30, 	$20, $0F, $30, $27, 	$20, $3C, $2C, $1C 	;sprite palettes
+.byte $0f, $27, $13, $0f
+.byte $20, $0A, $15, $01
+.byte $20, $29, $28, $27
+.byte $20, $34, $24, $14
+;sprite palettes
+.byte $0f, $27, $13, $0f ;shouold be sprite but changing this changes
+.byte $20, $20, $11, $30
+.byte $20, $20, $30, $27
+.byte $20, $3C, $2C, $1C 	;background palettes
 
 BACKGROUNDDATA:
 
@@ -205,8 +212,8 @@ BACKGROUNDDATA:
 ;br - bl - tr - tl
 
 BACKGROUNDATTRDATA:
-  .byte $00, $00, $00, $00, $00, $00, $00, $00
-	.byte $00, $00, $00, $00, $00, $00, $00, $00
+  .byte $01, $01, $01, $01, $01, $01, $01, $01
+	.byte $01, $01, $01, $01, $01, $01, $01, $01
 	.byte $00, $00, $00, $00, $00, $00, $00, $00
 	.byte $00, $00, $00, $00, $00, $00, $00, $00
 	.byte $00, $00, $00, $00, $00, $00, $00, $00

@@ -2,7 +2,7 @@
 .include "background.asm"
 ; .include "test_room.asm"
 .include "sprites.asm"
-.include "random_room.asm"
+; .include "random_room.asm"
 .include "start_screen.asm"
 
 
@@ -64,6 +64,7 @@ CLEARMEMORY:		;$0000 - $07FF
 	
 	
 	;load background pallet
+	LDA $2002
 	LDA #$3F	;$3F00
 	STA $2006
 	LDA #$00

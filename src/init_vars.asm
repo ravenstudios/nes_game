@@ -124,6 +124,6 @@ STA is_enemy_active+2
     STA mimic_x
     LDA #$f0
     STA mimic_y
-    LDA #$00
+    LDA #$04
     STA level
     RTS
