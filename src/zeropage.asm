@@ -141,6 +141,16 @@ can_move_block: .res 1
 is_block_moved_for_unlock: .res 1
 temp_col: .res 1
 current_tile_index: .res 1
+
+
+mimic_direction: .res 1
+mimic_x: .res 1
+mimic_y: .res 1
+player_x_prev: .res 1
+player_y_prev: .res 1
+tmp_delta: .res 1
+mimic_tile_x: .res 1
+mimic_tile_y: .res 1
 .segment "BSS"
 
 COLLISIONTABLE: .res 240

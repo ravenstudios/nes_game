@@ -1,21 +1,5 @@
 
-;----------------------Enemy Walk--------------------------------------
 EnemyUpdate:
-
-
-LDA enemy_x
-LDA enemy_y
-
-LDA enemy_x+1
-LDA enemy_y+1
-
-LDA enemy_x+2
-LDA enemy_y+2
-
-LDA is_enemy_active
-LDA is_enemy_active+1
-LDA is_enemy_active+2
-
     LDA #$00
     STA enemy_loop_idx
 @loop_enemies:
@@ -406,6 +390,18 @@ Deactivate:
     RTS
 
 
+ActivateEnemies:
+    LDX #$00
+@loop:
+    CPX enemy_count
+    BEQ @done
+    LDA #$01
+    STA is_enemy_active, X
+    INX
+    JMP @loop
+@done:
+RTS
+
 
 LoadEnemies:
     LDX #$00
@@ -426,15 +422,14 @@ LoadEnemies:
     INX
     BNE @loop                ; (enemy_count <= 255)
 @done:
+    JSR ActivateEnemies
     RTS
 
 
 
 
 Move_enemies_off_screen:
-    inc $0080
     LDX #$00
-   
 @loop:
     CPX enemy_count
     BEQ @done
@@ -444,7 +439,6 @@ Move_enemies_off_screen:
     STA is_enemy_active, X
     INX
     JMP @loop
-
 @done:
 RTS
 

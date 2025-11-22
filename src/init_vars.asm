@@ -21,10 +21,10 @@ INITVARS:
     STA timer_s
 
     LDA #$01
+    
     STA timer_ts
     STA can_move_block
-    ; LDA #$03
-    ; STA state
+    
 
 LDA #$01
 
@@ -120,7 +120,10 @@ STA is_enemy_active+2
     STA player_health
     STA timer_m
 
-
-    LDA #$02
+    LDA #$00
+    STA mimic_x
+    LDA #$f0
+    STA mimic_y
+    LDA #$00
     STA level
     RTS

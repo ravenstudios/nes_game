@@ -34,6 +34,7 @@ LoadLevel:
     JSR LoadBackground
     JSR LoadBKAtr
 
+    JSR UpdateHealth
     LDA level
     CMP #$00
     BNE :+
@@ -54,7 +55,12 @@ LoadLevel:
         JSR Level_3_init
         JMP @done
     :
-
+    LDA level
+    CMP #$03
+    BNE :+
+        JSR Level_4_init
+        JMP @done
+    :
 
     @done:
     ; turn rendering back ON
@@ -165,21 +171,28 @@ LoadCollisionTable:
 
 
 UpdateMapLoader:
-inc $00c0
-    ;Level 3
+    ; Level 3 only
     LDA level
     CMP #$02
     BNE @done
-        ;check if all enemies are dead
-        LDA enemy_kill_count
-        CMP #$03
-        BNE @done
-            LDA #$01
-            STA is_door_unlocked
-            JSR DrawDoor
 
-    @done:
+    ; wait until all 3 enemies are dead
+    LDA enemy_kill_count
+    CMP #$03
+    BNE @done
+
+    ; already unlocked? then do nothing (avoid re-drawing each frame)
+    LDA is_door_unlocked
+    BNE @done
+
+    ; first time: mark unlocked & draw door once
+    LDA #$01
+    STA is_door_unlocked
+    JSR DrawDoor
+
+@done:
     RTS
+
 
 
 

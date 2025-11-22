@@ -10,46 +10,44 @@ PPUADDR   = $2006
 PPUDATA   = $2007
 
 
+; DoorData was:  $0d, $0e, $1d, $1e
+; WallData was:  $4d, $4d, $5d, $5d
+
+; DOOR_TILE_X = 12
+; DOOR_TILE_Y = 4
+
 DrawDoor:
-@vbwait:
-    BIT $2002
-    BPL @vbwait          ; loop until vblank begins (bit7=1)
+    ; TL
+    LDA #$0d
+    STA loadedTile
+    LDX #DOOR_TILE_X
+    LDY #DOOR_TILE_Y
+    JSR SetBGTile
 
-LDX #$00
-@loop:
-    CPX #$04
-    BCS @done
+    ; TR
+    LDA #$0e
+    STA loadedTile
+    LDX #DOOR_TILE_X+1
+    LDY #DOOR_TILE_Y
+    JSR SetBGTile
 
-    ; Y = X * 2  (byte index into word table)
-    TXA
-    ASL A
-    TAY
+    ; BL
+    LDA #$1d
+    STA loadedTile
+    LDX #DOOR_TILE_X
+    LDY #DOOR_TILE_Y+1
+    JSR SetBGTile
 
-    ; Set PPU address from word (write HI then LO)
-    LDA PPUSTATUS          ; reset latch
-    LDA DoorLocation+1, Y  ; HI byte of address
-    STA PPUADDR
-    LDA DoorLocation, Y    ; LO byte of address
-    STA PPUADDR
+    ; BR
+    LDA #$1e
+    STA loadedTile
+    LDX #DOOR_TILE_X+1
+    LDY #DOOR_TILE_Y+1
+    JSR SetBGTile
 
-    ; Write tile
-    LDA DoorData, X
-    STA PPUDATA
-
-    INX
-    JMP @loop
-
-
-
-@done:
-    ; Optional: reset scroll to 0,0 if you really need it (not required for VRAM writes)
-    LDA #$00
-    STA $2005
-    STA $2005
-    
-    LDX #$60
-    LDY #$20
-    ; JSR SetTileSolid1
+    ; update collision table for the top row (like you do now)
+    LDX #$60       ; pixel X = $60
+    LDY #$20       ; pixel Y = $20
     JSR SetTileDoor
     INX
     JSR SetTileDoor
@@ -57,46 +55,40 @@ LDX #$00
     RTS
 
 
+
 Undraw_door:
-@vbwait:
-    BIT $2002
-    BPL @vbwait          ; loop until vblank begins (bit7=1)
 
-LDX #$00
-@loop:
-    CPX #$04
-    BCS @done
+    ; TL
+    LDA #$4d
+    STA loadedTile
+    LDX #DOOR_TILE_X
+    LDY #DOOR_TILE_Y
+    JSR SetBGTile
 
-    ; Y = X * 2  (byte index into word table)
-    TXA
-    ASL A
-    TAY
+    ; TR
+    LDA #$4d
+    STA loadedTile
+    LDX #DOOR_TILE_X+1
+    LDY #DOOR_TILE_Y
+    JSR SetBGTile
 
-    ; Set PPU address from word (write HI then LO)
-    LDA PPUSTATUS          ; reset latch
-    LDA DoorLocation+1, Y  ; HI byte of address
-    STA PPUADDR
-    LDA DoorLocation, Y    ; LO byte of address
-    STA PPUADDR
+    ; BL
+    LDA #$5d
+    STA loadedTile
+    LDX #DOOR_TILE_X
+    LDY #DOOR_TILE_Y+1
+    JSR SetBGTile
 
-    ; Write tile
-    LDA WallData, X
-    STA PPUDATA
+    ; BR
+    LDA #$5d
+    STA loadedTile
+    LDX #DOOR_TILE_X+1
+    LDY #DOOR_TILE_Y+1
+    JSR SetBGTile
 
-    INX
-    JMP @loop
-
-
-
-@done:
-    ; Optional: reset scroll to 0,0 if you really need it (not required for VRAM writes)
-    LDA #$00
-    STA $2005
-    STA $2005
-    
-    LDX #$60
-    LDY #$20
-    ; JSR SetTileSolid1
+    ; update collision table for the top row (like you do now)
+    LDX #$60       ; pixel X = $60
+    LDY #$20       ; pixel Y = $20
     JSR UnsetTileDoor
     INX
     JSR UnsetTileDoor

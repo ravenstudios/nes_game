@@ -45,6 +45,7 @@ HandleDpad:
     
     LDA #$00
     STA is_player_checking
+    
     RTS
     
 @down:
@@ -66,6 +67,7 @@ HandleDpad:
     
     LDA #$00
     STA is_player_checking
+    
     RTS
 
 @left:
@@ -88,6 +90,7 @@ HandleDpad:
     
     LDA #$00
     STA is_player_checking
+    
     RTS
 
 @right:

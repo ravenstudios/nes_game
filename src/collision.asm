@@ -163,9 +163,10 @@ CheckTile:
     CMP #$02
     
     BNE @jump_decide_solid       ; not pushable → decide solid/empty below
-    LDA #$01
-    STA is_door_unlocked
-    JSR DrawDoor
+        LDA #$01
+        STA is_door_unlocked
+        JSR DrawDoor
+        
 @up:
     LDA player_direction
     CMP #FACINGUP
@@ -408,6 +409,7 @@ CheckCollision:
     RTS
 
 Exit:
+    
     LDA #PLAYER_X_START
     STA player_x
     LDA #PLAYER_Y_START
@@ -442,6 +444,7 @@ Get_x_and_y:
     STA tile_x          ; 0..15
 
     RTS
+
 
 
 ; IN: tile_x, tile_y, loadedTile

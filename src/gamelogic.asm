@@ -9,7 +9,7 @@
 .include "door.asm"
 .include "gameover.asm"
 .include "map_loader.asm"
-
+.include "mimic.asm"
 
 INFLOOP:
 
@@ -66,6 +66,7 @@ UpdateGameLoop:
     JSR DoorUpdate
     JSR UpdatePlayer
     JSR UpdateMapLoader
+    JSR MimicUpdate
 @return:
     RTS
 
@@ -77,6 +78,7 @@ DrawGameLoop:
     JSR DRAWPLAYER
     ; JSR DrawAllBlocks
     JSR DrawBullet   
+    JSR DrawMimic
 RTS
 
 
@@ -128,4 +130,5 @@ LoadState1:
     ; JSR LoadBlocks
     JSR UpdateHealth
     JSR LoadPlayer
+    JSR LoadMimic
     RTS

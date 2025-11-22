@@ -2,7 +2,7 @@
 Level_1_init:
     LDA #(6*16+6)
     STA secret_tile
-    
+    JSR Move_enemies_off_screen
     RTS
 
 Level_1_Data:
