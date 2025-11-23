@@ -207,6 +207,8 @@ DrawEnemies:
     LDX #$00
 @loop_enemies:
     
+    LDA is_enemy_active, X
+    BEQ @done
     CPX enemy_count
     BCS @done
 
@@ -440,6 +442,7 @@ Move_enemies_off_screen:
     INX
     JMP @loop
 @done:
+JSR DrawEnemies
 RTS
 
 EnemyPos:

@@ -13,7 +13,6 @@
 
 INFLOOP:
 
-
 @wait_vblank:
     LDA vblank_flag
     BEQ @wait_vblank
@@ -22,33 +21,32 @@ INFLOOP:
 
     INC frame_counter
 
-    ;START STATE
+    
+
+    ; ===== UPDATE section =====
+    ; START STATE
     LDA state
     CMP #$00
     BNE :+
-    JSR StartScreenStateUpdate
-    JSR StartScreenStateUpdatDraw
+        JSR StartScreenStateUpdate
     :
 
-    ;GAME STATE
+    ; GAME STATE
     LDA state
     CMP #$01
     BNE :+
         JSR UpdateGameLoop
-        JSR DrawGameLoop
     :
-    
-    ;GAME OVER STATE
+
+    ; GAME OVER STATE
     LDA state
     CMP #$02
     BNE :+
         JSR ClearOAM
-        JSR GameoverUpdate
-        ; JSR DrawGameover
     :
-lda state
-sta $0100
-JMP INFLOOP
+
+    JMP INFLOOP
+
 
 
 
@@ -61,7 +59,7 @@ UpdateGameLoop:
     JSR HandleDpad
     JSR EnemyUpdate
     JSR GetNewEnemyRandomWalkTimer
-    JSR UpdateMoveableBlock
+    ; JSR UpdateMoveableBlock
     JSR UpdateBulet
     JSR DoorUpdate
     JSR UpdatePlayer
@@ -73,12 +71,17 @@ UpdateGameLoop:
 
 
 DrawGameLoop:
+
+    JSR TimerDraw
+    JSR DrawDoor
+    JSR Undraw_door
     JSR ANITMATION
     JSR DrawEnemies
     JSR DRAWPLAYER
-    ; JSR DrawAllBlocks
+    JSR DrawMoveableBlock
     JSR DrawBullet   
     JSR DrawMimic
+
 RTS
 
 
@@ -92,19 +95,45 @@ NMI:
     PHA
     LDA #1
     STA vblank_flag
-   
+
+    ; ===== OAM DMA FIRST (fast, doesn’t touch VRAM) =====
     LDA vram_busy
+    BNE skip_dma
+        LDA #$02
+        STA $4014         ; copy $0200..$02FF to OAM
+skip_dma:
+
+    ; ===== DRAW section =====
+    ; START STATE
+    LDA state
+    CMP #$00
     BNE :+
-    ;Draw
-    LDA #$02
-    STA $4014
+        JSR StartScreenStateUpdatDraw
     :
+
+    ; GAME STATE
+    LDA state
+    CMP #$01
+    BNE :+
+        JSR DrawGameLoop   ; DrawDoor, enemies, player, mimic, etc.
+    :
+
+    ; GAME OVER
+    LDA state
+    CMP #$02
+    BNE :+
+        JSR ClearOAM
+    :
+
+
+
     PLA
     TAY
     PLA
     TAX
     PLA
     RTI
+
 
 
 GetRandom:
@@ -128,7 +157,7 @@ LoadState1:
     JSR LoadLevel
     ; JSR LoadEnemies
     ; JSR LoadBlocks
-    JSR UpdateHealth
+    ; JSR UpdateHealth
     JSR LoadPlayer
     JSR LoadMimic
     RTS

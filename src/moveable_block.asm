@@ -1,258 +1,146 @@
-
-; DrawMoveableBlock:
-
-;     ; write X
-;     LDA moveable_block_x
- 
-;     STA $0233
-;     STA $023b
-;     CLC
-;     ADC #8
-;     STA $0237
-;     STA $023f
-
-;     ; write Y
-;     LDA moveable_block_y
-
-;     SEC 
-;     SBC #$01
-;     STA $0230
-;     STA $0234
-;     CLC
-;     ADC #8
-;     STA $0238
-;     STA $023c
-
-;     RTS
-
-; Writes all pushable blocks as 2x2 metasprites.
-; Uses 4 sprites per block, so OAM moves in 16-byte steps.
-DrawAllBlocks:
-    LDX #$00
-@loop_blocks:
-    CPX moveable_block_count
-    BCS @done
-
-    ; --- load this block's X/Y and precompute x+8,y+8 ---
-    LDA moveable_block_x,X   ; X
-    STA tmpx
-    CLC
-    ADC #8
-    STA tmpx8
-
-    LDA moveable_block_y,X   ; Y
-    STA tmpy
-    CLC
-    ADC #8
-    STA tmpy8
-
-    ; --- compute OAM pointer = $0200 + 16*(BLOCK_OAM_START + X) ---
-    TXA                       ; A = i
-    ASL                       ; *2
-    ASL                       ; *4
-    ASL                       ; *8
-    ASL                       ; *16   (16*i)
-    CLC
-    ADC #(4*BLOCK_OAM_START)  ; + 4*start (sprite index→byte offset)
-    CLC
-    ADC #$00                  ; low of $0200
-    STA oam_ptr_lo
-    LDA #$02                  ; high of $0200
-    ADC #$00                  ; carry won’t happen here, but keeps symmetry
-    STA oam_ptr_hi
-
-    ; --- write 4 sprites (Y,tile,attr,X) using (oam_ptr),Y ---
-    LDY #0
-
-    ; TL
-    LDA tmpy                  ; Y
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #BLOCK_TILE_TL        ; tile
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #BLOCK_ATTR           ; attr
-    STA (oam_ptr_lo),Y
-    INY
-    LDA tmpx                  ; X
-    STA (oam_ptr_lo),Y
-    INY
-
-    ; TR
-    LDA tmpy
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #BLOCK_TILE_TR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #BLOCK_ATTR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA tmpx8
-    STA (oam_ptr_lo),Y
-    INY
-
-    ; BL
-    LDA tmpy8
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #BLOCK_TILE_BL
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #BLOCK_ATTR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA tmpx
-    STA (oam_ptr_lo),Y
-    INY
-
-    ; BR
-    LDA tmpy8
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #BLOCK_TILE_BR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA #BLOCK_ATTR
-    STA (oam_ptr_lo),Y
-    INY
-    LDA tmpx8
-    STA (oam_ptr_lo),Y
-    ; INY not needed after last write
-
-    INX
-    BNE @loop_blocks          ; (max 255 blocks; you’ll cap earlier)
-@done:
-    RTS
-
-
-UpdateMoveableBlock:
-LDX #$00
-@loop_blocks:
-    CPX moveable_block_count
-    BCS @done
-
-    LDA is_moveable_block_moved, X
-    BEQ @next_block
-
-    ;set curent tile to passable
-    TXA
-    PHA
-    LDY moveable_block_y, X
-    LDA moveable_block_x, X
-    TAX
-    JSR UnsetTileSolid
-    PLA
-    TAX
-    ;move block
-    LDA player_direction
-
-    CMP #FACINGUP
-    BEQ @up
-
-    CMP #FACINGDOWN
-    BEQ @down
-
-    CMP #FACINGLEFT
-    BEQ @left
-
-    CMP #FACINGRIGHT
-    BEQ @right
-    CLC
-    RTS
+MoveBlock:
+    LDA #$01
+    STA is_door_unlocked
+    STA door_draw_pending
+    STA block_move_pending
 
 @up:
-LDA moveable_block_y, X
-SEC
-SBC #$10
-STA moveable_block_y, X
-JMP @next
+    LDA player_direction
+    CMP #FACINGUP
+    BNE @down
+        LDA movable_block_index
+        JSR UnsetTileSolid
+        LDA movable_block_index
+        JSR Get_x_and_y
+        
+        
+        LDA movable_block_floor_tile_x
+        STA movable_block_new_tile_x
+        LDA movable_block_floor_tile_y
+        SEC
+        SBC #$02
+        STA movable_block_new_tile_y
+
+        LDA movable_block_index
+        SEC
+        SBC #$10
+        JSR SetTileSolid1
+        
+        JMP @done
 
 @down:
-LDA moveable_block_y, X
-CLC
-ADC #$10
-STA moveable_block_y, X
-JMP @next
+
+    LDA player_direction
+    CMP #FACINGDOWN
+    BNE @left
+        LDA movable_block_index
+        JSR UnsetTileSolid
+        LDA movable_block_index
+        JSR Get_x_and_y
+        
+        
+        LDA movable_block_floor_tile_x
+        STA movable_block_new_tile_x
+        LDA movable_block_floor_tile_y
+        CLC
+        ADC #$02
+        STA movable_block_new_tile_y
+
+        LDA movable_block_index
+        CLC
+        ADC #$10
+        JSR SetTileSolid1
+        
+        JMP @done
 
 @left:
-LDA moveable_block_x, X
-SEC
-SBC #$10
-STA moveable_block_x, X
-JMP @next
+    LDA player_direction
+    CMP #FACINGLEFT
+    BNE @right
+        LDA movable_block_index
+        JSR UnsetTileSolid
+        LDA movable_block_index
+        JSR Get_x_and_y
+        
+        
+        LDA movable_block_floor_tile_x
+        SEC
+        SBC #$02
+        STA movable_block_new_tile_x
+        LDA movable_block_floor_tile_y
+        
+        STA movable_block_new_tile_y
+
+        LDA movable_block_index
+        SEC
+        SBC #$01
+        JSR SetTileSolid1
+        
+        JMP @done
 
 @right:
-LDA moveable_block_x, X
-CLC
-ADC #$10
-STA moveable_block_x, X
-JMP @next
+    LDA player_direction
+    CMP #FACINGRIGHT
+    BNE @done
+        LDA movable_block_index
+        JSR UnsetTileSolid
+        LDA movable_block_index
+        JSR Get_x_and_y
+        
+        
+        LDA movable_block_floor_tile_x
+        
+        CLC
+        ADC #$02
+        STA movable_block_new_tile_x
+        LDA movable_block_floor_tile_y
+        STA movable_block_new_tile_y
 
-@next:
-;set new tile solid
-LDY moveable_block_y, X
-TXA
-PHA
-LDA moveable_block_x, X
-TAX
-JSR SetTileSolid1
-PLA
-TAX
-LDA #$00
-STA is_moveable_block_moved, X
-
-
-@next_block:
-    INX
-    BNE @loop_blocks
+        LDA movable_block_index
+        CLC
+        ADC #$01
+        JSR SetTileSolid1
+        
+        JMP @done
 
 @done:
-RTS
-
-
-; LoadCollisionValues:
-;     ;obj 1 self
-;     ;obj 2 player
-;     LDA moveable_block_x
-;     STA collision_check_x
-;     LDA moveable_block_y
-;     STA collision_check_y
-
-;     RTS
+    LDA #$01
+    STA block_move_pending
+    LDA #$00
+    STA block_move_phase  
+    RTS
 
 
 
-LoadBlocks:
-    LDX #$00
-@loop:
-    CPX moveable_block_count
-    BCS @done                ; stop when X >= enemy_count
 
-    TXA                      ; A = X
-    ASL                      ; A = 2*X
-    TAY                      ; Y = 2*X
+DrawMoveableBlock:
 
-    LDA BlockPos, Y          ; x
-    STA moveable_block_x, X
-    INY
-    LDA BlockPos, Y          ; y
-    STA moveable_block_y, X
+    LDA block_move_pending
+    BEQ @done
 
-    TXA 
-    PHA
+    LDA block_move_phase
+    BEQ @phase0
 
-    LDA moveable_block_x, X
-    LDY moveable_block_y, X
+; ---------- phase 1: draw new block ----------
+@phase1:
+    ; we’re done after drawing the block
+    LDA #$00
+    STA block_move_pending
 
-    TAX
-    JSR SetTilePushable
-    
+    JSR DrawBlock2x2
+    JMP @done
 
-    PLA
-    TAX
-    INX
-    BNE @loop                ; (enemy_count <= 255)
+; ---------- phase 0: clear old floor ----------
+@phase0:
+    LDA #$f4
+    STA loadedTile
+    JSR Draw2x2_same_tile     ; draws floor tiles
+
+    ; advance to phase 1 for next frame
+    LDA #$01
+    STA block_move_phase
+    JMP @done
+
 @done:
     RTS
 
@@ -260,7 +148,87 @@ LoadBlocks:
 
 
 
-BlockPos:
-    .byte $50, $50
-    .byte $80, $50
-    .byte $a0, $a0
+Get_x_and_y:
+    LDA movable_block_index
+    LSR A
+    LSR A
+    LSR A
+    LSR A
+    ASL A   
+    
+    STA movable_block_floor_tile_y   
+
+    LDA movable_block_index
+    AND #$0F
+    
+    ASL A   
+    STA movable_block_floor_tile_x 
+
+    RTS
+
+
+
+Draw2x2_same_tile:
+    ; TL
+
+    LDX movable_block_floor_tile_x
+    STX $00d0
+    LDY movable_block_floor_tile_y
+    STY $00d1
+
+    LDA loadedTile
+    JSR SetBGTile
+
+    ; TR
+    INX
+    LDA loadedTile
+    JSR SetBGTile
+
+    ; BL
+    DEX
+    INY
+    LDA loadedTile
+    JSR SetBGTile
+
+    ; BR
+    INX
+    LDA loadedTile
+    JSR SetBGTile
+
+    RTS
+
+
+DrawBlock2x2:
+    ; TL
+    
+    LDX movable_block_new_tile_x
+    STX $00d2
+    LDY movable_block_new_tile_y
+    STY $00d3
+    LDA #$04
+    STA loadedTile
+    JSR SetBGTile
+
+    ; TR
+    
+    INX
+    LDA #$05
+    STA loadedTile
+    JSR SetBGTile
+
+    ; BL
+    
+    DEX
+    INY
+    LDA #$14
+    STA loadedTile
+    JSR SetBGTile
+
+    ; BR
+    
+    INX
+    LDA #$15
+    STA loadedTile
+    JSR SetBGTile
+
+    RTS

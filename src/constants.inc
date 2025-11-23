@@ -56,7 +56,7 @@ BULLET_SPEED = 2
 DOOR_TILE_X = 12
 DOOR_TILE_Y = 4
 
-
+FLOOR_TILE = $6d
 TIMER_FPS = 60
 ;number tiles
 num_0_tile = $d9

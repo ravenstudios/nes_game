@@ -13,7 +13,13 @@ INITVARS:
     STA is_player_checking
     STA enemy_kill_count
     STA timer_counter
-    LDA TIMER_FPS
+    STA can_undraw_door
+   
+
+
+
+
+    ; LDA TIMER_FPS
     
     
 
@@ -21,7 +27,7 @@ INITVARS:
     STA timer_s
 
     LDA #$01
-    
+     
     STA timer_ts
     STA can_move_block
     
@@ -124,6 +130,6 @@ STA is_enemy_active+2
     STA mimic_x
     LDA #$f0
     STA mimic_y
-    LDA #$04
+    LDA #$00
     STA level
     RTS

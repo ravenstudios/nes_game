@@ -147,8 +147,7 @@ CheckTile:
     ; --- read tile once and keep it ---
     LDA COLLISIONTABLE, X
     STA cur_tile           ; <- NEW: remember tile value
-    STX current_tile_index
-
+    
     ; ---------- Door (tile = 3) ----------
     LDA cur_tile
     CMP #$03
@@ -162,136 +161,15 @@ CheckTile:
     LDA cur_tile
     CMP #$02
     
-    BNE @jump_decide_solid       ; not pushable → decide solid/empty below
-        LDA #$01
-        STA is_door_unlocked
-        JSR DrawDoor
+    BNE @decide_solid 
+        STX movable_block_index      
         
-@up:
-    LDA player_direction
-    CMP #FACINGUP
-    BNE @down
-        ;change current tile to floor and convert tiles above to block tile and set solid
-        LDA #$6d
-        STA loadedTile
-        ; LDA cur_tile
-        LDA current_tile_index
-        JSR UnsetTileSolid
-      
-        JSR Get_x_and_y ;load cur_tile into A
-        JSR Draw2x2_same_tile
         
-
-        ; ;block
-        LDA current_tile_index
-        PHA
-        SEC
-        SBC #$10
-        STA current_tile_index
-        JSR SetTileSolid1
-        JSR Get_x_and_y
-        LDX tile_x
-        LDY tile_y
-        JSR DrawBlock2x2
-        PLA
-        STA current_tile_index
-        JMP @done
-@down:
-    LDA player_direction
-    CMP #FACINGDOWN
-    BNE @left
-        ;change current tile to floor and convert tiles above to block tile and set solid
-        LDA #$6d
-        STA loadedTile
-        ; LDA cur_tile
-        LDA current_tile_index
-        JSR UnsetTileSolid
-      
-        JSR Get_x_and_y ;load cur_tile into A
-        JSR Draw2x2_same_tile
-        
-
-        ; ;block
-        LDA current_tile_index
-        PHA
-        CLC
-        ADC #$10
-        STA current_tile_index
-        JSR SetTileSolid1
-        JSR Get_x_and_y
-        LDX tile_x
-        LDY tile_y
-        JSR DrawBlock2x2
-        PLA
-        STA current_tile_index
-        JMP @done
-
-@jump_decide_solid:
-    JMP @decide_solid
+        JSR MoveBlock
 
 
-@left:
-    LDA player_direction
-    CMP #FACINGLEFT
-    BNE @right
-        ;change current tile to floor and convert tiles above to block tile and set solid
-        LDA #$6d
-        STA loadedTile
-        ; LDA cur_tile
-        LDA current_tile_index
-        JSR UnsetTileSolid
-      
-        JSR Get_x_and_y ;load cur_tile into A
-        JSR Draw2x2_same_tile
-        
-
-        ; ;block
-        LDA current_tile_index
-        PHA
-        SEC
-        SBC #$01
-        STA current_tile_index
-        JSR SetTileSolid1
-        JSR Get_x_and_y
-        LDX tile_x
-        LDY tile_y
-        JSR DrawBlock2x2
-        PLA
-        STA current_tile_index
-        JMP @done
 
 
-@right:
-    LDA player_direction
-    CMP #FACINGRIGHT
-    BNE @done
-        ;change current tile to floor and convert tiles above to block tile and set solid
-        LDA #$6d
-        STA loadedTile
-        ; LDA cur_tile
-        LDA current_tile_index
-        JSR UnsetTileSolid
-      
-        JSR Get_x_and_y ;load cur_tile into A
-        JSR Draw2x2_same_tile
-        
-
-        ; ;block
-        LDA current_tile_index
-        PHA
-        CLC
-        ADC #$01
-        STA current_tile_index
-        JSR SetTileSolid1
-        JSR Get_x_and_y
-        LDX tile_x
-        LDY tile_y
-        JSR DrawBlock2x2
-        PLA
-        STA current_tile_index
-        JMP @done
-
-@done:
 
 
 @decide_solid:
@@ -420,82 +298,11 @@ Exit:
     JSR LoadLevel
     LDA #$00
     STA is_door_unlocked
-    JMP Undraw_door
+    
+    
+    LDA #$01
+    STA can_undraw_door
+    ; JMP Undraw_door
     RTS
 
 
-Get_x_and_y:
-    ; tile_y = index / 16  (row)
-    LDA current_tile_index
-    STA $0092
-    LSR A
-    LSR A
-    LSR A
-    LSR A
-    ASL A   
-    STA $0091
-    STA tile_y          ; 0..14
-
-    ; tile_x = index % 16  (col)
-    LDA current_tile_index
-    AND #$0F
-    STA $0090
-    ASL A   
-    STA tile_x          ; 0..15
-
-    RTS
-
-
-
-; IN: tile_x, tile_y, loadedTile
-Draw2x2_same_tile:
-    ; TL
-    LDA loadedTile
-    LDX tile_x
-    LDY tile_y
-    JSR SetBGTile
-
-    ; TR
-    INX
-    JSR SetBGTile
-
-    ; BL
-    DEX
-    INY
-    JSR SetBGTile
-
-    ; BR
-    INX
-    JSR SetBGTile
-
-    RTS
-
-
-DrawBlock2x2:
-    ; TL
-    LDA #$04
-    STA loadedTile
-    LDX tile_x
-    LDY tile_y
-    JSR SetBGTile
-
-    ; TR
-    LDA #$05
-    STA loadedTile
-    INX
-    JSR SetBGTile
-
-    ; BL
-    LDA #$14
-    STA loadedTile
-    DEX
-    INY
-    JSR SetBGTile
-
-    ; BR
-    LDA #$15
-    STA loadedTile
-    INX
-    JSR SetBGTile
-
-    RTS

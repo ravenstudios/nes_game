@@ -123,7 +123,6 @@ DRAWCHASERENEMY:
 
 
 LoadChaserCollisionValues:
-INC $0088
     LDA CHASERENEMY_X
     STA collision_check_x
     LDA CHASERENEMY_Y

@@ -1,4 +1,5 @@
 DRAWPLAYER:
+    JSR DrawHealth
 	LDA anim_frame
     ASL A
     CLC
@@ -17,17 +18,6 @@ DRAWPLAYER:
     INX
     STX $020D                  ; BR    
 
-    ;bounding box for test
-    ; LDA #$80
-    ; STA $0201                  ; TL
-    ; LDA #$81
-    ; STA $0205                  ; TR
-    ; LDA #$90
-    ; STA $0209                  ; BL
-    ; LDA #$91
-    ; STA $020D                  ; BR    
-
-    ; write X
     LDA player_x
     STA $0203
     STA $020b
@@ -36,21 +26,6 @@ DRAWPLAYER:
     STA $0207
     STA $020f
 
-    ; ; write Y
-    ; LDA PLAYER_Y
-    ; SEC
-    ; SBC #$01
-    ; STA $0200
-    ; STA $0204
-    ; CLC
-    ; ADC #8
-    ; STA $0208
-    ; STA $020c
-
-    ; assume: PLAYER_Y is the logical position (0..$EF)
-; OAM: TL=$0200, TR=$0204, BL=$0208, BR=$020C
-
-    ; cache player Y for this frame
     LDA player_y
     STA player_y_pos
 
@@ -73,7 +48,6 @@ DRAWPLAYER:
     JMP @done
 
 @hide:
-    ; put metasprite offscreen (any Y >= $F0 hides); $FE is common
     LDA is_player_hit
     BEQ @show
     LDA #$FE
@@ -83,19 +57,7 @@ DRAWPLAYER:
     STA $020C
 
 @done:
-    ; (write X and tile/attr as usual elsewhere)
-
-
-
-    
     RTS
-
-; enemy_x: .res 3
-; enemy_y: .res 3
-; enemy_direction: .res 3
-; enemy_random_walk_timer: .res 3
-; is_enemy_active: .res 3
-; enemy_count: .res 1
 
 
 UpdatePlayer:
@@ -142,7 +104,8 @@ UpdatePlayer:
             LDA #$01
             STA is_player_hit
             DEC player_health
-            JSR UpdateHealth
+            STA can_draw_health
+            ; JSR UpdateHealth
 
 
     @next:
@@ -181,20 +144,21 @@ GetPlayerTile:
     RTS
 
 
+DrawHealth:
 
-
-
-; draws a row of hearts starting at HEALTH_X, row HEALTH_Y
-; heart if i < player_health, else blank
-
-UpdateHealth:
+    LDA can_draw_health
+    CMP #$01
+    BNE @done
+    LDA #$00
+    STA can_draw_health
+    inc $00c0
     LDX #$00
     LDA #HEALTH_X         ; base X (tile column)
     STA tmp               ; tmp holds current draw X
 
 @health_loop:
     CPX #MAX_HEALTH
-    BCS @health_done      ; exit if X >= MAX_HEALTH
+    BCS @done      ; exit if X >= MAX_HEALTH
 
     ; --- choose tile: heart if X < player_health, else blank ---
     CPX player_health
@@ -227,7 +191,7 @@ UpdateHealth:
     INX
     JMP @health_loop
 
-@health_done:
+@done:
     RTS
 
 

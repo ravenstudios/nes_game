@@ -127,7 +127,8 @@ HandleDpad:
     LDA controller1
     AND #SELECTBTN
     BEQ @a_btn
-        
+        LDA #$03
+        STA enemy_kill_count
     RTS
 
 @a_btn:

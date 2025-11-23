@@ -16,7 +16,6 @@ gameover_string:
 DrawGameover:
 
     LDX #$00
-    inc $0080
     @loop:
         CPX #$08
         BEQ @done

@@ -1,68 +1,68 @@
 
 
-LOADBACKGROUND:
+; LOADBACKGROUND:
 
-	LDA $2002		;read PPU status to reset high/low latch
-	LDA #$20	;start of nametable "canvas" as the high bit
-	STA $2006	
-	LDA #$00	;sets low bit
-	STA $2006	;what adress to write to starting at $2100
-	LDX #$00	;bad code that uses wraparound to hit 0 in the loop
-LOADBACKGROUNDP1:
-	LDA BACKGROUNDDATA, X ;loop through BACKGROUNDDATA
-	STA $2007 ; store byte
-	LDA COLLISIONTABLEDATA, X
-	; STA COLLISIONTABLE
-	INX
-	CPX #$00 ;wrap around
-	BNE LOADBACKGROUNDP1 ; if x == 0 break
-LOADBACKGROUNDP2:
-	LDA BACKGROUNDDATA+256, X
-	STA $2007
-	LDA COLLISIONTABLEDATA+256, X
-	; STA COLLISIONTABLE
-	INX
-	CPX #$00
-	BNE LOADBACKGROUNDP2
-LOADBACKGROUNDP3:
-	LDA BACKGROUNDDATA+512, X
-	STA $2007
-	LDA COLLISIONTABLEDATA+512, X
-	; STA COLLISIONTABLE
-	INX
-	CPX #$00
-	BNE LOADBACKGROUNDP3
-LOADBACKGROUNDP4:
-	LDA BACKGROUNDDATA+768, X
-	STA $2007
-	LDA COLLISIONTABLEDATA+768, X
-	; STA COLLISIONTABLE
-	INX
-	CPX #$c0
-	BNE LOADBACKGROUNDP4
-;192
+; 	LDA $2002		;read PPU status to reset high/low latch
+; 	LDA #$20	;start of nametable "canvas" as the high bit
+; 	STA $2006	
+; 	LDA #$00	;sets low bit
+; 	STA $2006	;what adress to write to starting at $2100
+; 	LDX #$00	;bad code that uses wraparound to hit 0 in the loop
+; LOADBACKGROUNDP1:
+; 	LDA BACKGROUNDDATA, X ;loop through BACKGROUNDDATA
+; 	STA $2007 ; store byte
+; 	LDA COLLISIONTABLEDATA, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$00 ;wrap around
+; 	BNE LOADBACKGROUNDP1 ; if x == 0 break
+; LOADBACKGROUNDP2:
+; 	LDA BACKGROUNDDATA+256, X
+; 	STA $2007
+; 	LDA COLLISIONTABLEDATA+256, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$00
+; 	BNE LOADBACKGROUNDP2
+; LOADBACKGROUNDP3:
+; 	LDA BACKGROUNDDATA+512, X
+; 	STA $2007
+; 	LDA COLLISIONTABLEDATA+512, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$00
+; 	BNE LOADBACKGROUNDP3
+; LOADBACKGROUNDP4:
+; 	LDA BACKGROUNDDATA+768, X
+; 	STA $2007
+; 	LDA COLLISIONTABLEDATA+768, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$c0
+; 	BNE LOADBACKGROUNDP4
+; ;192
 
-;LOAD BACKGROUND PALETTEDATA
-	LDA #$23	
-	STA $2006
-	LDA #$c0
-	STA $2006
-	LDX #$00
-LOADBACKGROUNDATTRDATA:
-	LDA BACKGROUNDATTRDATA, X
-	STA $2007
-	INX
-	CPX #$40
-	BNE LOADBACKGROUNDATTRDATA
+; ;LOAD BACKGROUND PALETTEDATA
+; 	LDA #$23	
+; 	STA $2006
+; 	LDA #$c0
+; 	STA $2006
+; 	LDX #$00
+; LOADBACKGROUNDATTRDATA:
+; 	LDA BACKGROUNDATTRDATA, X
+; 	STA $2007
+; 	INX
+; 	CPX #$40
+; 	BNE LOADBACKGROUNDATTRDATA
 
-	;RESET SCROLL
-	LDA #$00
-	STA $2005
-	STA $2005
+; 	;RESET SCROLL
+; 	LDA #$00
+; 	STA $2005
+; 	STA $2005
 
 
 
-RTS
+; RTS
 	
 
 SetTilePushable:
@@ -211,15 +211,15 @@ BACKGROUNDDATA:
 ;3-pink
 ;br - bl - tr - tl
 
-BACKGROUNDATTRDATA:
-  .byte $01, $01, $01, $01, $01, $01, $01, $01
-	.byte $01, $01, $01, $01, $01, $01, $01, $01
-	.byte $00, $00, $00, $00, $00, $00, $00, $00
-	.byte $00, $00, $00, $00, $00, $00, $00, $00
-	.byte $00, $00, $00, $00, $00, $00, $00, $00
-	.byte $00, $00, $00, $00, $00, $00, $00, $00
-	.byte $00, $00, $00, $00, $00, $00, $00, $00
-	.byte $00, $00, $00, $00, $00, $00, $00, $00
+; BACKGROUNDATTRDATA:
+;   .byte $01, $01, $01, $01, $01, $01, $01, $01
+; 	.byte $01, $01, $01, $01, $01, $01, $01, $01
+; 	.byte $00, $00, $00, $00, $00, $00, $00, $00
+; 	.byte $00, $00, $00, $00, $00, $00, $00, $00
+; 	.byte $00, $00, $00, $00, $00, $00, $00, $00
+; 	.byte $00, $00, $00, $00, $00, $00, $00, $00
+; 	.byte $00, $00, $00, $00, $00, $00, $00, $00
+; 	.byte $00, $00, $00, $00, $00, $00, $00, $00
 
 
 COLLISIONTABLEDATA:
@@ -261,33 +261,31 @@ COLLISIONTABLEDATA:
 
 ; A=tile, X=col, Y=row
 ; A = tile, X = col (0..31), Y = row (0..29)
+; expects:
+;   loadedTile = tile number
+;   X = column (0–31)
+;   Y = row (0–29)
+; uses:
+;   tmp0/tmp1
+
 SetBGTile:
-    ; --- wait for start of vblank ---
-@vbwait:
-    BIT $2002
-    BPL @vbwait          ; loop until vblank begins (bit7=1)
-
-    ; --- render OFF while touching VRAM ---
-    LDA #$00
-    STA $2001
-
-    ; PHA                  ; save tile in A
-
     ; addr = $2000 + row*32 + col
     TYA
     STA tmp0
     LDA #$00
     STA tmp1
-    ASL tmp0
- 	ROL tmp1  ; *2
-    ASL tmp0
- 	ROL tmp1  ; *4
-    ASL tmp0
- 	ROL tmp1  ; *8
-    ASL tmp0
- 	ROL tmp1  ; *16
-    ASL tmp0
- 	ROL tmp1  ; *32
+
+    ; tmp = row * 32
+    ASL tmp0       ; *2
+    ROL tmp1
+    ASL tmp0       ; *4
+    ROL tmp1
+    ASL tmp0       ; *8
+    ROL tmp1
+    ASL tmp0       ; *16
+    ROL tmp1
+    ASL tmp0       ; *32
+    ROL tmp1
 
     CLC
     LDA tmp0
@@ -297,6 +295,7 @@ SetBGTile:
     ADC #>$2000
     STA tmp1
 
+    ; add column X
     TXA
     CLC
     ADC tmp0
@@ -305,27 +304,25 @@ SetBGTile:
     ADC #$00
     STA tmp1
 
-    ; do the write
-    LDA $2002
+    ; ---- do the write ----
+    LDA $2002          ; reset PPUADDR latch (same as BIT $2002)
     LDA tmp1
-    STA $2006
+    STA $2006          ; high byte
     LDA tmp0
-    STA $2006
+    STA $2006          ; low byte
 
     LDA loadedTile
     STA $2007
 
-    ; --- restore scroll & render ON (no scrolling: both 0) ---
-    LDA #$00
+	LDA #$00
     STA $2005
     STA $2005
-    LDA #%00011110
-    STA $2001
+	
     RTS
 
 
+
 ClearBackground:
-    INC $0081
     ; disable rendering
     LDA #$00
     STA $2001
@@ -341,7 +338,6 @@ ClearBackground:
     LDY #$03       ; high byte
     LDX #$C0       ; low byte
 ClearLoop:
-    INC $0083
     LDA #$00
     STA $2007      ; write blank tile
 

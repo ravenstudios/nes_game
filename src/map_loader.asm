@@ -34,7 +34,9 @@ LoadLevel:
     JSR LoadBackground
     JSR LoadBKAtr
 
-    JSR UpdateHealth
+    LDA #$01
+    STA can_draw_health
+    ; JSR UpdateHealth
     LDA level
     CMP #$00
     BNE :+
@@ -188,7 +190,8 @@ UpdateMapLoader:
     ; first time: mark unlocked & draw door once
     LDA #$01
     STA is_door_unlocked
-    JSR DrawDoor
+    STA door_draw_pending
+    ; JSR DrawDoor
 
 @done:
     RTS

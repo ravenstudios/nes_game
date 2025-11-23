@@ -1,13 +1,13 @@
 TimerUpdate:
-    INC $00f0
     DEC timer_tick_counter
     LDA timer_tick_counter
-    STA $00f3
     BNE @skip
-        INC $00f1
+
         LDA #TIMER_FPS
         STA timer_tick_counter ;reset
         
+        LDA #$01
+        STA can_draw_timer
         
         ;get timer_s
         LDA timer_s
@@ -24,7 +24,7 @@ TimerUpdate:
             STA timer_ts
             DEC timer_m
         :
-    JSR TimerDraw
+    
     DEC timer_s
     
 @skip:
@@ -32,7 +32,13 @@ TimerUpdate:
 
 
 TimerDraw:
-inc $00f5
+    LDA can_draw_timer
+    CMP #$01
+    BNE @done
+
+    LDA #$00
+    STA can_draw_timer
+
     LDX timer_m
     LDA NumberTiles, X
     STA loadedTile
@@ -63,7 +69,7 @@ inc $00f5
     LDY #TIMER_DIGIT_Y
     LDX #LEVEL_X
     JSR SetBGTile
-
+@done:
     RTS
 
 NumberTiles:

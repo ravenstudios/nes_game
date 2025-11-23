@@ -17,6 +17,13 @@ PPUDATA   = $2007
 ; DOOR_TILE_Y = 4
 
 DrawDoor:
+    LDA door_draw_pending
+    CMP #$01
+    BNE @done
+
+    LDA #$00
+    STA door_draw_pending ;reset flag
+
     ; TL
     LDA #$0d
     STA loadedTile
@@ -51,14 +58,21 @@ DrawDoor:
     JSR SetTileDoor
     INX
     JSR SetTileDoor
-
+    
+@done:
     RTS
 
 
 
 Undraw_door:
+    LDA can_undraw_door
+    CMP #$01
+    BNE @done
+    LDA #$00
+    STA can_undraw_door; reset flag
 
     ; TL
+
     LDA #$4d
     STA loadedTile
     LDX #DOOR_TILE_X
@@ -93,6 +107,8 @@ Undraw_door:
     INX
     JSR UnsetTileDoor
 
+    
+@done:
     RTS
 
 
@@ -127,7 +143,11 @@ DoorUpdate:
         BNE @done
             LDA #$01
             STA is_door_unlocked
-            JSR DrawDoor
+            STA door_draw_pending
+            LDA #$00
+            STA can_undraw_door
+
+            ; JSR DrawDoor
 
 @done:
 RTS
