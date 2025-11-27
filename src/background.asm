@@ -313,7 +313,7 @@ SetBGTile:
 
     LDA loadedTile
     STA $2007
-
+; 
 	LDA #$00
     STA $2005
     STA $2005

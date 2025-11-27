@@ -1,7 +1,7 @@
 Level_3_init:
     LDA #0
     STA secret_tile
-    JSR LoadEnemies
+    JSR ActivateEnemies
     RTS
 
 

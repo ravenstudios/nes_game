@@ -69,6 +69,9 @@ TimerDraw:
     LDY #TIMER_DIGIT_Y
     LDX #LEVEL_X
     JSR SetBGTile
+
+    JSR DrawHealth
+
 @done:
     RTS
 

@@ -1,5 +1,5 @@
 DRAWPLAYER:
-    JSR DrawHealth
+    ; JSR DrawHealth
 	LDA anim_frame
     ASL A
     CLC
@@ -146,53 +146,61 @@ GetPlayerTile:
 
 DrawHealth:
 
-    LDA can_draw_health
-    CMP #$01
-    BNE @done
-    LDA #$00
-    STA can_draw_health
-    inc $00c0
-    LDX #$00
-    LDA #HEALTH_X         ; base X (tile column)
-    STA tmp               ; tmp holds current draw X
+    ; Only draw when flagged
+    ; LDA can_draw_health
+    ; CMP #$01
+    ; BNE @done
+
+    ; LDA #$00
+    ; STA can_draw_health
+
+    ; Clamp player_health to MAX_HEALTH just in case
+    LDA player_health
+    CMP #MAX_HEALTH
+    BCC :+
+        LDA #MAX_HEALTH
+        STA player_health
+    :
+
+    ; --- set PPU address to start of health bar ---
+    LDA PPUSTATUS          ; $2002, reset latch
+    LDA #HEALTH_ADDR_HI
+    STA PPUADDR            ; $2006 high
+    LDA #HEALTH_ADDR_LO
+    STA PPUADDR            ; $2006 low
+
+    ; --- draw MAX_HEALTH tiles in a row ---
+    LDX #$00               ; heart index
 
 @health_loop:
     CPX #MAX_HEALTH
-    BCS @done      ; exit if X >= MAX_HEALTH
+    BCS @done_write
 
-    ; --- choose tile: heart if X < player_health, else blank ---
+    ; choose tile: heart if X < player_health, else blank
     CPX player_health
-    BCC @draw_heart       ; X < player_health → heart
-@draw_blank:
-    LDA #$00              ; blank tile (adjust as needed)
-    STA loadedTile
-    JMP @emit
-@draw_heart:
-    LDA #HEALTH_TILE
-    STA loadedTile
+    BCC @heart_tile
+
+@blank_tile:
+    LDA #$00               ; blank tile index
+    BEQ @emit              ; always taken
+
+@heart_tile:
+    LDA #HEALTH_TILE       ; heart tile index
 
 @emit:
-    ; preserve loop index, use tmp as draw X for SetBGTile
-    TXA
-    PHA
+    STA PPUDATA            ; $2007
 
-    LDX tmp               ; draw column
-    LDY #HEALTH_Y         ; draw row
-    JSR SetBGTile
-
-    PLA
-    TAX                   ; restore loop index
-
-    ; advance draw X and loop index
-    LDA tmp
-    CLC
-    ADC #1
-    STA tmp
     INX
     JMP @health_loop
 
+@done_write:
 @done:
+
+	LDA #$00
+    STA $2005
+    STA $2005
     RTS
+
 
 
 

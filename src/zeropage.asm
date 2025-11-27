@@ -171,6 +171,8 @@ movable_block_new_tile_y: .res 1
 block_move_phase: .res 1
 movable_block_index: .res 1
 can_draw_health: .res 1
+health_tmp: .res 1
+
 .segment "BSS"
 
 COLLISIONTABLE: .res 240

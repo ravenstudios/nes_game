@@ -20,4 +20,9 @@ Maybe boss will be seen in a window during a lighting strike.
 [x]Fix enemies able to push blocks
 [x]Fix enemies collision on blocks
 [x]Make time show minutes and secends
-[]Fix map layout or collision, top of map is off 1 row. Fix by makeing hub 4 rows not 3
+[x]Fix map layout or collision, top of map is off 1 row. Fix by makeing hub 4 rows not 3
+[]Clone enemy gets stuck on bottom
+[]Hud glitchs on load level. Its even worse when enimes are loaded on level 3
+[]Enemies trigger next room with door collision
+[]Clone push block is reversed
+[]Enimes group together, need to bounce off each other

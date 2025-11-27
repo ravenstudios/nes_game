@@ -399,6 +399,15 @@ ActivateEnemies:
     BEQ @done
     LDA #$01
     STA is_enemy_active, X
+    TXA                      ; A = X
+    ASL                      ; A = 2*X
+    TAY                      ; Y = 2*X
+
+    LDA EnemyPos, Y          ; x
+    STA enemy_x, X
+    INY
+    LDA EnemyPos, Y          ; y
+    STA enemy_y, X
     INX
     JMP @loop
 @done:

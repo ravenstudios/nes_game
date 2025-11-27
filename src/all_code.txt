@@ -24,54 +24,54 @@
 ===== background.asm =====
 
 
-LOADBACKGROUND:
+; LOADBACKGROUND:
 
-	LDA $2002		;read PPU status to reset high/low latch
-	LDA #$20	;start of nametable "canvas" as the high bit
-	STA $2006	
-	LDA #$00	;sets low bit
-	STA $2006	;what adress to write to starting at $2100
-	LDX #$00	;bad code that uses wraparound to hit 0 in the loop
-LOADBACKGROUNDP1:
-	LDA BACKGROUNDDATA, X ;loop through BACKGROUNDDATA
-	STA $2007 ; store byte
-	LDA COLLISIONTABLEDATA, X
-	; STA COLLISIONTABLE
-	INX
-	CPX #$00 ;wrap around
-	BNE LOADBACKGROUNDP1 ; if x == 0 break
-LOADBACKGROUNDP2:
-	LDA BACKGROUNDDATA+256, X
-	STA $2007
-	LDA COLLISIONTABLEDATA+256, X
-	; STA COLLISIONTABLE
-	INX
-	CPX #$00
-	BNE LOADBACKGROUNDP2
-LOADBACKGROUNDP3:
-	LDA BACKGROUNDDATA+512, X
-	STA $2007
-	LDA COLLISIONTABLEDATA+512, X
-	; STA COLLISIONTABLE
-	INX
-	CPX #$00
-	BNE LOADBACKGROUNDP3
-LOADBACKGROUNDP4:
-	LDA BACKGROUNDDATA+768, X
-	STA $2007
-	LDA COLLISIONTABLEDATA+768, X
-	; STA COLLISIONTABLE
-	INX
-	CPX #$c0
-	BNE LOADBACKGROUNDP4
-;192
+; 	LDA $2002		;read PPU status to reset high/low latch
+; 	LDA #$20	;start of nametable "canvas" as the high bit
+; 	STA $2006	
+; 	LDA #$00	;sets low bit
+; 	STA $2006	;what adress to write to starting at $2100
+; 	LDX #$00	;bad code that uses wraparound to hit 0 in the loop
+; LOADBACKGROUNDP1:
+; 	LDA BACKGROUNDDATA, X ;loop through BACKGROUNDDATA
+; 	STA $2007 ; store byte
+; 	LDA COLLISIONTABLEDATA, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$00 ;wrap around
+; 	BNE LOADBACKGROUNDP1 ; if x == 0 break
+; LOADBACKGROUNDP2:
+; 	LDA BACKGROUNDDATA+256, X
+; 	STA $2007
+; 	LDA COLLISIONTABLEDATA+256, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$00
+; 	BNE LOADBACKGROUNDP2
+; LOADBACKGROUNDP3:
+; 	LDA BACKGROUNDDATA+512, X
+; 	STA $2007
+; 	LDA COLLISIONTABLEDATA+512, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$00
+; 	BNE LOADBACKGROUNDP3
+; LOADBACKGROUNDP4:
+; 	LDA BACKGROUNDDATA+768, X
+; 	STA $2007
+; 	LDA COLLISIONTABLEDATA+768, X
+; 	; STA COLLISIONTABLE
+; 	INX
+; 	CPX #$c0
+; 	BNE LOADBACKGROUNDP4
+; ;192
 
-;LOAD BACKGROUND PALETTEDATA
-	LDA #$23	
-	STA $2006
-	LDA #$c0
-	STA $2006
-	LDX #$00
+; ;LOAD BACKGROUND PALETTEDATA
+; 	LDA #$23	
+; 	STA $2006
+; 	LDA #$c0
+; 	STA $2006
+; 	LDX #$00
 ; LOADBACKGROUNDATTRDATA:
 ; 	LDA BACKGROUNDATTRDATA, X
 ; 	STA $2007
@@ -1393,6 +1393,8 @@ DrawEnemies:
     LDX #$00
 @loop_enemies:
     
+    LDA is_enemy_active, X
+    BEQ @done
     CPX enemy_count
     BCS @done
 
@@ -1626,6 +1628,7 @@ Move_enemies_off_screen:
     INX
     JMP @loop
 @done:
+JSR DrawEnemies
 RTS
 
 EnemyPos:
@@ -1794,7 +1797,7 @@ LoadState1:
     JSR LoadLevel
     ; JSR LoadEnemies
     ; JSR LoadBlocks
-    JSR UpdateHealth
+    ; JSR UpdateHealth
     JSR LoadPlayer
     JSR LoadMimic
     RTS
@@ -1879,7 +1882,7 @@ INITVARS:
     STA enemy_kill_count
     STA timer_counter
     STA can_undraw_door
-
+   
 
 
 
@@ -1892,7 +1895,7 @@ INITVARS:
     STA timer_s
 
     LDA #$01
-    
+     
     STA timer_ts
     STA can_move_block
     
@@ -2277,14 +2280,20 @@ IRQ:
 ; ===== LoadLevel: sets bgPtr + collPtr based on current level, then loads data =====
 
 LoadLevel:
-    ; turn rendering OFF while we touch VRAM
+
+    ; tell NMI to stay out of VRAM
+    LDA #$01
+    STA vram_busy
+
+    ; disable NMI + rendering
     LDA #$00
-    STA $2001
+    STA $2000       ; NMI off
+    STA $2001       ; rendering off
 
     ; A or memory "level" holds the current level index (0-based)
     LDA level        ; 0,1,2,...
     ASL A            ; *2
-    ASL A            ; *4  (4 bytes per entry)
+    ASL A            ; *4
     TAX              ; X = offset into LevelTable
 
     ; --- bgPtr = pointer to this level's BG data ---
@@ -2307,38 +2316,46 @@ LoadLevel:
     JSR LoadBackground
     JSR LoadBKAtr
 
-    JSR UpdateHealth
+    LDA #$01
+    STA can_draw_health
+
+    ; per-level init
     LDA level
     CMP #$00
     BNE :+
         JSR Level_1_init
-        JMP @done
-    
+        JMP @after_init
     :
     LDA level
     CMP #$01
     BNE :+
         JSR Level_2_init
-        JMP @done
-    
+        JMP @after_init
     :
     LDA level
     CMP #$02
     BNE :+
         JSR Level_3_init
-        JMP @done
+        JMP @after_init
     :
     LDA level
     CMP #$03
     BNE :+
         JSR Level_4_init
-        JMP @done
+        JMP @after_init
     :
+    ; etc...
 
-    @done:
-    ; turn rendering back ON
+@after_init:
+    ; re-enable rendering + NMI
     LDA #%00011110
-    STA $2001
+    STA $2001          ; show BG+sprites
+    LDA #%10010000
+    STA $2000          ; NMI on, BG pattern table select as you like
+
+    ; allow NMI to draw again
+    LDA #$00
+    STA vram_busy
 
     RTS
 
@@ -2703,38 +2720,106 @@ MoveBlock:
     LDA player_direction
     CMP #FACINGUP
     BNE @down
-        ; current tile under block
-
         LDA movable_block_index
-        STA $00b0
         JSR UnsetTileSolid
-        
         LDA movable_block_index
-        STA $00b1
-
         JSR Get_x_and_y
         
+        
+        LDA movable_block_floor_tile_x
+        STA movable_block_new_tile_x
+        LDA movable_block_floor_tile_y
+        SEC
+        SBC #$02
+        STA movable_block_new_tile_y
+
         LDA movable_block_index
-        STA $00b4
+        SEC
+        SBC #$10
+        JSR SetTileSolid1
         
- 
-
-        ; JSR Draw2x2_same_tile
-
-        ; LDA movable_block_index
-        ; SEC
-        ; SBC #$10
-        ; JSR SetTileSolid1
-
-        
-
-
         JMP @done
 
 @down:
-    
+
+    LDA player_direction
+    CMP #FACINGDOWN
+    BNE @left
+        LDA movable_block_index
+        JSR UnsetTileSolid
+        LDA movable_block_index
+        JSR Get_x_and_y
+        
+        
+        LDA movable_block_floor_tile_x
+        STA movable_block_new_tile_x
+        LDA movable_block_floor_tile_y
+        CLC
+        ADC #$02
+        STA movable_block_new_tile_y
+
+        LDA movable_block_index
+        CLC
+        ADC #$10
+        JSR SetTileSolid1
+        
+        JMP @done
+
+@left:
+    LDA player_direction
+    CMP #FACINGLEFT
+    BNE @right
+        LDA movable_block_index
+        JSR UnsetTileSolid
+        LDA movable_block_index
+        JSR Get_x_and_y
+        
+        
+        LDA movable_block_floor_tile_x
+        SEC
+        SBC #$02
+        STA movable_block_new_tile_x
+        LDA movable_block_floor_tile_y
+        
+        STA movable_block_new_tile_y
+
+        LDA movable_block_index
+        SEC
+        SBC #$01
+        JSR SetTileSolid1
+        
+        JMP @done
+
+@right:
+    LDA player_direction
+    CMP #FACINGRIGHT
+    BNE @done
+        LDA movable_block_index
+        JSR UnsetTileSolid
+        LDA movable_block_index
+        JSR Get_x_and_y
+        
+        
+        LDA movable_block_floor_tile_x
+        
+        CLC
+        ADC #$02
+        STA movable_block_new_tile_x
+        LDA movable_block_floor_tile_y
+        STA movable_block_new_tile_y
+
+        LDA movable_block_index
+        CLC
+        ADC #$01
+        JSR SetTileSolid1
+        
+        JMP @done
 
 @done:
+    LDA #$01
+    STA block_move_pending
+    LDA #$00
+    STA block_move_phase  
     RTS
 
 
@@ -2743,22 +2828,31 @@ MoveBlock:
 DrawMoveableBlock:
 
     LDA block_move_pending
-    BEQ @done       ; nothing to draw this frame
-    
+    BEQ @done
+
+    LDA block_move_phase
+    BEQ @phase0
+
+; ---------- phase 1: draw new block ----------
+@phase1:
+    ; we’re done after drawing the block
     LDA #$00
     STA block_move_pending
-    ; @up:
-    ; LDA player_direction
-    ; CMP #FACINGUP
-    ; BNE @down
 
-   
-    ; JSR Get_x_and_y
-    LDA #$00
+    JSR DrawBlock2x2
+    JMP @done
+
+; ---------- phase 0: clear old floor ----------
+@phase0:
+    LDA #$f4
     STA loadedTile
-    JSR Draw2x2_same_tile
+    JSR Draw2x2_same_tile     ; draws floor tiles
 
-@down:
+    ; advance to phase 1 for next frame
+    LDA #$01
+    STA block_move_phase
+    JMP @done
+
 @done:
     RTS
 
@@ -2768,8 +2862,6 @@ DrawMoveableBlock:
 
 Get_x_and_y:
     LDA movable_block_index
-    STA $00b2
-    
     LSR A
     LSR A
     LSR A
@@ -2777,46 +2869,42 @@ Get_x_and_y:
     ASL A   
     
     STA movable_block_floor_tile_y   
-    STA $0092       ; 0..14
 
-    ; movable_block_floor_tile_x = index % 16  (col)
     LDA movable_block_index
-    STA $00b3
     AND #$0F
     
     ASL A   
     STA movable_block_floor_tile_x 
-    STA $0091         ; 0..15
 
     RTS
 
 
 
-
-; IN: movable_block_floor_tile_x, movable_block_floor_tile_y, loadedTile
-; IN: movable_block_floor_tile_x, movable_block_floor_tile_y, loadedTile
 Draw2x2_same_tile:
-inc $00c0
     ; TL
-    LDA loadedTile
-    STA $00a0
+
     LDX movable_block_floor_tile_x
-    STx $00a1
+    STX $00d0
     LDY movable_block_floor_tile_y
-    STy $00a2
+    STY $00d1
+
+    LDA loadedTile
     JSR SetBGTile
 
     ; TR
     INX
+    LDA loadedTile
     JSR SetBGTile
 
     ; BL
     DEX
     INY
+    LDA loadedTile
     JSR SetBGTile
 
     ; BR
     INX
+    LDA loadedTile
     JSR SetBGTile
 
     RTS
@@ -2824,35 +2912,42 @@ inc $00c0
 
 DrawBlock2x2:
     ; TL
+    
+    LDX movable_block_new_tile_x
+    STX $00d2
+    LDY movable_block_new_tile_y
+    STY $00d3
     LDA #$04
     STA loadedTile
-    LDX movable_block_floor_tile_x
-    LDY movable_block_floor_tile_y
     JSR SetBGTile
 
     ; TR
+    
+    INX
     LDA #$05
     STA loadedTile
-    INX
     JSR SetBGTile
 
     ; BL
-    LDA #$14
-    STA loadedTile
+    
     DEX
     INY
+    LDA #$14
+    STA loadedTile
     JSR SetBGTile
 
     ; BR
+    
+    INX
     LDA #$15
     STA loadedTile
-    INX
     JSR SetBGTile
 
     RTS
 
 ===== player.asm =====
 DRAWPLAYER:
+    JSR DrawHealth
 	LDA anim_frame
     ASL A
     CLC
@@ -2871,17 +2966,6 @@ DRAWPLAYER:
     INX
     STX $020D                  ; BR    
 
-    ;bounding box for test
-    ; LDA #$80
-    ; STA $0201                  ; TL
-    ; LDA #$81
-    ; STA $0205                  ; TR
-    ; LDA #$90
-    ; STA $0209                  ; BL
-    ; LDA #$91
-    ; STA $020D                  ; BR    
-
-    ; write X
     LDA player_x
     STA $0203
     STA $020b
@@ -2890,21 +2974,6 @@ DRAWPLAYER:
     STA $0207
     STA $020f
 
-    ; ; write Y
-    ; LDA PLAYER_Y
-    ; SEC
-    ; SBC #$01
-    ; STA $0200
-    ; STA $0204
-    ; CLC
-    ; ADC #8
-    ; STA $0208
-    ; STA $020c
-
-    ; assume: PLAYER_Y is the logical position (0..$EF)
-; OAM: TL=$0200, TR=$0204, BL=$0208, BR=$020C
-
-    ; cache player Y for this frame
     LDA player_y
     STA player_y_pos
 
@@ -2927,7 +2996,6 @@ DRAWPLAYER:
     JMP @done
 
 @hide:
-    ; put metasprite offscreen (any Y >= $F0 hides); $FE is common
     LDA is_player_hit
     BEQ @show
     LDA #$FE
@@ -2937,19 +3005,7 @@ DRAWPLAYER:
     STA $020C
 
 @done:
-    ; (write X and tile/attr as usual elsewhere)
-
-
-
-    
     RTS
-
-; enemy_x: .res 3
-; enemy_y: .res 3
-; enemy_direction: .res 3
-; enemy_random_walk_timer: .res 3
-; is_enemy_active: .res 3
-; enemy_count: .res 1
 
 
 UpdatePlayer:
@@ -2996,7 +3052,8 @@ UpdatePlayer:
             LDA #$01
             STA is_player_hit
             DEC player_health
-            JSR UpdateHealth
+            STA can_draw_health
+            ; JSR UpdateHealth
 
 
     @next:
@@ -3035,54 +3092,63 @@ GetPlayerTile:
     RTS
 
 
+DrawHealth:
 
+    ; Only draw when flagged
+    LDA can_draw_health
+    CMP #$01
+    BNE @done
 
+    LDA #$00
+    STA can_draw_health
 
-; draws a row of hearts starting at HEALTH_X, row HEALTH_Y
-; heart if i < player_health, else blank
+    ; Clamp player_health to MAX_HEALTH just in case
+    LDA player_health
+    CMP #MAX_HEALTH
+    BCC :+
+        LDA #MAX_HEALTH
+        STA player_health
+    :
 
-UpdateHealth:
-    LDX #$00
-    LDA #HEALTH_X         ; base X (tile column)
-    STA tmp               ; tmp holds current draw X
+    ; --- set PPU address to start of health bar ---
+    LDA PPUSTATUS          ; $2002, reset latch
+    LDA #HEALTH_ADDR_HI
+    STA PPUADDR            ; $2006 high
+    LDA #HEALTH_ADDR_LO
+    STA PPUADDR            ; $2006 low
+
+    ; --- draw MAX_HEALTH tiles in a row ---
+    LDX #$00               ; heart index
 
 @health_loop:
     CPX #MAX_HEALTH
-    BCS @health_done      ; exit if X >= MAX_HEALTH
+    BCS @done_write
 
-    ; --- choose tile: heart if X < player_health, else blank ---
+    ; choose tile: heart if X < player_health, else blank
     CPX player_health
-    BCC @draw_heart       ; X < player_health → heart
-@draw_blank:
-    LDA #$00              ; blank tile (adjust as needed)
-    STA loadedTile
-    JMP @emit
-@draw_heart:
-    LDA #HEALTH_TILE
-    STA loadedTile
+    BCC @heart_tile
+
+@blank_tile:
+    LDA #$00               ; blank tile index
+    BEQ @emit              ; always taken
+
+@heart_tile:
+    LDA #HEALTH_TILE       ; heart tile index
 
 @emit:
-    ; preserve loop index, use tmp as draw X for SetBGTile
-    TXA
-    PHA
+    STA PPUDATA            ; $2007
 
-    LDX tmp               ; draw column
-    LDY #HEALTH_Y         ; draw row
-    JSR SetBGTile
-
-    PLA
-    TAX                   ; restore loop index
-
-    ; advance draw X and loop index
-    LDA tmp
-    CLC
-    ADC #1
-    STA tmp
     INX
     JMP @health_loop
 
-@health_done:
+@done_write:
+@done:
+
+	LDA #$00
+    STA $2005
+    STA $2005
     RTS
+
 
 
 
@@ -3751,8 +3817,10 @@ movable_block_floor_tile_x: .res 1
 movable_block_floor_tile_y: .res 1
 movable_block_new_tile_x: .res 1
 movable_block_new_tile_y: .res 1
-
+block_move_phase: .res 1
 movable_block_index: .res 1
+can_draw_health: .res 1
+health_tmp: .res 1
 .segment "BSS"
 
 COLLISIONTABLE: .res 240

@@ -4,14 +4,22 @@
 ; ===== LoadLevel: sets bgPtr + collPtr based on current level, then loads data =====
 
 LoadLevel:
-    ; turn rendering OFF while we touch VRAM
+
+    ; tell NMI to stay out of VRAM
+    LDA #$01
+    STA vram_busy
+
+    ; disable NMI + rendering
     LDA #$00
-    STA $2001
+    STA $2000       ; NMI off
+    STA $2001       ; rendering off
 
     ; A or memory "level" holds the current level index (0-based)
     LDA level        ; 0,1,2,...
     ASL A            ; *2
-    ASL A            ; *4  (4 bytes per entry)
+    ASL A            ; *4
+    ; CLC
+    ; ADC #4
     TAX              ; X = offset into LevelTable
 
     ; --- bgPtr = pointer to this level's BG data ---
@@ -33,41 +41,48 @@ LoadLevel:
     JSR LoadCollisionTable
     JSR LoadBackground
     JSR LoadBKAtr
-
+    JSR TimerDraw
     LDA #$01
     STA can_draw_health
-    ; JSR UpdateHealth
+    STA can_draw_timer
+
+    ; per-level init
     LDA level
     CMP #$00
     BNE :+
         JSR Level_1_init
-        JMP @done
-    
+        JMP @after_init
     :
     LDA level
     CMP #$01
     BNE :+
         JSR Level_2_init
-        JMP @done
-    
+        JMP @after_init
     :
     LDA level
     CMP #$02
     BNE :+
         JSR Level_3_init
-        JMP @done
+        JMP @after_init
     :
     LDA level
     CMP #$03
     BNE :+
         JSR Level_4_init
-        JMP @done
+        JMP @after_init
     :
+    ; etc...
 
-    @done:
-    ; turn rendering back ON
+@after_init:
+    ; re-enable rendering + NMI
     LDA #%00011110
-    STA $2001
+    STA $2001          ; show BG+sprites
+    LDA #%10010000
+    STA $2000          ; NMI on, BG pattern table select as you like
+
+    ; allow NMI to draw again
+    LDA #$00
+    STA vram_busy
 
     RTS
 
