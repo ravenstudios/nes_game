@@ -1,7 +1,10 @@
 Level_4_init:
-    LDA #0
+    LDA #(15*16)
     STA secret_tile
     JSR Move_enemies_off_screen
+
+    LDA #$00
+    STA is_door_unlocked
 
     LDA #$a0
     STA mimic_x

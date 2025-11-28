@@ -12,7 +12,9 @@ Maybe boss will be seen in a window during a lighting strike.
 []First couple of levles for tut, no enemimes, push blocks, hidden tile
 []Death screen is white with game over message then shows game running again with dead sprite and enimes walking over you. Your dead world keeps going.
 []Final door in every room waiting to be unlocked, will only unlock when at last level
-
+[]Invisble wall or spikes can walkthrough
+[]Collect X items to unlock door
+[]Invisiable floor path
 
 
 ##################Bugs#####################

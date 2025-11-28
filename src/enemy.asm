@@ -16,6 +16,9 @@ EnemyUpdate:
     BEQ :+
     JSR BulletVsEnemyOverlap
     :
+
+
+
     LDA enemy_direction, X
 
     CMP #FACINGUP
@@ -440,19 +443,43 @@ LoadEnemies:
 
 
 Move_enemies_off_screen:
+    ; 1) Put enemies at Y=$F0 and mark active so DrawEnemies will update OAM
     LDX #$00
-@loop:
+@loop1:
     CPX enemy_count
-    BEQ @done
+    BEQ @after_draw
+
     LDA #$F0
     STA enemy_y, X
+
+    LDA #$00
+    STA enemy_x, X      ; (optional: could leave X as-is)
+    
+    LDA #$01
+    STA is_enemy_active, X
+
+    INX
+    JMP @loop1
+
+@after_draw:
+    ; 2) Draw them once at the new off-screen position
+    JSR DrawEnemies
+
+    ; 3) Now mark them inactive so logic ignores them
+    LDX #$00
+@loop2:
+    CPX enemy_count
+    BEQ @done
+
     LDA #$00
     STA is_enemy_active, X
+
     INX
-    JMP @loop
+    JMP @loop2
+
 @done:
-JSR DrawEnemies
-RTS
+    RTS
+
 
 EnemyPos:
     .byte $20, $60

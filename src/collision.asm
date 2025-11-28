@@ -152,6 +152,8 @@ CheckTile:
     LDA cur_tile
     CMP #$03
     BNE :+
+        LDA is_player_checking
+        BEQ @decide_solid
         JSR Exit
         CLC                 ; usually treat as passable after teleport
         RTS
@@ -287,22 +289,42 @@ CheckCollision:
     RTS
 
 Exit:
-    
+    ; close the door in the current room *before* leaving
+    ; LDA #$01
+    ; STA can_undraw_door
+    ; JSR Undraw_door
+
+    ; move player to start position for the *next* room
     LDA #PLAYER_X_START
     STA player_x
     LDA #PLAYER_Y_START
     STA player_y
+
+    ; decide what the next level is
     LDX level
     INX
-    STX level
-    JSR LoadLevel
+    STX next_level      ; store next room index
+
+    ; start transition: phase 1 = flicker off
+    LDA #$01
+    STA transition_phase
+
+    LDA #16             ; number of flicker frames
+    STA transition_frames
+
+    ; JSR StartThunder
+
+
+    ; lock the door for next time in logic
     LDA #$00
     STA is_door_unlocked
+    STA door_draw_pending
+    ; make sure this flag is not left dangling
+    ; LDA #$01
+    ; STA can_undraw_door
     
-    
-    LDA #$01
-    STA can_undraw_door
-    ; JMP Undraw_door
     RTS
+
+
 
 

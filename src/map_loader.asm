@@ -45,8 +45,7 @@ LoadLevel:
     LDA #$01
     STA can_draw_health
     STA can_draw_timer
-
-    ; per-level init
+    
     LDA level
     CMP #$00
     BNE :+
@@ -83,6 +82,14 @@ LoadLevel:
     ; allow NMI to draw again
     LDA #$00
     STA vram_busy
+    ; LDA #$01
+    ; STA can_undraw_door
+
+    LDA #$00
+    STA is_door_unlocked
+    STA door_draw_pending
+
+    STA can_undraw_door
 
     RTS
 
@@ -199,8 +206,8 @@ UpdateMapLoader:
     BNE @done
 
     ; already unlocked? then do nothing (avoid re-drawing each frame)
-    LDA is_door_unlocked
-    BNE @done
+    ; LDA is_door_unlocked
+    ; BNE @done
 
     ; first time: mark unlocked & draw door once
     LDA #$01
@@ -218,6 +225,27 @@ UpdateMapLoader:
 
 
 
+; @after_init:
+;     ; clear any door state carried from the previous level
+    
+
+;     ; re-enable rendering + NMI
+;     LDA #%00011110
+;     STA $2001          ; show BG+sprites
+;     LDA #%10010000
+;     STA $2000          ; NMI on, BG pattern table select as you like
+
+;     ; allow NMI to draw again
+;     LDA #$00
+;     STA vram_busy
+
+;     LDA #$00
+;     STA is_door_unlocked
+;     STA door_draw_pending
+;     LDA #$01
+;     STA can_undraw_door
+
+;     RTS
 
 
 

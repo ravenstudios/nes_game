@@ -4,6 +4,7 @@
 .include "sprites.asm"
 ; .include "random_room.asm"
 .include "start_screen.asm"
+.include "famistudio_ca65.s"
 
 
 RESET:
@@ -99,7 +100,21 @@ JSR LoadTitleScreenBackground
 	LDA #%00011110		;show sprites and background
 	STA $2001
 
-	
+	lda #%00001111
+	sta $4015
+
+		; X/Y = address of music data
+	; A   = 1 for NTSC, 0 for PAL
+	LDX #<music_data_untitled
+	LDY #>music_data_untitled
+	LDA #1          ; NTSC
+	JSR famistudio_init
+
+
+
+
+
+
 	JMP INFLOOP
 
 

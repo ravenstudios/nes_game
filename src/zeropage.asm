@@ -173,6 +173,17 @@ movable_block_index: .res 1
 can_draw_health: .res 1
 health_tmp: .res 1
 
+
+transition_phase:   .res 1   ; 0 = no transition, 1 = flicker off, 2 = load room, 3 = flicker on
+transition_frames:  .res 1
+next_level:         .res 1
+
+last_draw_to_move_enemies: .res 1
+
+
+thunder_active: .res 1
+thunder_timer: .res 1
+
 .segment "BSS"
 
 COLLISIONTABLE: .res 240

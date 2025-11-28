@@ -14,7 +14,8 @@ INITVARS:
     STA enemy_kill_count
     STA timer_counter
     STA can_undraw_door
-   
+    STA last_draw_to_move_enemies
+     
 
 
 

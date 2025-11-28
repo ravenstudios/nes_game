@@ -20,6 +20,56 @@
 @pass:
     RTS
 ===== audio.asm =====
+; ===== audio.asm =====
+; simple thunder SFX using the noise channel
+
+; ZP vars (we’ll add them to zeropage.asm in a sec)
+;   thunder_active
+;   thunder_timer
+
+StartThunder:
+    ; configure noise channel
+    ; $400C: DDLC VVVV
+    ; D = length counter halt, L = constant volume, V = volume
+    LDA #%00101111        ; length halt=0, const volume=1, volume=15
+    STA $400C
+
+    ; $400E: ---- PPPP  (period index, lower = lower pitch)
+    LDA #%00000001        ; low, rumbly noise
+    STA $400E
+
+    ; $400F: LLLL L--- (length counter, but we’re going to stop manually)
+    LDA #$00
+    STA $400F
+
+    ; enable noise channel (bit 3) in $4015
+    LDA #%00001000
+    STA $4015
+
+    ; how long the thunder lasts (frames)
+    LDA #60               ; ~1 second at 60 FPS
+    STA thunder_timer
+
+    LDA #$01
+    STA thunder_active
+    RTS
+
+
+UpdateThunder:
+    LDA thunder_active
+    BEQ @done
+
+    DEC thunder_timer
+    BNE @done
+
+    ; time’s up – silence noise
+    LDA #$00
+    STA $4015        ; no channels enabled (fine for now)
+    LDA #$00
+    STA thunder_active
+
+@done:
+    RTS
 
 ===== background.asm =====
 
@@ -337,7 +387,7 @@ SetBGTile:
 
     LDA loadedTile
     STA $2007
-
+; 
 	LDA #$00
     STA $2005
     STA $2005
@@ -874,6 +924,8 @@ CheckTile:
     LDA cur_tile
     CMP #$03
     BNE :+
+        LDA is_player_checking
+        BEQ @decide_solid
         JSR Exit
         CLC                 ; usually treat as passable after teleport
         RTS
@@ -1009,23 +1061,43 @@ CheckCollision:
     RTS
 
 Exit:
-    
+    ; close the door in the current room *before* leaving
+    ; LDA #$01
+    ; STA can_undraw_door
+    ; JSR Undraw_door
+
+    ; move player to start position for the *next* room
     LDA #PLAYER_X_START
     STA player_x
     LDA #PLAYER_Y_START
     STA player_y
+
+    ; decide what the next level is
     LDX level
     INX
-    STX level
-    JSR LoadLevel
+    STX next_level      ; store next room index
+
+    ; start transition: phase 1 = flicker off
+    LDA #$01
+    STA transition_phase
+
+    LDA #16             ; number of flicker frames
+    STA transition_frames
+
+    ; JSR StartThunder
+
+
+    ; lock the door for next time in logic
     LDA #$00
     STA is_door_unlocked
+    STA door_draw_pending
+    ; make sure this flag is not left dangling
+    ; LDA #$01
+    ; STA can_undraw_door
     
-    
-    LDA #$01
-    STA can_undraw_door
-    ; JMP Undraw_door
     RTS
+
+
 
 
 
@@ -1202,6 +1274,9 @@ EnemyUpdate:
     BEQ :+
     JSR BulletVsEnemyOverlap
     :
+
+
+
     LDA enemy_direction, X
 
     CMP #FACINGUP
@@ -1585,6 +1660,15 @@ ActivateEnemies:
     BEQ @done
     LDA #$01
     STA is_enemy_active, X
+    TXA                      ; A = X
+    ASL                      ; A = 2*X
+    TAY                      ; Y = 2*X
+
+    LDA EnemyPos, Y          ; x
+    STA enemy_x, X
+    INY
+    LDA EnemyPos, Y          ; y
+    STA enemy_y, X
     INX
     JMP @loop
 @done:
@@ -1617,19 +1701,43 @@ LoadEnemies:
 
 
 Move_enemies_off_screen:
+    ; 1) Put enemies at Y=$F0 and mark active so DrawEnemies will update OAM
     LDX #$00
-@loop:
+@loop1:
     CPX enemy_count
-    BEQ @done
+    BEQ @after_draw
+
     LDA #$F0
     STA enemy_y, X
+
+    LDA #$00
+    STA enemy_x, X      ; (optional: could leave X as-is)
+    
+    LDA #$01
+    STA is_enemy_active, X
+
+    INX
+    JMP @loop1
+
+@after_draw:
+    ; 2) Draw them once at the new off-screen position
+    JSR DrawEnemies
+
+    ; 3) Now mark them inactive so logic ignores them
+    LDX #$00
+@loop2:
+    CPX enemy_count
+    BEQ @done
+
     LDA #$00
     STA is_enemy_active, X
+
     INX
-    JMP @loop
+    JMP @loop2
+
 @done:
-JSR DrawEnemies
-RTS
+    RTS
+
 
 EnemyPos:
     .byte $20, $60
@@ -1650,6 +1758,9 @@ EnemyPos:
 .include "gameover.asm"
 .include "map_loader.asm"
 .include "mimic.asm"
+; .include "audio.asm"
+.include "ShiftyTestTheme.asm"
+
 
 INFLOOP:
 
@@ -1661,7 +1772,26 @@ INFLOOP:
 
     INC frame_counter
 
-    
+    ; ===== handle transition phase 2: actually load the new room =====
+    LDA transition_phase
+    CMP #$02
+    BNE @no_load
+
+        ; set real level from next_level
+        LDA next_level
+        STA level
+
+        ; load the new level (this already handles vram_busy, $2000/$2001, etc.)
+        JSR LoadLevel
+
+        ; now switch to flicker-on phase (3)
+        LDA #$03
+        STA transition_phase
+
+        LDA #16         ; flicker-on frames
+        STA transition_frames
+
+@no_load:
 
     ; ===== UPDATE section =====
     ; START STATE
@@ -1671,12 +1801,20 @@ INFLOOP:
         JSR StartScreenStateUpdate
     :
 
+    ; if we are in a transition, you might want to skip gameplay updates
+    LDA transition_phase
+    BEQ @do_game_update
+    JMP @after_game_update
+
+@do_game_update:
     ; GAME STATE
     LDA state
     CMP #$01
     BNE :+
         JSR UpdateGameLoop
     :
+
+@after_game_update:
 
     ; GAME OVER STATE
     LDA state
@@ -1691,6 +1829,7 @@ INFLOOP:
 
 
 
+
 UpdateGameLoop:
     JSR TimerUpdate
     JSR PlayerHitTimer
@@ -1699,7 +1838,7 @@ UpdateGameLoop:
     JSR HandleDpad
     JSR EnemyUpdate
     JSR GetNewEnemyRandomWalkTimer
-    ; JSR UpdateMoveableBlock
+    ; JSR UpdateThunder
     JSR UpdateBulet
     JSR DoorUpdate
     JSR UpdatePlayer
@@ -1722,28 +1861,105 @@ DrawGameLoop:
     JSR DrawBullet   
     JSR DrawMimic
 
+    LDA is_door_unlocked
+    STA $0160
+    LDA can_undraw_door
+    STA $0161
+    LDA door_draw_pending
+    STA $0162
 RTS
 
 
 
 NMI:
+LDA #$0F
+STA $4015      ; force all APU channels ON every frame
+
     INC rand8
     PHA
     TXA
     PHA
     TYA
     PHA
+
+    JSR famistudio_update
+
     LDA #1
     STA vblank_flag
 
-    ; ===== OAM DMA FIRST (fast, doesn’t touch VRAM) =====
+    ; ===== OAM DMA =====
     LDA vram_busy
     BNE skip_dma
         LDA #$02
-        STA $4014         ; copy $0200..$02FF to OAM
+        STA $4014
 skip_dma:
 
-    ; ===== DRAW section =====
+    ; ===== HANDLE TRANSITION FLICKER =====
+    LDA transition_phase
+    BEQ @no_transition   ; 0 = normal rendering
+
+    CMP #$01
+    BEQ @flicker_off
+    CMP #$02
+    BEQ @transition_dark
+    CMP #$03
+    BEQ @flicker_on
+    JMP @no_transition
+
+@flicker_off:
+    ; phase 1: flicker, end in black + phase 2
+    LDA frame_counter
+    AND #%00000011
+    BEQ @lights_off1
+    LDA #%00011110
+    JMP @write_2001_1
+@lights_off1:
+    LDA #$00
+@write_2001_1:
+    STA $2001
+
+    DEC transition_frames
+    BNE @end_transition_draw
+
+    LDA #$00
+    STA $2001       ; full black
+    LDA #$02
+    STA transition_phase
+    JMP @end_transition_draw
+
+@transition_dark:
+    ; phase 2: keep black while main loop loads room
+    LDA #$00
+    STA $2001
+    JMP @end_transition_draw
+
+@flicker_on:
+    ; phase 3: flicker new room, end in normal
+    LDA frame_counter
+    AND #%00000011
+    BEQ @lights_off3
+    LDA #%00011110
+    JMP @write_2001_3
+@lights_off3:
+    LDA #$00
+@write_2001_3:
+    STA $2001
+
+    DEC transition_frames
+    BNE @end_transition_draw
+
+    LDA #%00011110
+    STA $2001       ; fully on
+    LDA #$00
+    STA transition_phase
+    JMP @end_transition_draw
+
+@end_transition_draw:
+    ; while in transition, skip normal DrawGameLoop
+    JMP @after_draw
+
+@no_transition:
+    ; ===== NORMAL DRAW section =====
     ; START STATE
     LDA state
     CMP #$00
@@ -1755,7 +1971,7 @@ skip_dma:
     LDA state
     CMP #$01
     BNE :+
-        JSR DrawGameLoop   ; DrawDoor, enemies, player, mimic, etc.
+        JSR DrawGameLoop
     :
 
     ; GAME OVER
@@ -1766,7 +1982,7 @@ skip_dma:
     :
 
 
-
+@after_draw:
     PLA
     TAY
     PLA
@@ -1792,6 +2008,11 @@ no_xor:
 
 
 LoadState1:
+
+    lda #0                 ; play song 0
+    jsr famistudio_music_play
+
+
     ; JSR LoadRandomRoom
     ; JSR LOADSPRITES
     JSR LoadLevel
@@ -1800,7 +2021,93 @@ LoadState1:
     ; JSR UpdateHealth
     JSR LoadPlayer
     JSR LoadMimic
+
     RTS
+
+
+
+; Wait exactly one vblank/frame
+WaitOneFrame:
+WaitLoop:
+    LDA vblank_flag
+    BEQ WaitLoop
+    LDA #0
+    STA vblank_flag
+    RTS
+
+
+
+; ===========================
+; LightsFlickerOff
+;  - Flickers the lights a bit
+;  - Ends with screen fully OFF ($2001 = 0)
+; ===========================
+
+LightsFlickerOff:
+    LDX #16          ; number of flicker frames (tweak this)
+@flicker_loop_off:
+    JSR WaitOneFrame
+
+    ; use frame_counter low bits to decide on/off
+    LDA frame_counter
+    AND #%00000011   ; look at last 2 bits
+    BEQ @lights_off  ; ~25% of time: off
+
+    ; lights ON this frame
+    LDA #%00011110   ; BG+sprites on, your normal setting
+    JMP @write_2001
+
+@lights_off:
+    LDA #$00         ; everything off
+
+@write_2001:
+    STA $2001
+
+    DEX
+    BNE @flicker_loop_off
+
+    ; end in total darkness
+    LDA #$00
+    STA $2001
+    RTS
+
+
+
+; ===========================
+; LightsFlickerOn
+;  - Starts from black
+;  - Flickers a bit
+;  - Ends with screen fully ON ($2001 = %00011110)
+; ===========================
+
+LightsFlickerOn:
+    LDX #16          ; number of flicker frames (tweak)
+
+@flicker_loop_on:
+    JSR WaitOneFrame
+
+    LDA frame_counter
+    AND #%00000011
+    BEQ @lights_off2   ; sometimes off
+
+    ; lights ON this frame
+    LDA #%00011110
+    JMP @write_2001_2
+
+@lights_off2:
+    LDA #$00
+
+@write_2001_2:
+    STA $2001
+
+    DEX
+    BNE @flicker_loop_on
+
+    ; end with lights ON
+    LDA #%00011110
+    STA $2001
+    RTS
+
 ===== gameover.asm =====
 Gameover:
     
@@ -1882,7 +2189,8 @@ INITVARS:
     STA enemy_kill_count
     STA timer_counter
     STA can_undraw_door
-   
+    STA last_draw_to_move_enemies
+     
 
 
 
@@ -2294,6 +2602,8 @@ LoadLevel:
     LDA level        ; 0,1,2,...
     ASL A            ; *2
     ASL A            ; *4
+    ; CLC
+    ; ADC #4
     TAX              ; X = offset into LevelTable
 
     ; --- bgPtr = pointer to this level's BG data ---
@@ -2315,11 +2625,11 @@ LoadLevel:
     JSR LoadCollisionTable
     JSR LoadBackground
     JSR LoadBKAtr
-
+    JSR TimerDraw
     LDA #$01
     STA can_draw_health
-
-    ; per-level init
+    STA can_draw_timer
+    
     LDA level
     CMP #$00
     BNE :+
@@ -2356,6 +2666,14 @@ LoadLevel:
     ; allow NMI to draw again
     LDA #$00
     STA vram_busy
+    ; LDA #$01
+    ; STA can_undraw_door
+
+    LDA #$00
+    STA is_door_unlocked
+    STA door_draw_pending
+
+    STA can_undraw_door
 
     RTS
 
@@ -2472,8 +2790,8 @@ UpdateMapLoader:
     BNE @done
 
     ; already unlocked? then do nothing (avoid re-drawing each frame)
-    LDA is_door_unlocked
-    BNE @done
+    ; LDA is_door_unlocked
+    ; BNE @done
 
     ; first time: mark unlocked & draw door once
     LDA #$01
@@ -2491,6 +2809,27 @@ UpdateMapLoader:
 
 
 
+; @after_init:
+;     ; clear any door state carried from the previous level
+    
+
+;     ; re-enable rendering + NMI
+;     LDA #%00011110
+;     STA $2001          ; show BG+sprites
+;     LDA #%10010000
+;     STA $2000          ; NMI on, BG pattern table select as you like
+
+;     ; allow NMI to draw again
+;     LDA #$00
+;     STA vram_busy
+
+;     LDA #$00
+;     STA is_door_unlocked
+;     STA door_draw_pending
+;     LDA #$01
+;     STA can_undraw_door
+
+;     RTS
 
 
 
@@ -2947,7 +3286,7 @@ DrawBlock2x2:
 
 ===== player.asm =====
 DRAWPLAYER:
-    JSR DrawHealth
+    ; JSR DrawHealth
 	LDA anim_frame
     ASL A
     CLC
@@ -3095,12 +3434,12 @@ GetPlayerTile:
 DrawHealth:
 
     ; Only draw when flagged
-    LDA can_draw_health
-    CMP #$01
-    BNE @done
+    ; LDA can_draw_health
+    ; CMP #$01
+    ; BNE @done
 
-    LDA #$00
-    STA can_draw_health
+    ; LDA #$00
+    ; STA can_draw_health
 
     ; Clamp player_health to MAX_HEALTH just in case
     LDA player_health
@@ -3213,6 +3552,7 @@ LoadPlayer:
 .include "sprites.asm"
 ; .include "random_room.asm"
 .include "start_screen.asm"
+.include "famistudio_ca65.s"
 
 
 RESET:
@@ -3308,10 +3648,153 @@ JSR LoadTitleScreenBackground
 	LDA #%00011110		;show sprites and background
 	STA $2001
 
-	
+	lda #%00001111
+	sta $4015
+
+		; X/Y = address of music data
+	; A   = 1 for NTSC, 0 for PAL
+	LDX #<music_data_untitled
+	LDY #>music_data_untitled
+	LDA #1          ; NTSC
+	JSR famistudio_init
+
+
+
+
+
+
 	JMP INFLOOP
 
 
+
+===== ShiftyTestTheme.asm =====
+; This file is for the FamiStudio Sound Engine and was generated by FamiStudio
+; Required flags for Untitled:
+.segment "CODE"
+
+.segment "RODATA"
+
+
+.export _music_data_untitled:=music_data_untitled
+
+music_data_untitled:
+	.byte 1
+	.word @instruments
+	.word @samples-4
+; 00 : Song 1
+	.word @song0ch0
+	.word @song0ch1
+	.word @song0ch2
+	.word @song0ch3
+	.word @song0ch4
+	.byte .lobyte(@tempo_env_1_mid), .hibyte(@tempo_env_1_mid), 0, 0
+
+.export music_data_untitled
+.global FAMISTUDIO_DPCM_PTR
+
+@instruments:
+	.word @env1,@env2,@env4,@env0 ; 00 : Instrument 1
+	.word @env5,@env3,@env4,@env6 ; 01 : Instrument 2
+
+@env0:
+	.byte $00,$c0,$7f,$00,$02
+@env1:
+	.byte $00,$cf,$7f,$00,$02
+@env2:
+	.byte $c0,$7f,$00,$01
+@env3:
+	.byte $d4,$cf,$db,$e2,$a8,$d3,$cb,$c0,$00,$07
+@env4:
+	.byte $7f,$00,$00
+@env5:
+	.byte $00,$cd,$ca,$c7,$c4,$c3,$c2,$c0,$00,$07
+@env6:
+	.byte $00,$cc,$a2,$d5,$a0,$c0,$9d,$e3,$bf,$00,$08
+
+@samples:
+
+@tempo_env_1_mid:
+	.byte $03,$05,$80
+
+@song0ch0:
+@song0ch0loop:
+	.byte $47, .lobyte(@tempo_env_1_mid), .hibyte(@tempo_env_1_mid), $80
+@song0ref6:
+	.byte $19, $a5, $20, $a5, $25, $a5, $28, $a5, $27, $a5, $1f, $a5, $2b, $a5, $00, $a5, $48, $19, $a5, $20, $a5, $25, $a5, $28
+	.byte $a5, $27, $a5, $2f, $a5, $23, $a5, $00, $a5, $48
+	.byte $41, $10
+	.word @song0ref6
+	.byte $48, $2c, $a5, $2b, $a5, $28, $a5, $27, $a5, $25, $a5, $27, $a5, $28, $a5, $27, $a5, $48, $00, $ff, $ff, $bd
+@song0ref65:
+	.byte $48, $ff, $ff, $bf, $48, $ff, $ff, $bf, $48, $ff, $ff, $bf, $48, $ff, $ff, $bf, $48, $ff, $ff, $bf
+	.byte $41, $0f
+	.word @song0ref65
+	.byte $48, $ff, $ff, $bf, $42
+	.word @song0ch0loop
+@song0ch1:
+@song0ch1loop:
+	.byte $80
+@song0ref97:
+	.byte $27, $a5, $28, $a5, $2b, $a5, $2c, $a5, $2d, $a5, $2c, $a5, $2b, $a5, $28, $a5, $3b, $a5, $39, $a5, $38, $a5, $36, $a5
+	.byte $38, $a5, $39, $a5, $3b, $a5, $39, $a5
+	.byte $41, $10
+	.word @song0ref97
+	.byte $34, $a5, $33, $a5, $31, $a5, $2f, $a5, $2d, $a5, $2c, $a5, $2d, $a5, $2f, $a5
+@song0ref148:
+	.byte $00, $ff, $ff, $bd
+@song0ref152:
+	.byte $ff, $ff, $bf, $ff, $ff, $bf, $ff, $ff, $bf, $ff, $ff, $bf, $ff, $ff, $bf
+	.byte $41, $0f
+	.word @song0ref152
+	.byte $ff, $ff, $bf, $42
+	.word @song0ch1loop
+@song0ch2:
+@song0ch2loop:
+	.byte $80
+@song0ref178:
+	.byte $0d, $a5, $10, $a5, $0f, $a5, $13, $a5, $0d, $a5, $10, $a5, $0f, $a5, $08, $a5
+	.byte $41, $10
+	.word @song0ref178
+	.byte $41, $10
+	.word @song0ref178
+	.byte $41, $10
+	.word @song0ref178
+	.byte $41, $13
+	.word @song0ref148
+	.byte $41, $0f
+	.word @song0ref152
+	.byte $ff, $ff, $bf, $42
+	.word @song0ch2loop
+@song0ch3:
+@song0ch3loop:
+	.byte $82, $40, $01
+@song0ref219:
+	.byte $a5, $17, $a5, $10, $a5, $19, $a5, $1f, $a5, $1a, $a5, $1f, $a5, $17
+	.byte $41, $0e
+	.word @song0ref219
+	.byte $a5, $00
+	.byte $41, $0e
+	.word @song0ref219
+	.byte $a5, $00
+	.byte $41, $0e
+	.word @song0ref219
+	.byte $a5, $00, $a5
+	.byte $41, $0f
+	.word @song0ref152
+	.byte $41, $0f
+	.word @song0ref152
+	.byte $ff, $ff, $bf, $ff, $ff, $bf, $42
+	.word @song0ch3loop
+@song0ch4:
+@song0ch4loop:
+	.byte $41, $0f
+	.word @song0ref152
+	.byte $41, $0f
+	.word @song0ref152
+	.byte $41, $0f
+	.word @song0ref152
+	.byte $ff, $ff, $bf, $42
+	.word @song0ch4loop
 
 ===== sprites.asm =====
 
@@ -3637,6 +4120,9 @@ TimerDraw:
     LDY #TIMER_DIGIT_Y
     LDX #LEVEL_X
     JSR SetBGTile
+
+    JSR DrawHealth
+
 @done:
     RTS
 
@@ -3821,6 +4307,18 @@ block_move_phase: .res 1
 movable_block_index: .res 1
 can_draw_health: .res 1
 health_tmp: .res 1
+
+
+transition_phase:   .res 1   ; 0 = no transition, 1 = flicker off, 2 = load room, 3 = flicker on
+transition_frames:  .res 1
+next_level:         .res 1
+
+last_draw_to_move_enemies: .res 1
+
+
+thunder_active: .res 1
+thunder_timer: .res 1
+
 .segment "BSS"
 
 COLLISIONTABLE: .res 240
